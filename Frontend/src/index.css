@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 @font-face {
   font-family: 'Noto Sans Devanagari';
   src: url('/fonts/NotoSansDevanagari-400.ttf') format('truetype');
@@ -108,6 +110,7 @@ main {
 }
 
 .site-header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -153,6 +156,10 @@ main {
   color: var(--muted);
 }
 
+.nav-actions {
+  display: none;
+}
+
 .header-actions {
   display: flex;
   align-items: center;
@@ -162,6 +169,42 @@ main {
 .lang-toggle {
   padding: 10px 16px;
   font-weight: 600;
+}
+
+.nav-toggle {
+  display: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
+}
+
+.nav-toggle span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: var(--text);
+  border-radius: 999px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.nav-toggle--open span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.nav-toggle--open span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle--open span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
 }
 
 .primary-btn,
@@ -194,7 +237,6 @@ main {
   padding: 8px 18px;
   font-size: 13px;
 }
-
 .hero {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1015,9 +1057,99 @@ main {
   }
 }
 
+@media (max-width: 820px) {
+  .site-header {
+    gap: 16px;
+    padding-bottom: 24px;
+  }
+
+  .nav {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 72px;
+    z-index: 30;
+    width: 100%;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    background: var(--surface-strong);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow);
+  }
+
+  .nav.nav--open {
+    display: flex;
+  }
+
+  .header-actions {
+    position: absolute;
+    top: 18px;
+    right: 0;
+    width: auto;
+    justify-content: flex-end;
+    gap: 8px;
+    z-index: 40;
+  }
+
+  .menu-toggle {
+    position: relative;
+    z-index: 40;
+  }
+
+  .header-actions .lang-toggle,
+  .header-actions .primary-btn {
+    display: none;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+    margin-left: auto;
+  }
+
+  .nav-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .nav-actions .primary-btn {
+    flex: 1;
+    min-width: 180px;
+  }
+
+  .hero {
+    gap: 24px;
+  }
+
+  .hero-content p {
+    max-width: none;
+  }
+
+  .hero-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 @media (max-width: 640px) {
+  .page {
+    padding: 20px 18px 32px;
+  }
+
   .hero-content h1 {
-    font-size: 36px;
+    font-size: 34px;
+    line-height: 1.1;
+  }
+
+  .hero-content p {
+    font-size: 15px;
+  }
+
+  .pill {
+    font-size: 11px;
+    padding: 6px 12px;
   }
 
   .hero-actions {
@@ -1025,8 +1157,34 @@ main {
     align-items: stretch;
   }
 
+  .hero-actions .primary-btn,
+  .hero-actions .ghost-btn {
+    width: 100%;
+  }
+
   .hero-stats {
     grid-template-columns: 1fr;
+  }
+
+  .hero-stats > div {
+    background: var(--surface-strong);
+    border: 1px solid var(--border);
+    padding: 12px 14px;
+    border-radius: 16px;
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+  }
+
+  .hero-stats h3 {
+    font-size: 18px;
+  }
+
+  .hero-card {
+    margin-top: 8px;
+  }
+
+  .hero-orbit {
+    inset: -8% -10%;
+    opacity: 0.5;
   }
 
   .card-grid,
@@ -1051,3 +1209,8 @@ main {
     animation: none;
   }
 }
+
+
+
+
+
