@@ -66,7 +66,13 @@ function Header({ t, onToggle }) {
           {t.nav.contact}
         </a>
         <div className="nav-actions">
-          <button className="ghost-btn small" onClick={onToggle}>
+          <button
+            className="ghost-btn small"
+            onClick={() => {
+              onToggle()
+              closeMenu()
+            }}
+          >
             {t.nav.toggle}
           </button>
           <a className="primary-btn" href="#contact" onClick={closeMenu}>

@@ -323,14 +323,15 @@ export const contentEn = {
       emailPlaceholder: 'you@example.com',
       phone: 'Phone number',
       phonePlaceholder: 'Optional',
-      role: 'I want to',
+      role: 'I am a',
       roles: ['Volunteer', 'Partner', 'Media', 'Student', 'Other'],
       message: 'Message',
       messagePlaceholder: 'Tell us how you want to help',
       note: 'We respect your privacy. No spam, ever.',
-      submit: 'Send message',
+      submit: 'Send'
     },
-  },  cta: {
+  },  
+  cta: {
     title: 'Ready to ride with us?',
     description:
       'Become a volunteer, join upcoming rides, or help spread awareness across Ujjain.',

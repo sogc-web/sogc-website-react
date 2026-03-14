@@ -15,6 +15,7 @@ import CTA from './components/CTA'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import BackgroundGradient from './components/BackgroundGradient'
+import MoveToTopButton from './components/MoveToTopButton'
 import { contentEn } from './data/content.en'
 import { contentHi } from './data/content.hi'
 
@@ -59,6 +60,7 @@ function App() {
         </main>
         <Footer t={t} />
       </div>
+      <MoveToTopButton />
     </BackgroundGradient>
   )
 }
