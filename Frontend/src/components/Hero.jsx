@@ -6,8 +6,12 @@ function Hero({ t }) {
         <h1>{t.hero.title}</h1>
         <p>{t.hero.description}</p>
         <div className="hero-actions">
-          <button className="primary-btn">{t.hero.ctaPrimary}</button>
-          <button className="ghost-btn">{t.hero.ctaSecondary}</button>
+          <a className="primary-btn" href="#events">
+            {t.hero.ctaPrimary}
+          </a>
+          <a className="ghost-btn" href="#campaigns">
+            {t.hero.ctaSecondary}
+          </a>
         </div>
         <div className="hero-stats">
           {t.hero.stats.map((stat) => (

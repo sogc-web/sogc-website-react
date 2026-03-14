@@ -14,6 +14,7 @@ import Testimonials from './components/Testimonials'
 import CTA from './components/CTA'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
+import BackgroundGradient from './components/BackgroundGradient'
 import { contentEn } from './data/content.en'
 import { contentHi } from './data/content.hi'
 
@@ -35,30 +36,31 @@ function App() {
   }, [lang])
 
   return (
-    <div className="page">
-      {loading ? (
-        <div className="loader-overlay">
-          <Loader text={t.loader.text} />
-        </div>
-      ) : null}
-      <Header t={t} onToggle={toggleLang} />
-      <main>
-        <Hero t={t} />
-        <CTA t={t} />
-        <Mission t={t} />
-        <Campaigns t={t} />
-        <Events t={t} />
-        <GalleryMedia t={t} />
-        <GalleryStory t={t} />
-        <Timeline t={t} />
-        <PressMentions t={t} />
-        <Testimonials t={t} />
-        <Contact t={t} />
-      </main>
-      <Footer t={t} />
-    </div>
+    <BackgroundGradient>
+      <div className="page">
+        {loading ? (
+          <div className="loader-overlay">
+            <Loader text={t.loader.text} />
+          </div>
+        ) : null}
+        <Header t={t} onToggle={toggleLang} />
+        <main>
+          <Hero t={t} />
+          <CTA t={t} />
+          <Mission t={t} />
+          <Campaigns t={t} />
+          <Events t={t} />
+          <GalleryMedia t={t} />
+          <GalleryStory t={t} />
+          <Timeline t={t} />
+          <PressMentions t={t} />
+          <Testimonials t={t} />
+          <Contact t={t} />
+        </main>
+        <Footer t={t} />
+      </div>
+    </BackgroundGradient>
   )
 }
 
 export default App
-
