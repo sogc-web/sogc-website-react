@@ -1,121 +1,64 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+import { useEffect, useState } from 'react'
 import './App.css'
+import Loader from './components/Loader'
+import Header from './components/Header'
+import Hero from './components/Hero'
+import Mission from './components/Mission'
+import Campaigns from './components/Campaigns'
+import Events from './components/Events'
+import GalleryMedia from './components/GalleryMedia'
+import GalleryStory from './components/GalleryStory'
+import Timeline from './components/Timeline'
+import PressMentions from './components/PressMentions'
+import Testimonials from './components/Testimonials'
+import CTA from './components/CTA'
+import Contact from './components/Contact'
+import Footer from './components/Footer'
+import { contentEn } from './data/content.en'
+import { contentHi } from './data/content.hi'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [lang, setLang] = useState('en')
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1200)
+    return () => clearTimeout(timer)
+  }, [])
+
+  const t = lang === 'hi' ? contentHi : contentEn
+  const toggleLang = () => setLang((prev) => (prev === 'en' ? 'hi' : 'en'))
+
+  useEffect(() => {
+    document.documentElement.lang = lang
+    document.documentElement.setAttribute('data-lang', lang)
+  }, [lang])
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="page">
+      {loading ? (
+        <div className="loader-overlay">
+          <Loader text={t.loader.text} />
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      ) : null}
+      <Header t={t} onToggle={toggleLang} />
+      <main>
+        <Hero t={t} />
+        <CTA t={t} />
+        <Mission t={t} />
+        <Campaigns t={t} />
+        <Events t={t} />
+        <GalleryMedia t={t} />
+        <GalleryStory t={t} />
+        <Timeline t={t} />
+        <PressMentions t={t} />
+        <Testimonials t={t} />
+        <Contact t={t} />
+      </main>
+      <Footer t={t} />
+    </div>
   )
 }
 
 export default App
+
