@@ -31,10 +31,10 @@ function Header({ t, onToggle }) {
   return (
     <header className="site-header">
       <div className="brand">
-        <div className="brand-mark">SOGC</div>
+        <img className="brand-mark" src="/sogc-logo.png" alt="SOGC logo" />
         <div>
           <p className="brand-title">Society of Global Cycle</p>
-          <p className="brand-subtitle">{t.hero.pill}</p>
+          
         </div>
       </div>
       <nav ref={menuRef} className={`nav ${isOpen ? 'nav--open' : ''}`}>

@@ -1,9 +1,17 @@
 function Hero({ t }) {
+  const titleLines = [t.hero.title.line1, t.hero.title.line2, t.hero.title.line3].filter(Boolean)
+
   return (
     <section className="hero">
       <div className="hero-content">
         <span className="pill">{t.hero.pill}</span>
-        <h1>{t.hero.title}</h1>
+        <h1>
+          {titleLines.map((line) => (
+            <span key={line} className="hero-title-line">
+              {line}
+            </span>
+          ))}
+        </h1>
         <p>{t.hero.description}</p>
         <div className="hero-actions">
           <a className="primary-btn" href="#events">
@@ -21,28 +29,6 @@ function Hero({ t }) {
             </div>
           ))}
         </div>
-      </div>
-      <div className="hero-card">
-        <div className="glass-card">
-          <h2>{t.hero.card.title}</h2>
-          <p>{t.hero.card.description}</p>
-          <div className="hero-card-footer">
-            <div>
-              <p className="label">{t.hero.card.focusLabel}</p>
-              <p>{t.hero.card.focusValue}</p>
-            </div>
-            <div>
-              <p className="label">{t.hero.card.scopeLabel}</p>
-              <p>{t.hero.card.scopeValue}</p>
-            </div>
-          </div>
-        </div>
-        <div className="hero-orbit">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-        <div className="hero-lane"></div>
       </div>
     </section>
   )
