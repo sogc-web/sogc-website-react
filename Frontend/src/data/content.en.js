@@ -14,7 +14,11 @@ export const contentEn = {
   },
   hero: {
     pill: 'Cycle-friendly Ujjain',
-    title: 'Building a healthier city through everyday cycling.',
+    title: {
+      line1: 'Building',
+      line2: 'a healthier city',
+      line3: 'through everyday cycling.',
+    },
     description:
       'Society of Global Cycle is an NGO promoting clean mobility, safer streets, and a culture of active living across Ujjain.',
     ctaPrimary: 'Join a Ride',
@@ -192,24 +196,23 @@ export const contentEn = {
     open: 'Open',
   },
   story: {
-    eyebrow: 'Ride Gallery Story',
-    title: 'Moments that define the movement',
-    description:
-      'Swipe through the ride stories; each stop captures a community memory.',
-    items: [
-      {
-        title: 'Char Dwar Yatra',
-        subtitle: 'A 118 km spiritual and cultural circuit ride.',
-      },
-      {
-        title: 'Sunday Rides',
-        subtitle: 'Weekly rides to heritage and historic locations.',
-      },
-      {
-        title: 'Cycloday Dialogues',
-        subtitle: 'Youth and experts shaping a cycle-friendly future.',
-      },
+    sectionEyebrow: 'About the movement',
+    sectionTitle: 'Why this cycling movement matters',
+    sectionDescription:
+      'A message-driven section that explains the city mission without loading the full video until a visitor chooses to watch.',
+    eyebrow: 'About the movement',
+    titleLines: ['Building a cycle city', 'starts with', 'everyday riders.'],
+    bodyLines: [
+      'Public rides, city dialogues, and community campaigns are all working toward the same goal.',
+      'The invitation is simple: make cycling part of ordinary life, not only special events.',
     ],
+    quote: 'A cycle city grows when everyday travel begins to shift, one rider at a time.',
+    playLabel: 'Play message',
+    pauseLabel: 'Pause',
+    resumeLabel: 'Resume',
+    stopLabel: 'Stop',
+    closeLabel: 'Close',
+    pipLabel: 'Floating video player',
   },
   timeline: {
     eyebrow: 'Impact Timeline',
@@ -346,4 +349,5 @@ export const contentEn = {
     text: 'Rolling out the ride...',
   },
 }
+
 
