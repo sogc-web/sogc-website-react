@@ -1,10 +1,21 @@
-import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import MobileMenuButton from './MobileMenuButton'
 
 function Header({ t, onToggle }) {
   const [isOpen, setIsOpen] = useState(false)
   const menuRef = useRef(null)
   const toggleRef = useRef(null)
+
+  const navItems = [
+    { key: 'campaigns', href: '#campaigns', label: t.nav.campaigns },
+    { key: 'events', href: '#events', label: t.nav.events },
+    { key: 'gallery', href: '#gallery', label: t.nav.gallery },
+    { key: 'stories', href: '#story', label: t.nav.stories },
+    { key: 'timeline', href: '#timeline', label: t.nav.timeline },
+    { key: 'press', href: '#press', label: t.nav.press },
+    { key: 'testimonials', href: '#testimonials', label: t.nav.testimonials },
+    { key: 'contact', href: '#contact', label: t.nav.contact },
+  ]
 
   const toggleMenu = () => setIsOpen((prev) => !prev)
   const closeMenu = () => setIsOpen(false)
@@ -30,41 +41,18 @@ function Header({ t, onToggle }) {
 
   return (
     <header className="site-header">
-      <div className="brand">
+      <a className="brand" href="#">
         <img className="brand-mark" src="/sogc-logo.png" alt="SOGC logo" />
         <div>
           <p className="brand-title">Society of Global Cycle</p>
-          
         </div>
-      </div>
+      </a>
       <nav ref={menuRef} className={`nav ${isOpen ? 'nav--open' : ''}`}>
-        <a href="#mission" onClick={closeMenu}>
-          {t.nav.mission}
-        </a>
-        <a href="#campaigns" onClick={closeMenu}>
-          {t.nav.campaigns}
-        </a>
-        <a href="#events" onClick={closeMenu}>
-          {t.nav.events}
-        </a>
-        <a href="#gallery" onClick={closeMenu}>
-          {t.nav.gallery}
-        </a>
-        <a href="#story" onClick={closeMenu}>
-          {t.nav.stories}
-        </a>
-        <a href="#timeline" onClick={closeMenu}>
-          {t.nav.timeline}
-        </a>
-        <a href="#press" onClick={closeMenu}>
-          {t.nav.press}
-        </a>
-        <a href="#testimonials" onClick={closeMenu}>
-          {t.nav.testimonials}
-        </a>
-        <a href="#contact" onClick={closeMenu}>
-          {t.nav.contact}
-        </a>
+        {navItems.map((item) => (
+          <a key={item.key} href={item.href} onClick={closeMenu}>
+            {item.label}
+          </a>
+        ))}
         <div className="nav-actions">
           <button
             className="ghost-btn small"
@@ -75,18 +63,30 @@ function Header({ t, onToggle }) {
           >
             {t.nav.toggle}
           </button>
-          <a className="primary-btn" href="#contact" onClick={closeMenu}>
+          <button
+            className="primary-btn"
+            onClick={() => {
+              closeMenu()
+              window.dispatchEvent(new CustomEvent('open-volunteer-popup'))
+            }}
+          >
             {t.nav.volunteer}
-          </a>
+          </button>
         </div>
       </nav>
       <div className="header-actions">
         <button className="ghost-btn lang-toggle" onClick={onToggle}>
           {t.nav.toggle}
         </button>
-        <a className="primary-btn" href="#contact" onClick={closeMenu}>
+        <button
+          className="primary-btn"
+          onClick={() => {
+            closeMenu()
+            window.dispatchEvent(new CustomEvent('open-volunteer-popup'))
+          }}
+        >
           {t.nav.volunteer}
-        </a>
+        </button>
         <div className="menu-toggle md:hidden" ref={toggleRef}>
           <MobileMenuButton isOpen={isOpen} onClick={toggleMenu} label="Toggle navigation" />
         </div>

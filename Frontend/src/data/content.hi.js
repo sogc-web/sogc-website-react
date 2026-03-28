@@ -1,4 +1,4 @@
-export const contentHi = {
+﻿export const contentHi = {
   nav: {
     mission: 'मिशन',
     campaigns: 'अभियान',

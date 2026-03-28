@@ -1,6 +1,8 @@
 import SectionHeader from './SectionHeader'
 
 function Events({ t }) {
+  const allEvents = [t.events.featured, ...t.events.items]
+
   return (
     <section id="events" className="section alt">
       <div className="section-header split">
@@ -8,20 +10,8 @@ function Events({ t }) {
         <p className="section-note">{t.events.note}</p>
       </div>
 
-      <article className="featured-event reveal">
-        <div>
-          <p className="eyebrow">{t.events.featuredLabel}</p>
-          <h3>{t.events.featured.title}</h3>
-          <p>{t.events.featured.description}</p>
-        </div>
-        <div className="featured-meta">
-          <span>{t.events.featured.date}</span>
-          <span>{t.events.featured.location}</span>
-        </div>
-      </article>
-
       <div className="list">
-        {t.events.items.map((event, index) => (
+        {allEvents.map((event, index) => (
           <article
             key={event.title}
             className="list-item reveal"

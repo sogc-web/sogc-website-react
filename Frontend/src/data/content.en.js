@@ -1,4 +1,4 @@
-export const contentEn = {
+﻿export const contentEn = {
   nav: {
     mission: 'Mission',
     campaigns: 'Campaigns',
@@ -187,6 +187,7 @@ export const contentEn = {
       { title: 'Char Dwar Cycle Yatra', type: 'Photo Album' },
       { title: 'Ride for Nation', type: 'Highlights Reel' },
       { title: 'Sunday Cycle Rides', type: 'Community Moments' },
+      { title: 'Signature Campaign', type: 'Photo Album' },
     ],
     mediaItems: [
       { title: 'Press Coverage', source: 'Newspaper' },
@@ -256,7 +257,11 @@ export const contentEn = {
   press: {
     eyebrow: 'Press Mentions',
     title: 'Media coverage',
-    description: 'Highlights from newspaper and regional media coverage.',
+    description: 'A visual snapshot of newspaper clippings and regional media highlights.',
+    previewCta: 'More coverage',
+    pageTitle: 'Media coverage archive',
+    pageDescription: 'A full archive of newspaper clippings and media coverage from the movement.',
+    backToHome: 'Back to home',
     items: [
       {
         outlet: 'Newspaper Articles',
@@ -280,24 +285,44 @@ export const contentEn = {
     title: 'Community feedback',
     items: [
       {
-        name: 'Volunteer',
-        role: 'Community member',
-        quote: 'Cycling events built stronger neighborhood connections.',
+        name: 'Aditi Sharma',
+        role: 'Sunday ride participant',
+        quote: 'The Sunday rides helped me feel comfortable cycling on city roads again.',
       },
       {
-        name: 'Participant',
-        role: 'Sunday ride',
-        quote: 'Weekly rides make the city feel safer for cyclists.',
+        name: 'Rohan Verma',
+        role: 'Volunteer',
+        quote: 'People actually stop, talk, and join in. That community energy is what keeps this movement alive.',
       },
       {
-        name: 'Student',
-        role: 'Youth rider',
-        quote: 'Workshops helped us learn road safety and confidence.',
+        name: 'Sneha Patel',
+        role: 'College student',
+        quote: 'The workshops made road safety feel practical instead of preachy. I came away more confident.',
       },
       {
-        name: 'Partner',
+        name: 'Ankit Singh',
         role: 'Local supporter',
-        quote: 'The mission promotes health, clean air, and community pride.',
+        quote: 'These campaigns make cycling visible in a positive way. It feels like the city is slowly changing.',
+      },
+      {
+        name: 'Pooja Tiwari',
+        role: 'Community rider',
+        quote: 'I joined for fitness, but I stayed because the group feels welcoming and consistent every week.',
+      },
+      {
+        name: 'Vivek Joshi',
+        role: 'Event volunteer',
+        quote: 'The best part is that every activity feels organized but still personal. People genuinely feel included.',
+      },
+      {
+        name: 'Nandini Dubey',
+        role: 'Youth participant',
+        quote: 'I like that the movement talks about health, environment, and civic responsibility together.',
+      },
+      {
+        name: 'Mohit Solanki',
+        role: 'Neighbourhood resident',
+        quote: 'Even if someone is not a regular cyclist, these programs make them want to support the cause.',
       },
     ],
   },
@@ -334,7 +359,7 @@ export const contentEn = {
       note: 'We respect your privacy. No spam, ever.',
       submit: 'Send'
     },
-  },  
+  },
   cta: {
     title: 'Ready to ride with us?',
     description:
@@ -354,5 +379,3 @@ export const contentEn = {
     text: 'Rolling out the ride...',
   },
 }
-
-

@@ -35,7 +35,15 @@ const mediaModules = import.meta.glob(
     '../assets/SOGC-Media/Cycle day 2023/*.jpeg',
     '../assets/SOGC-Media/Cycle day 2023/*.jpg',
     '../assets/SOGC-Media/Cycle day 2023/*.JPG',
-    '../assets/SOGC-Media/Cycle day 2023/*.JPEG'
+    '../assets/SOGC-Media/Cycle day 2023/*.JPEG',
+    '../assets/SOGC-Media/Signature_campaign/*.jpeg',
+    '../assets/SOGC-Media/Signature_campaign/*.jpg',
+    '../assets/SOGC-Media/Signature_campaign/*.JPG',
+    '../assets/SOGC-Media/Signature_campaign/*.JPEG',
+    '../assets/SOGC-Media/Signature_campaign/*.mp4',
+    '../assets/SOGC-Media/Signature_campaign/*.MP4',
+    '../assets/SOGC-Media/Signature_campaign/*.mov',
+    '../assets/SOGC-Media/Signature_campaign/*.MOV'
   ],
   {
     eager: true,
@@ -135,6 +143,14 @@ const mediaCollections = [
     summary: 'Aerial video moments from the 2021 Cycle Day rides.',
     matcher: (path) => path.includes('/cycle day 2021/'),
     featuredFileName: 'DJI_0148.mp4',
+  }),
+  buildCollection({
+    id: 'signature-campaign',
+    title: 'Signature Campaign',
+    eyebrow: 'Citizen drive',
+    summary: 'A public signature drive that turns support for safer cycling into visible collective action.',
+    matcher: (path) => path.includes('/signature_campaign/'),
+    featuredFileName: 'signature_image_4.jpg',
   }),
 ].filter((collection) => collection.media.length > 0 && collection.cover)
 

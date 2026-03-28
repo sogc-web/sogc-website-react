@@ -1,3 +1,5 @@
+import './Timeline.css'
+
 function Timeline({ t }) {
   return (
     <section id="timeline" className="section timeline">

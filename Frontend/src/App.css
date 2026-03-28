@@ -1,4 +1,4 @@
-.hero {
+﻿.hero {
   position: relative;
   background: transparent;
   box-shadow: none;
@@ -19,11 +19,49 @@
   z-index: 200;
 }
 
+/* --- Visibility & Contrast Fixes --- */
+
+/* White section headings and subheadings with shadow */
+.section-header h2,
+.campaigns-luxe-header h2 {
+  color: var(--section-text-strong) !important;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+.section-header .eyebrow,
+.campaigns-luxe-header .eyebrow {
+  color: var(--section-text-soft) !important;
+  font-weight: 600;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+}
+
+.section-header .section-desc,
+.campaigns-luxe-header .section-note,
+.section-note,
+.testimonials-luxe-note {
+  color: var(--section-text-muted) !important;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Fix Event section metadata (e.g. Annual Sawan Month, Ujjain Sacred Circuit) */
+.featured-meta span,
+.meta span {
+  color: var(--section-text-strong) !important;
+  font-weight: 600;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Make testimony cards background slightly darker */
+.testimonials-luxe-card {
+  background-color: rgba(15, 23, 42, 0.55) !important;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.25) !important;
+}
+
 .page {
   width: 100%;
   max-width: none;
   margin: 0;
-  padding: 0 0 40px;
+  padding: 0;
 }
 
 .hero-stage {
@@ -32,14 +70,155 @@
   border-radius: 0;
 }
 
+.subpage-stage {
+  width: 100%;
+  margin: 0 0 var(--section-gap);
+  padding: 18px 24px 0;
+}
+
+.subpage-main {
+  padding-inline: 24px;
+}
+
+.subpage-stage .site-header {
+  padding: 10px 0 18px;
+}
+
+.subpage-stage .brand,
+.subpage-stage .nav,
+.subpage-stage .header-actions {
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(18px);
+}
+
+.subpage-stage .brand {
+  padding: 12px 16px 12px 12px;
+  border-radius: 26px;
+}
+
+.subpage-stage .nav {
+  padding: 14px 24px;
+  border-radius: 999px;
+}
+
+.subpage-stage .header-actions {
+  padding: 8px;
+  border-radius: 999px;
+}
+
 main,
 .footer {
   padding-inline: 24px;
 }
 
+@media (max-width: 820px) {
+  .subpage-stage {
+    padding: 14px 14px 0;
+  }
+
+  .subpage-stage .site-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 0 0 12px;
+    min-height: 64px;
+  }
+
+  .subpage-stage .brand {
+    flex: 1;
+    min-width: 0;
+    max-width: calc(100% - 56px);
+    padding: 10px 12px 10px 10px;
+  }
+
+  .subpage-stage .brand-mark {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+  }
+
+  .subpage-stage .brand-title {
+    font-size: 16px;
+    line-height: 1.1;
+  }
+
+  .subpage-stage .header-actions {
+    position: static;
+    flex: 0 0 auto;
+    margin-left: auto;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    z-index: 12;
+  }
+
+  .subpage-stage .menu-toggle button {
+    color: #111827;
+  }
+
+  .subpage-stage .header-actions>.ghost-btn,
+  .subpage-stage .header-actions>.primary-btn {
+    display: none;
+  }
+
+  .subpage-stage .nav {
+    position: absolute;
+    display: none;
+    flex-direction: column;
+    top: calc(100% + 10px);
+    left: 14px;
+    right: 14px;
+    z-index: 25;
+    width: auto;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+  }
+
+  .subpage-stage .nav.nav--open {
+    display: flex;
+  }
+
+  .subpage-stage .nav-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .subpage-stage .nav-actions .ghost-btn {
+    min-width: 88px;
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(14px);
+  }
+
+  .subpage-stage .nav-actions .primary-btn {
+    flex: 1 1 auto;
+  }
+
+  .subpage-main {
+    padding-inline: 18px;
+  }
+}
+
 @media (max-width: 640px) {
+
   main,
-  .footer {
+  .footer,
+  .subpage-main {
     padding-inline: 18px;
   }
 }
