@@ -26,8 +26,9 @@ export const contentEn = {
     stats: [
       { value: '2019', label: 'Active since' },
       { value: '100+', label: 'Sunday rides' },
-      { value: '118 km', label: 'Char Dwar circuit' },
+      { value: '118 km', label: 'Char Dwar yatra' },
     ],
+    SocialLinks: 'Follow us on',
     card: {
       title: 'Mission Cycle City Ujjain',
       description:
@@ -343,7 +344,11 @@ export const contentEn = {
   footer: {
     name: 'Society of Global Cycle',
     address: 'EWS 2/202, Indira Nagar, Agar Road, Ujjain',
-    links: ['Instagram', 'Facebook', 'YouTube'],
+    links: [
+      { label: 'X', url: 'https://x.com/SocietyOfGlobal' },
+      { label: 'Facebook', url: 'https://www.facebook.com/Sengarutk/' },
+      { label: 'Instagram', url: 'https://www.instagram.com/societyofglobalcycle/' },
+    ],
   },
   loader: {
     text: 'Rolling out the ride...',

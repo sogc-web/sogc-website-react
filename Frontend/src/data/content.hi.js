@@ -27,8 +27,9 @@ export const contentHi = {
     stats: [
       { value: '2019', label: 'से सक्रिय' },
       { value: '100+', label: 'संडे राइड्स' },
-      { value: '118 किमी', label: 'चार द्वार सर्किट' },
+      { value: '118 किमी', label: 'चार द्वार यात्रा ' },
     ],
+    SocialLinks: 'हमारे साथ जुड़ें',
     card: {
       title: 'Mission Cycle City Ujjain',
       description:
