@@ -98,7 +98,7 @@
           'हर सप्ताह आयोजित राइड जो निरंतरता, दोस्ती और सुरक्षित साइकिल संस्कृति को मजबूत करती है।',
       },
       {
-        title: 'Cycloday Dialogues',
+        title: 'Cyclodaya Dialogues',
         tag: 'मासिक',
         stat: 'युवा + नीति चर्चा',
         description:
@@ -155,7 +155,7 @@
         description: 'हेलमेट फिटिंग, सड़क शिष्टाचार और रूट प्लानिंग की जानकारी।',
       },
       {
-        title: 'Cycloday Dialogue',
+        title: 'Cyclodaya Dialogue',
         date: 'मासिक',
         location: 'टाउन स्क्वायर',
         description: 'पर्यावरण, युवा भागीदारी और साइकिल नीति पर विशेषज्ञ चर्चा।',
@@ -236,7 +236,7 @@
       },
       {
         year: '2022',
-        title: 'Cycloday संवाद',
+        title: 'Cyclodaya संवाद',
         description: 'युवाओं और नीति निर्माताओं को जोड़ने वाले मासिक मंच।',
       },
       {

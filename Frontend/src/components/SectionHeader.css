@@ -1,0 +1,61 @@
+.section-header {
+  max-width: 640px;
+}
+
+.section-header--center {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.section-header.split {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.section-header h2 {
+  margin: 6px 0 10px;
+  font-family: var(--font-heading);
+}
+
+.section > .section-header .eyebrow,
+.section > .section-header h2,
+.section > .section-header .section-desc,
+.section > .section-header .section-note,
+.section > .story-stage-section__header .eyebrow,
+.section > .story-stage-section__header h2,
+.section > .story-stage-section__header .section-desc,
+.section > .story-stage-section__header .section-note {
+  color: var(--section-text-strong);
+}
+
+.section > .section-header .section-desc,
+.section > .section-header .section-note,
+.section > .story-stage-section__header .section-desc,
+.section > .story-stage-section__header .section-note {
+  color: var(--section-text-muted);
+}
+
+.section > .section-header .eyebrow,
+.section > .story-stage-section__header .eyebrow {
+  color: var(--section-text-soft);
+}
+
+.section-desc,
+.section-note {
+  color: var(--muted);
+}
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+}
+
+@media (max-width: 1024px) {
+  .section-header.split {
+    flex-direction: column;
+  }
+}

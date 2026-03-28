@@ -1,5 +1,6 @@
-﻿import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import MobileMenuButton from './MobileMenuButton'
+import './Header.css'
 
 function Header({ t, onToggle }) {
   const [isOpen, setIsOpen] = useState(false)

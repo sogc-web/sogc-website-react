@@ -1,3 +1,4 @@
+import './Mission.css'
 import SectionHeader from './SectionHeader'
 
 function Mission({ t }) {

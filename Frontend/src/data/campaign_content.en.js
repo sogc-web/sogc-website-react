@@ -64,13 +64,13 @@
     ],
   },
   {
-    slug: 'cycloday-dialogues',
+    slug: 'cyclodaya-dialogues',
     kicker: 'Ideas platform',
-    title: 'Cycloday (Vichar Vimarsh)',
+    title: 'Cyclodaya (Vichar Vimarsh)',
     summary: 'A public conversation format where cycling becomes a lens for health, youth participation, planning, and environment.',
     stat: 'Dialogue-driven format',
     intro:
-      'Cycloday (Vichar Vimarsh) create a quieter but deeply important layer of the movement. Instead of only showing rides, this format gives space to ideas, questions, and expert voices that can shape long-term culture.',
+      'Cyclodaya (Vichar Vimarsh) create a quieter but deeply important layer of the movement. Instead of only showing rides, this format gives space to ideas, questions, and expert voices that can shape long-term culture.',
     metrics: [
       { value: '3 June', label: 'World Bicycle Day anchor' },
       { value: 'Youth-led', label: 'Conversation energy' },

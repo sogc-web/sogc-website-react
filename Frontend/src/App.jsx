@@ -18,6 +18,7 @@ import Footer from './components/Footer'
 import BackgroundGradient from './components/BackgroundGradient'
 import MoveToTopButton from './components/MoveToTopButton'
 import VolunteerPopup from './components/VolunteerPopup'
+import ScrollReveal from './components/ScrollReveal'
 import { contentEn } from './data/content.en'
 import { contentHi } from './data/content.hi'
 import { campaignContentEn } from './data/campaign_content.en'
@@ -92,6 +93,11 @@ function App() {
     return () => window.removeEventListener('hashchange', handleHashChange)
   }, [])
 
+  // Reset scroll position to top whenever the route changes
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [currentRoute])
+
   useEffect(() => {
     if (heroCarouselImages.length <= 1) {
       return undefined
@@ -120,6 +126,7 @@ function App() {
 
   return (
     <BackgroundGradient>
+      <ScrollReveal />
       <div className={`page${isSubpage ? ' page--subpage' : ''}`}>
         {!isSubpage && loading ? (
           <div className="loader-overlay">

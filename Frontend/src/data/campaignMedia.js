@@ -48,7 +48,7 @@ const sortedMedia = Object.entries(mediaModules)
 const campaignFoldersBySlug = {
   'mission-cycle-city-ujjain': ['/cycle day 2023/', '/chardwar 2024/'],
   'char-dwar-cycle-yatra': ['/chardwar 2024/', '/chardwar 2023/'],
-  'cycloday-dialogues': ['/cycle day 2023/'],
+  'cyclodaya-dialogues': ['/cycle day 2023/'],
   'ride-for-nation': ['/chardwar 2023/', '/chardwar 2022/'],
   'sunday-cycle-ride': ['/chardwar 2023/', '/cycle day 2023/'],
   'simhastha-2028-cycle-mission': ['/chardwar 2024/', '/cycle day 2023/'],

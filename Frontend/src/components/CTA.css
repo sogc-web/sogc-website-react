@@ -1,0 +1,22 @@
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 40px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #166534 0%, #1f8b4c 100%);
+  border-radius: var(--radius-lg);
+}
+
+.cta h2 {
+  margin: 0 0 10px;
+  font-family: var(--font-heading);
+}
+
+@media (max-width: 1024px) {
+  .cta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Lightbox from 'yet-another-react-lightbox'
 import Captions from 'yet-another-react-lightbox/plugins/captions'
 import Thumbnails from 'yet-another-react-lightbox/plugins/thumbnails'
@@ -13,7 +13,7 @@ function Campaigns({ t, campaigns }) {
   return (
     <section id="campaigns" className="section campaigns-luxe-section">
       <div className="campaigns-luxe-shell">
-        <div className="campaigns-luxe-header">
+        <div className="campaigns-luxe-header reveal">
           <div>
             <span className="eyebrow">{t.campaigns.eyebrow}</span>
             <h2>{t.campaigns.title}</h2>
@@ -32,7 +32,6 @@ function Campaigns({ t, campaigns }) {
                 key={campaign.slug}
                 href={`#campaign/${campaign.slug}`}
                 className={`campaign-luxe-card campaign-luxe-card--${(index % 6) + 1} reveal`}
-                style={{ animationDelay: `${0.08 + index * 0.05}s` }}
               >
                 <div className="campaign-luxe-card__backdrop">
                   {heroImage ? <img src={heroImage.src} alt={campaign.title} /> : null}
@@ -72,6 +71,8 @@ function Campaigns({ t, campaigns }) {
 
 function CampaignDetailPage({ t, campaign }) {
   const [selectedIndex, setSelectedIndex] = useState(-1)
+  const heroCopyRef = useRef(null)
+  const [heroMediaHeight, setHeroMediaHeight] = useState(null)
   const media = useMemo(() => getCampaignMediaBySlug(campaign.slug), [campaign.slug])
   const slides = useMemo(
     () =>
@@ -85,11 +86,47 @@ function CampaignDetailPage({ t, campaign }) {
     [campaign.title, media],
   )
 
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined
+    }
+
+    const updateHeroMediaHeight = () => {
+      if (window.innerWidth <= 1280 || !heroCopyRef.current) {
+        setHeroMediaHeight(null)
+        return
+      }
+
+      setHeroMediaHeight(heroCopyRef.current.offsetHeight)
+    }
+
+    updateHeroMediaHeight()
+
+    const resizeObserver = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(() => updateHeroMediaHeight())
+      : null
+
+    if (resizeObserver && heroCopyRef.current) {
+      resizeObserver.observe(heroCopyRef.current)
+    }
+
+    window.addEventListener('resize', updateHeroMediaHeight)
+
+    return () => {
+      resizeObserver?.disconnect()
+      window.removeEventListener('resize', updateHeroMediaHeight)
+    }
+  }, [campaign.slug])
+
   return (
     <section className="campaign-detail-page">
       <div className="campaign-detail-page__hero">
-        <div className="campaign-detail-page__hero-copy">
-          <span className="eyebrow">{campaign.kicker}</span>
+        <div ref={heroCopyRef} className="campaign-detail-page__hero-copy">
+          <a href="#campaigns" className="campaign-detail-page__back">Back to campaigns</a>
+          <div className="campaign-detail-page__eyebrow-row">
+            <span className="eyebrow">{campaign.kicker}</span>
+            <span className="campaign-detail-page__spotlight">{campaign.stat}</span>
+          </div>
           <h1>{campaign.title}</h1>
           <p className="campaign-detail-page__intro">{campaign.intro}</p>
           <div className="campaign-detail-page__chips">
@@ -99,8 +136,8 @@ function CampaignDetailPage({ t, campaign }) {
           </div>
         </div>
 
-        <div className="campaign-detail-page__hero-media">
-          {media.slice(0, 4).map((image, index) => (
+        <div className="campaign-detail-page__hero-media" style={heroMediaHeight ? { height: `${heroMediaHeight}px` } : undefined}>
+          {media.slice(0, 3).map((image, index) => (
             <button
               key={image.id}
               type="button"
@@ -132,12 +169,12 @@ function CampaignDetailPage({ t, campaign }) {
       </div>
 
       <div className="campaign-detail-page__gallery-strip">
-        {media.slice(4, 10).map((image, index) => (
+        {media.slice(3, 9).map((image, index) => (
           <button
             key={image.id}
             type="button"
             className="campaign-detail-page__gallery-item"
-            onClick={() => setSelectedIndex(index + 4)}
+            onClick={() => setSelectedIndex(index + 3)}
           >
             <img src={image.src} alt={image.alt} loading="lazy" />
           </button>
@@ -176,5 +213,11 @@ function CampaignDetailPage({ t, campaign }) {
 
 export { CampaignDetailPage }
 export default Campaigns
+
+
+
+
+
+
 
 

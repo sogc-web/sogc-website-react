@@ -1,0 +1,34 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 20px 24px;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.list-item h3 {
+  margin: 0 0 6px;
+}
+
+.meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+@media (max-width: 1024px) {
+  .list-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

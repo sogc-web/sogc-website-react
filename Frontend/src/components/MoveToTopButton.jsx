@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import './MoveToTopButton.css'
 
 function MoveToTopButton() {
   const [isVisible, setIsVisible] = useState(false)

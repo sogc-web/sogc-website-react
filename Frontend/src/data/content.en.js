@@ -84,7 +84,7 @@
           'A 118 km ride during Sawan month across the sacred circuit of Ujjain.',
       },
       {
-        title: 'Cycloday (Vichar-Vimarsh)',
+        title: 'Cyclodaya (Vichar-Vimarsh)',
         tag: 'Since 2018',
         stat: 'World Bicycle Day',
         description:
@@ -148,7 +148,7 @@
         description: 'Weekly rides to heritage, religious, and historic locations.',
       },
       {
-        title: 'Cycloday (World Bicycle Day)',
+        title: 'Cyclodaya (World Bicycle Day)',
         date: '3 June',
         location: 'Community venues',
         description: 'Talks and programs focused on cycling and environment.',
@@ -229,8 +229,8 @@
       },
       {
         year: '2018',
-        title: 'Cycloday begins',
-        description: 'Cycloday (Vichar-Vimarsh) starts to promote cycling awareness.',
+        title: 'Cyclodaya begins',
+        description: 'Cyclodaya (Vichar-Vimarsh) starts to promote cycling awareness.',
       },
       {
         year: '24 Jun 2019',

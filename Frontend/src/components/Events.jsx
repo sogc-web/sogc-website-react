@@ -1,3 +1,4 @@
+import './Events.css'
 import SectionHeader from './SectionHeader'
 
 function Events({ t }) {

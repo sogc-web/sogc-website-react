@@ -20,7 +20,7 @@ function Hero({ t }) {
   const titleLines = [t.hero.title.line1, t.hero.title.line2, t.hero.title.line3].filter(Boolean)
 
   return (
-    <section className="hero">
+    <section id="hero" className="hero">
       <div className="hero-content">
         <span className="pill">{t.hero.pill}</span>
         <h1>
@@ -65,3 +65,4 @@ function Hero({ t }) {
 }
 
 export default Hero
+

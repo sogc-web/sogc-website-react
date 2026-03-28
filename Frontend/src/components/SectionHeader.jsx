@@ -1,3 +1,5 @@
+import './SectionHeader.css'
+
 function SectionHeader({ eyebrow, title, description, align = 'left' }) {
   return (
     <div className={`section-header section-header--${align}`}>

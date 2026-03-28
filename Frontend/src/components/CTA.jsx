@@ -1,3 +1,5 @@
+import './CTA.css'
+
 function CTA({ t }) {
   return (
     <section className="cta">
