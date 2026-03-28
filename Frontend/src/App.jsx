@@ -28,6 +28,7 @@ const LANGUAGE_STORAGE_KEY = 'sogc-language'
 const HERO_IMAGE_ROTATION_MS = 5000
 const MEDIA_COVERAGE_HASH = '#media-coverage'
 const CAMPAIGN_HASH_PREFIX = '#campaign/'
+const HEADER_LOGO_SRC = '/sogc-logo.png'
 const heroBackgroundImageModules = import.meta.glob(
   [
     './assets/SOGC-Media/hero-bg-images/*.jpg',
@@ -69,6 +70,21 @@ function getCurrentRoute() {
   return { type: 'home' }
 }
 
+
+function preloadImage(src, fetchPriority = 'auto') {
+  if (typeof window === 'undefined' || !src) return undefined
+
+  const image = new window.Image()
+  image.decoding = 'async'
+
+  if ('fetchPriority' in image) {
+    image.fetchPriority = fetchPriority
+  }
+
+  image.src = src
+  return image
+}
+
 function App() {
   const [loading, setLoading] = useState(true)
   const [currentRoute, setCurrentRoute] = useState(getCurrentRoute)
@@ -82,7 +98,7 @@ function App() {
   })
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 2000)
+    const timer = setTimeout(() => setLoading(false), 3000)
     return () => clearTimeout(timer)
   }, [])
 
@@ -123,6 +139,27 @@ function App() {
     document.documentElement.setAttribute('data-lang', lang)
     window.localStorage.setItem(LANGUAGE_STORAGE_KEY, lang)
   }, [lang])
+
+  useEffect(() => {
+    const criticalImages = [HEADER_LOGO_SRC, heroCarouselImages[0]].filter(Boolean)
+    const preloadHandles = criticalImages.map((src) => preloadImage(src, 'high')).filter(Boolean)
+
+    const preloadRemainingImages = () => {
+      heroCarouselImages.slice(1).forEach((src) => {
+        preloadHandles.push(preloadImage(src, 'low'))
+      })
+    }
+
+    if (typeof window.requestIdleCallback === 'function') {
+      const idleId = window.requestIdleCallback(preloadRemainingImages)
+      return () => {
+        window.cancelIdleCallback?.(idleId)
+      }
+    }
+
+    const timeoutId = window.setTimeout(preloadRemainingImages, 0)
+    return () => window.clearTimeout(timeoutId)
+  }, [heroCarouselImages])
 
   return (
     <BackgroundGradient>

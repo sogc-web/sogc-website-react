@@ -43,7 +43,7 @@ function Header({ t, onToggle }) {
   return (
     <header className="site-header">
       <a className="brand" href="#">
-        <img className="brand-mark" src="/sogc-logo.png" alt="SOGC logo" />
+        <img className="brand-mark" src="/sogc-logo.png" alt="SOGC logo" loading="eager" fetchPriority="high" />
         <div>
           <p className="brand-title">Society of Global Cycle</p>
         </div>
