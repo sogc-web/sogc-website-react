@@ -15,7 +15,6 @@ function MediaCoveragePage({ t }) {
   const title = t.press?.pageTitle ?? t.press?.title ?? 'Media coverage'
   const description =
     t.press?.pageDescription ?? 'A full archive of newspaper clippings and media coverage from the movement.'
-  const backLabel = t.press?.backToHome ?? 'Back to home'
 
   const slides = useMemo(
     () =>
@@ -31,12 +30,6 @@ function MediaCoveragePage({ t }) {
 
   return (
     <section className="media-coverage-page">
-      <div className="media-coverage-page__topbar">
-        <a className="ghost-btn media-coverage-page__back" href="#press">
-          {backLabel}
-        </a>
-      </div>
-
       <div className="section-header section-header--center media-coverage-page__header">
         <span className="eyebrow">{eyebrow}</span>
         <h2>{title}</h2>

@@ -96,7 +96,7 @@ function App() {
   // Reset scroll position to top whenever the route changes
   useEffect(() => {
     window.scrollTo(0, 0)
-  }, [currentRoute])
+  }, [currentRoute.type, currentRoute.slug])
 
   useEffect(() => {
     if (heroCarouselImages.length <= 1) {

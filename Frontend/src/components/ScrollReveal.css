@@ -1,11 +1,11 @@
 .reveal {
   --reveal-offset-y: 0px;
   opacity: 0;
-  transform: translate3d(0, var(--reveal-offset-y), 0);
+  translate: 0 var(--reveal-offset-y);
   transition:
-    opacity 0.72s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.72s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform, opacity;
+    opacity 1.2s cubic-bezier(0.22, 1, 0.36, 1),
+    translate 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: translate, opacity;
   backface-visibility: hidden;
 }
 
@@ -23,12 +23,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   .reveal,
   .reveal-down,
   .reveal-up,
   .reveal.active {
     opacity: 1 !important;
-    transform: none !important;
+    translate: 0 0 !important;
     transition: none !important;
   }
 }

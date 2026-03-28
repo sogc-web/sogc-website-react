@@ -10,15 +10,6 @@
   gap: 32px;
 }
 
-.media-coverage-page__topbar {
-  display: flex;
-  justify-content: flex-start;
-}
-
-.media-coverage-page__back {
-  align-self: flex-start;
-}
-
 .media-coverage-page__header {
   max-width: 760px;
 }
@@ -26,6 +17,18 @@
 .media-coverage-page__header h2 {
   font-family: var(--font-heading);
   margin: 8px 0 10px;
+  color: #000000 !important;
+  text-shadow: none !important;
+}
+
+.media-coverage-page__header .section-desc {
+  color: #000000 !important;
+  text-shadow: none !important;
+}
+
+.media-coverage-page__header .eyebrow {
+  color: var(--accent-dark) !important;
+  text-shadow: none !important;
 }
 
 .media-coverage-grid {
