@@ -1,10 +1,10 @@
 ﻿export const contentEn = {
   nav: {
     mission: 'Mission',
+    stories: 'Stories',
     campaigns: 'Campaigns',
     events: 'Events',
     gallery: 'Gallery',
-    stories: 'Stories',
     timeline: 'Timeline',
     press: 'Press',
     testimonials: 'Testimonials',

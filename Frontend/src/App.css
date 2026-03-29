@@ -4,6 +4,21 @@ main {
   gap: var(--section-gap);
 }
 
+.header-shell {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-shell--hero {
+  padding: 18px 24px 0;
+  margin-bottom: calc(var(--section-gap) * -1);
+}
+
+.header-shell--subpage {
+  padding: 18px 24px 0;
+}
+
 .page {
   width: 100%;
   max-width: none;
@@ -164,46 +179,40 @@ a.ghost-btn:active {
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.25) !important;
 }
 
-.subpage-stage {
-  width: 100%;
-  margin: 0 0 var(--section-gap);
-  padding: 18px 24px 0;
-}
-
 .subpage-main {
   display: flex;
   flex-direction: column;
   gap: 32px;
   width: 100%;
   max-width: min(1760px, calc(100vw - 24px));
-  margin: 0 auto 40px;
+  margin: var(--section-gap) auto 40px;
   padding-inline: 12px;
 }
 
-.subpage-stage .site-header {
+.header-shell--subpage .site-header {
   padding: 10px 0 18px;
 }
 
-.subpage-stage .brand,
-.subpage-stage .nav,
-.subpage-stage .header-actions {
+.header-shell--subpage .brand,
+.header-shell--subpage .nav,
+.header-shell--subpage .header-actions {
   background: rgba(255, 255, 255, 0.62);
   border: 1px solid rgba(15, 23, 42, 0.08);
   box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08);
   backdrop-filter: blur(18px);
 }
 
-.subpage-stage .brand {
+.header-shell--subpage .brand {
   padding: 12px 16px 12px 12px;
   border-radius: 26px;
 }
 
-.subpage-stage .nav {
+.header-shell--subpage .nav {
   padding: 14px 24px;
   border-radius: 999px;
 }
 
-.subpage-stage .header-actions {
+.header-shell--subpage .header-actions {
   padding: 8px;
   border-radius: 999px;
 }
@@ -221,11 +230,12 @@ main {
 }
 
 @media (max-width: 820px) {
-  .subpage-stage {
+  .header-shell--hero,
+  .header-shell--subpage {
     padding: 14px 14px 0;
   }
 
-  .subpage-stage .site-header {
+  .header-shell--subpage .site-header {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -235,25 +245,25 @@ main {
     padding: 0 0 12px;
   }
 
-  .subpage-stage .brand {
+  .header-shell--subpage .brand {
     flex: 1;
     min-width: 0;
     max-width: calc(100% - 56px);
     padding: 10px 12px 10px 10px;
   }
 
-  .subpage-stage .brand-mark {
+  .header-shell--subpage .brand-mark {
     width: 42px;
     height: 42px;
     border-radius: 14px;
   }
 
-  .subpage-stage .brand-title {
+  .header-shell--subpage .brand-title {
     font-size: 16px;
     line-height: 1.1;
   }
 
-  .subpage-stage .header-actions {
+  .header-shell--subpage .header-actions {
     position: static;
     z-index: 12;
     flex: 0 0 auto;
@@ -269,16 +279,16 @@ main {
     backdrop-filter: none;
   }
 
-  .subpage-stage .menu-toggle button {
+  .header-shell--subpage .menu-toggle button {
     color: #111827;
   }
 
-  .subpage-stage .header-actions > .ghost-btn,
-  .subpage-stage .header-actions > .primary-btn {
+  .header-shell--subpage .header-actions > .ghost-btn,
+  .header-shell--subpage .header-actions > .primary-btn {
     display: none;
   }
 
-  .subpage-stage .nav {
+  .header-shell--subpage .nav {
     position: absolute;
     top: calc(100% + 10px);
     left: 14px;
@@ -294,18 +304,18 @@ main {
     border: 1px solid rgba(15, 23, 42, 0.08);
   }
 
-  .subpage-stage .nav.nav--open {
+  .header-shell--subpage .nav.nav--open {
     display: flex;
   }
 
-  .subpage-stage .nav-actions {
+  .header-shell--subpage .nav-actions {
     display: flex;
     flex-direction: row;
     gap: 10px;
     margin-top: 12px;
   }
 
-  .subpage-stage .nav-actions .ghost-btn {
+  .header-shell--subpage .nav-actions .ghost-btn {
     min-width: 88px;
     padding: 8px 14px;
     background: rgba(255, 255, 255, 0.72);

@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Lightbox from 'yet-another-react-lightbox'
 import Captions from 'yet-another-react-lightbox/plugins/captions'
 import Thumbnails from 'yet-another-react-lightbox/plugins/thumbnails'
@@ -225,7 +225,7 @@ function GalleryMedia({ t }) {
           >
             <div className="gallery-collection-card__media">
               {collection.cover.type === 'image' ? (
-                <img src={collection.cover.src} alt={collection.title} />
+                <img src={collection.cover.src} alt={collection.title} loading="lazy" decoding="async" />
               ) : (
                 <video src={collection.cover.src} muted playsInline preload="metadata" />
               )}
@@ -278,3 +278,4 @@ function GalleryMedia({ t }) {
 }
 
 export default GalleryMedia
+

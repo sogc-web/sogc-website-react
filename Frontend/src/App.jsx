@@ -142,23 +142,8 @@ function App() {
 
   useEffect(() => {
     const criticalImages = [HEADER_LOGO_SRC, heroCarouselImages[0]].filter(Boolean)
-    const preloadHandles = criticalImages.map((src) => preloadImage(src, 'high')).filter(Boolean)
-
-    const preloadRemainingImages = () => {
-      heroCarouselImages.slice(1).forEach((src) => {
-        preloadHandles.push(preloadImage(src, 'low'))
-      })
-    }
-
-    if (typeof window.requestIdleCallback === 'function') {
-      const idleId = window.requestIdleCallback(preloadRemainingImages)
-      return () => {
-        window.cancelIdleCallback?.(idleId)
-      }
-    }
-
-    const timeoutId = window.setTimeout(preloadRemainingImages, 0)
-    return () => window.clearTimeout(timeoutId)
+    criticalImages.map((src) => preloadImage(src, 'high')).filter(Boolean)
+    return undefined
   }, [heroCarouselImages])
 
   return (
@@ -194,6 +179,7 @@ function App() {
                       }
                       src={heroImage}
                       alt=""
+                      decoding="async"
                       loading={index === 0 ? 'eager' : 'lazy'}
                       fetchPriority={index === 0 ? 'high' : 'auto'}
                     />
@@ -206,10 +192,10 @@ function App() {
             </section>
             <main>
               <CTA t={t} />
+              <GalleryStory t={t} />
               <Campaigns t={t} campaigns={campaignCatalog} />
               <Events t={t} />
               <GalleryMedia t={t} />
-              <GalleryStory t={t} />
               <Timeline t={t} />
               <PressMentions t={t} />
               <Testimonials t={t} />

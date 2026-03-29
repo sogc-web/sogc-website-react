@@ -34,7 +34,7 @@ function Campaigns({ t, campaigns }) {
                 className={`campaign-luxe-card campaign-luxe-card--${(index % 6) + 1} reveal`}
               >
                 <div className="campaign-luxe-card__backdrop">
-                  {heroImage ? <img src={heroImage.src} alt={campaign.title} /> : null}
+                  {heroImage ? <img src={heroImage.src} alt={campaign.title} loading="lazy" decoding="async" /> : null}
                 </div>
                 <div className="campaign-luxe-card__veil" />
                 <div className="campaign-luxe-card__glass">
@@ -53,7 +53,7 @@ function Campaigns({ t, campaigns }) {
                     <div className="campaign-luxe-card__thumbs">
                       {supportingImages.map((image) => (
                         <span key={image.id} className="campaign-luxe-card__thumb">
-                          <img src={image.src} alt="" />
+                          <img src={image.src} alt="" loading="lazy" decoding="async" />
                         </span>
                       ))}
                     </div>
@@ -144,7 +144,7 @@ function CampaignDetailPage({ t, campaign }) {
               className={`campaign-detail-page__media-card campaign-detail-page__media-card--${index + 1}`}
               onClick={() => setSelectedIndex(index)}
             >
-              <img src={image.src} alt={image.alt} loading="lazy" />
+              <img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
             </button>
           ))}
         </div>
@@ -176,7 +176,7 @@ function CampaignDetailPage({ t, campaign }) {
             className="campaign-detail-page__gallery-item"
             onClick={() => setSelectedIndex(index + 3)}
           >
-            <img src={image.src} alt={image.alt} loading="lazy" />
+            <img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
           </button>
         ))}
       </div>
@@ -213,6 +213,7 @@ function CampaignDetailPage({ t, campaign }) {
 
 export { CampaignDetailPage }
 export default Campaigns
+
 
 
 

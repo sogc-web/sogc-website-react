@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import SectionHeader from './SectionHeader'
 import interviewVideo from '../assets/SOGC-Media/Utkarsh_ji_interview.mp4'
-import storyThumbnail from '../assets/SOGC-Media/story_section_thumbnail.png'
+import storyThumbnail from '../assets/SOGC-Media/story_section_thumbnail.jpg'
 import './GalleryStory.css'
 
 const TEXT_EXIT_MS = 680
@@ -242,3 +242,4 @@ function GalleryStory({ t }) {
 }
 
 export default GalleryStory
+
