@@ -8,10 +8,10 @@ function Header({ t, onToggle }) {
   const toggleRef = useRef(null)
 
   const navItems = [
+    { key: 'stories', href: '#story', label: t.nav.stories },
     { key: 'campaigns', href: '#campaigns', label: t.nav.campaigns },
     { key: 'events', href: '#events', label: t.nav.events },
     { key: 'gallery', href: '#gallery', label: t.nav.gallery },
-    { key: 'stories', href: '#story', label: t.nav.stories },
     { key: 'timeline', href: '#timeline', label: t.nav.timeline },
     { key: 'press', href: '#press', label: t.nav.press },
     { key: 'testimonials', href: '#testimonials', label: t.nav.testimonials },

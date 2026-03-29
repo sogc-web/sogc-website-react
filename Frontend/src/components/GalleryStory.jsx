@@ -93,24 +93,6 @@ function GalleryStory({ t }) {
     }, TEXT_EXIT_MS)
   }
 
-  const handlePauseToggle = () => {
-    const activePlayer = useMiniPlayer ? miniVideoRef.current : mainVideoRef.current
-    if (!activePlayer) {
-      return
-    }
-
-    if (activePlayer.paused) {
-      const playPromise = activePlayer.play()
-      if (playPromise && typeof playPromise.catch === 'function') {
-        playPromise.catch(() => {})
-      }
-      setIsPaused(false)
-      return
-    }
-
-    activePlayer.pause()
-    setIsPaused(true)
-  }
 
   const handleStop = () => {
     ;[mainVideoRef.current, miniVideoRef.current].forEach((videoElement) => {
@@ -142,16 +124,16 @@ function GalleryStory({ t }) {
         <p className="section-note">{t.story.sectionNote}</p>
       </div>
 
-      <div className={`story-stage reveal${isExiting ? ' story-stage--exiting' : ''}${isPlaying ? ' story-stage--playing' : ''}`}>
+      <div className={`story-stage${isExiting ? ' story-stage--exiting' : ''}${isPlaying ? ' story-stage--playing' : ''}`}>
         <img className="story-stage__poster" src={storyThumbnail} alt="" aria-hidden="true" loading="lazy" />
 
-        {!useMiniPlayer && isPlaying ? (
+        {!useMiniPlayer && (isExiting || isPlaying) ? (
           <video
             ref={mainVideoRef}
             className="story-stage__video"
-            controls
+            controls={isPlaying}
             playsInline
-            preload="none"
+            preload="metadata"
             poster={storyThumbnail}
             onPlay={() => handlePlayerState(false)}
             onPause={() => handlePlayerState(true)}
@@ -199,27 +181,27 @@ function GalleryStory({ t }) {
             <span className="story-stage__play-text">{t.story.playLabel}</span>
           </button>
 
-          {isPlaying && !useMiniPlayer ? (
-            <div className="story-stage__controls">
-              <button type="button" className="story-stage__control-button" onClick={handlePauseToggle}>
-                {isPaused ? t.story.resumeLabel : t.story.pauseLabel}
-              </button>
-              <button type="button" className="story-stage__control-button story-stage__control-button--danger" onClick={handleStop}>
-                {t.story.stopLabel}
-              </button>
-            </div>
-          ) : null}
+
         </div>
       </div>
 
       {isPlaying && useMiniPlayer ? (
         <aside className="story-stage__pip" aria-label={t.story.pipLabel}>
+          <button
+            type="button"
+            className="story-stage__pip-close"
+            onClick={handleStop}
+            aria-label={t.story.closeLabel}
+          >
+            x
+          </button>
           <div className="story-stage__pip-video-shell">
             <video
               ref={miniVideoRef}
               className="story-stage__pip-video"
+              controls
               playsInline
-              preload="none"
+              preload="metadata"
               poster={storyThumbnail}
               onPlay={() => handlePlayerState(false)}
               onPause={() => handlePlayerState(true)}
@@ -227,14 +209,7 @@ function GalleryStory({ t }) {
               <source src={interviewVideo} type="video/mp4" />
             </video>
           </div>
-          <div className="story-stage__pip-controls">
-            <button type="button" className="story-stage__control-button" onClick={handlePauseToggle}>
-              {isPaused ? t.story.resumeLabel : t.story.pauseLabel}
-            </button>
-            <button type="button" className="story-stage__control-button story-stage__control-button--danger" onClick={handleStop}>
-              {t.story.closeLabel}
-            </button>
-          </div>
+
         </aside>
       ) : null}
     </section>
@@ -242,4 +217,3 @@ function GalleryStory({ t }) {
 }
 
 export default GalleryStory
-
