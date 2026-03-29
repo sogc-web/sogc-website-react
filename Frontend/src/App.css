@@ -227,6 +227,22 @@ main {
     padding: 28px;
     border-radius: 30px;
   }
+
+  .header-shell--subpage .site-header {
+    flex-direction: row;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .header-shell--subpage .nav {
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  .header-shell--subpage .header-actions {
+    flex: 0 0 auto;
+  }
 }
 
 @media (max-width: 820px) {

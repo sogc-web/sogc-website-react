@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import './components/HeroSection.css'
 import Loader from './components/Loader'
@@ -158,7 +158,7 @@ function App() {
 
         {isSubpage ? (
           <>
-            <section className="subpage-stage">
+            <section className="header-shell header-shell--subpage subpage-stage">
               <Header t={t} onToggle={toggleLang} />
             </section>
             <main className="subpage-main">
