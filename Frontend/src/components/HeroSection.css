@@ -1,4 +1,4 @@
-.hero-stage {
+﻿.hero-stage {
   position: relative;
   width: 100%;
   margin: 0 0 var(--section-gap);
@@ -244,6 +244,7 @@
   justify-content: center;
   width: 32px;
   height: 32px;
+  color: #ffffff;
   transition: transform 0.22s ease, opacity 0.22s ease;
 }
 
@@ -253,7 +254,7 @@
   opacity: 0.92;
 }
 
-.hero-social-link img {
+.hero-social-icon {
   width: 32px;
   height: 32px;
   object-fit: contain;
@@ -539,7 +540,7 @@
     height: 26px;
   }
 
-  .hero-social-link img {
+  .hero-social-icon {
     width: 26px;
     height: 26px;
   }
@@ -553,3 +554,6 @@
     transform: scale(1.06);
   }
 }
+
+
+

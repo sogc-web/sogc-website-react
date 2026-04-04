@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+﻿import { useMemo, useState } from 'react'
 import Lightbox from 'yet-another-react-lightbox'
 import Captions from 'yet-another-react-lightbox/plugins/captions'
 import Thumbnails from 'yet-another-react-lightbox/plugins/thumbnails'
@@ -80,8 +80,9 @@ const mediaAssets = sortMediaItems(
   })),
 )
 
-function buildCollection({ id, title, eyebrow, summary, matcher, featuredFileName }) {
-  const media = mediaAssets.filter((item) => matcher(item.path))
+function buildCollection({ id, title, eyebrow, summary, folder, featuredFileName }) {
+  const folderPath = folder.toLowerCase()
+  const media = mediaAssets.filter((item) => item.path.includes(folderPath))
   const cover =
     media.find((item) => item.fileName.toLowerCase() === featuredFileName.toLowerCase()) ??
     media.find((item) => item.type === 'image') ??
@@ -102,57 +103,6 @@ function buildCollection({ id, title, eyebrow, summary, matcher, featuredFileNam
     },
   }
 }
-
-const mediaCollections = [
-  buildCollection({
-    id: 'char-dwar-2024',
-    title: 'Char Dwar 2024',
-    eyebrow: 'Latest album',
-    summary: 'The newest Char Dwar ride set with portraits, route moments, and group energy.',
-    matcher: (path) => path.includes('/chardwar 2024/'),
-    featuredFileName: '0M3A6480.JPG',
-  }),
-  buildCollection({
-    id: 'char-dwar-2023',
-    title: 'Char Dwar 2023',
-    eyebrow: 'Ride archive',
-    summary: 'A mixed collection of ride photos and short clips from the 2023 circuit.',
-    matcher: (path) => path.includes('/chardwar 2023/'),
-    featuredFileName: 'IMG_1209.JPG',
-  }),
-  buildCollection({
-    id: 'char-dwar-2022',
-    title: 'Char Dwar 2022',
-    eyebrow: 'Earlier coverage',
-    summary: 'An earlier archive with WhatsApp captures and on-ground ride videos.',
-    matcher: (path) => path.includes('/chardwar 2022/'),
-    featuredFileName: 'WhatsApp Image 2024-06-27 at 3.28.15 PM (3).jpeg',
-  }),
-  buildCollection({
-    id: 'cycle-day-2023',
-    title: 'Cycle Day 2023',
-    eyebrow: 'Event gallery',
-    summary: 'Professional event photography from the 2023 Cycle Day celebration.',
-    matcher: (path) => path.includes('/cycle day 2023/'),
-    featuredFileName: 'DSC_9607.JPG',
-  }),
-  buildCollection({
-    id: 'cycle-day-2021',
-    title: 'Cycle Day 2021',
-    eyebrow: 'Drone clips',
-    summary: 'Aerial video moments from the 2021 Cycle Day rides.',
-    matcher: (path) => path.includes('/cycle day 2021/'),
-    featuredFileName: 'DJI_0148.mp4',
-  }),
-  buildCollection({
-    id: 'signature-campaign',
-    title: 'Signature Campaign',
-    eyebrow: 'Citizen drive',
-    summary: 'A public signature drive that turns support for safer cycling into visible collective action.',
-    matcher: (path) => path.includes('/signature_campaign/'),
-    featuredFileName: 'signature_image_4.jpg',
-  }),
-].filter((collection) => collection.media.length > 0 && collection.cover)
 
 function buildSlides(collection) {
   return collection.media.map((item, index) => {
@@ -188,6 +138,14 @@ function buildSlides(collection) {
 function GalleryMedia({ t }) {
   const [selectedCollection, setSelectedCollection] = useState(null)
   const [selectedIndex, setSelectedIndex] = useState(0)
+
+  const mediaCollections = useMemo(
+    () =>
+      (t.gallery.collections ?? [])
+        .map((collection) => buildCollection(collection))
+        .filter((collection) => collection.media.length > 0 && collection.cover),
+    [t],
+  )
 
   const slides = useMemo(() => {
     if (!selectedCollection) {
@@ -235,11 +193,6 @@ function GalleryMedia({ t }) {
               <span className="gallery-collection-card__eyebrow">{collection.eyebrow}</span>
               <h3>{collection.title}</h3>
               <p>{collection.summary}</p>
-              {/* <div className="gallery-collection-card__stats">
-                <span>{collection.stats.total} files</span>
-                {collection.stats.photos > 0 ? <span>{collection.stats.photos} photos</span> : null}
-                {collection.stats.videos > 0 ? <span>{collection.stats.videos} videos</span> : null}
-              </div> */}
             </div>
           </button>
         ))}
@@ -278,4 +231,3 @@ function GalleryMedia({ t }) {
 }
 
 export default GalleryMedia
-

@@ -4,7 +4,6 @@ import useScrollDirection from './useScrollDirection'
 
 const REVEAL_SELECTOR = [
     '.reveal',
-    '.campaign-luxe-card',
     '.section-header',
     '.campaigns-luxe-header',
     '.story-stage-section__header',
@@ -108,3 +107,4 @@ export default function ScrollReveal() {
 
     return null
 }
+

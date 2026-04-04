@@ -1,6 +1,5 @@
 ﻿export const contentEn = {
   nav: {
-    mission: 'Mission',
     stories: 'Stories',
     campaigns: 'Campaigns',
     events: 'Events',
@@ -20,15 +19,22 @@
       line3: 'through everyday cycling.',
     },
     description:
-      'Society of Global Cycle is an NGO promoting clean mobility, safer streets, and a culture of active living across Ujjain.',
+      'Society of Global Cycle is an NGO promoting clean mobility, safer streets, and a culture of active living.',
     ctaPrimary: 'Join a Ride',
     ctaSecondary: 'View Campaigns',
     stats: [
-      { value: '2019', label: 'Active since' },
+      { value: '2017', label: 'Active since' },
       { value: '100+', label: 'Sunday rides' },
       { value: '118 km', label: 'Char Dwar yatra' },
     ],
     SocialLinks: 'Follow us on',
+    socialLinks: [
+      { label: 'Facebook', href: 'https://www.facebook.com/Sengarutk/', icon: 'facebook' },
+      { label: 'X', href: 'https://x.com/SocietyOfGlobal', icon: 'x' },
+      { label: 'Instagram', href: 'https://www.instagram.com/societyofglobalcycle/', icon: 'instagram' },
+      { label: 'WhatsApp', href: 'https://chat.whatsapp.com/IlhNNf4YwuM2pHV4LwYkpP?mode=gi_t', icon: 'whatsapp' },
+      { label: 'YouTube', href: 'https://www.youtube.com/channel/UCK1vKC1VL2eID3PO8iX7ePw', icon: 'youtube' },
+    ],
     card: {
       title: 'Mission Cycle City Ujjain',
       description:
@@ -65,134 +71,121 @@
   campaigns: {
     eyebrow: 'Campaigns',
     title: 'Initiatives that shape a cycling culture',
-    note:
-      'Campaigns are updated by the admin panel, with static fallbacks on public pages.',
     cta: 'Explore',
     items: [
       {
-        title: 'Mission Cycle City Ujjain',
-        tag: 'Signature',
-        stat: 'City-wide movement',
+        title: 'Signature Campaign',
+        tag: 'Hastakshar Abhiyaan',
+        stat: 'Public support drive',
         description:
-          'A city-wide mission to make cycling a daily habit and improve public health and air quality.',
+          'A public signature campaign that gathers visible citizen support for cycling, safer streets, and civic participation.',
       },
       {
-        title: 'Char Dwar Cycle Yatra',
-        tag: 'Annual',
-        stat: '118 km heritage ride',
+        title: 'Cycle Simhast',
+        tag: 'Cycle Simhast',
+        stat: 'Future mobility vision',
         description:
-          'A 118 km ride during Sawan month across the sacred circuit of Ujjain.',
+          'A campaign focused on making Simhast more cycle-friendly through public imagination, planning, and awareness.',
       },
       {
-        title: 'Cyclodaya (Vichar-Vimarsh)',
-        tag: 'Since 2018',
-        stat: 'World Bicycle Day',
+        title: 'Awareness Rides',
+        tag: 'Community rides',
+        stat: 'On-ground awareness',
         description:
-          'Public dialogues with experts around cycling, youth, and the environment.',
+          'Regular awareness rides that take the cycling message into public spaces and build confidence through participation.',
       },
       {
-        title: 'Ride for Nation',
-        tag: '15 Aug',
-        stat: 'Independence Day',
+        title: 'Awareness for Bicycle Campaign',
+        tag: 'Bicycle awareness',
+        stat: 'Public outreach',
         description:
-          'Independence Day ride promoting clean mobility and civic responsibility.',
-      },
-      {
-        title: 'Cycle Gair',
-        tag: 'Rang Panchami',
-        stat: 'Water conservation message',
-        description:
-          'A cycle procession during Rang Panchami to promote water conservation.',
-      },
-      {
-        title: 'Sunday Cycle Ride',
-        tag: 'Weekly',
-        stat: 'City rides',
-        description:
-          'Weekly rides to heritage and important city locations.',
-      },
-      {
-        title: 'Simhastha 2028 Cycle Mission',
-        tag: 'Campaign',
-        stat: 'Cycle-yukt Simhastha',
-        description:
-          'Campaign to make the Simhastha 2028 area cycle-friendly, with signature drives.',
-      },
-      {
-        title: 'Voter Awareness Ride',
-        tag: 'Elections',
-        stat: 'Civic participation',
-        description:
-          'Cycle rallies to encourage voter participation during elections.',
+          'A focused outreach campaign that encourages people to see the bicycle as a healthy, practical, and everyday transport choice.',
       },
     ],
   },
   events: {
     eyebrow: 'Events',
     title: 'Rides and community programs',
-    note:
-      'Events are updated by admins. If data is missing, we show a curated list.',
     featuredLabel: 'Featured Event',
     featured: {
       title: 'Char Dwar Cycle Yatra',
       date: 'Annual (Sawan month)',
       location: 'Ujjain Sacred Circuit',
       description:
-        'A full-day, 118 km heritage ride showcasing Ujjain?s spiritual and cultural identity.',
+        'A full-day, 118 km heritage ride across Ujjain\'s sacred route that blends endurance, devotion, and public visibility.',
     },
     items: [
+      {
+        title: 'Cyclodaya',
+        date: '3 June',
+        location: 'Community venues',
+        description: 'Cyclodaya (Vichar-Vimarsh) creates public conversations around cycling, health, youth, and the environment.',
+      },
       {
         title: 'Sunday Cycle Ride',
         date: 'Weekly',
         location: 'Ujjain city routes',
-        description: 'Weekly rides to heritage, religious, and historic locations.',
+        description: 'Weekly community rides that keep the movement active and make cycling a familiar public habit.',
       },
       {
-        title: 'Cyclodaya (World Bicycle Day)',
-        date: '3 June',
-        location: 'Community venues',
-        description: 'Talks and programs focused on cycling and environment.',
-      },
-      {
-        title: 'Ride for Nation',
+        title: 'Ride For Nation',
         date: '15 August',
         location: 'Ujjain city',
-        description: 'Independence Day rally for clean mobility.',
+        description: 'An Independence Day ride linking clean mobility with civic pride and public participation.',
       },
       {
         title: 'Cycle Gair',
         date: 'Rang Panchami',
         location: 'Ujjain city',
-        description: 'Cycle procession spreading the water conservation message.',
-      },
-      {
-        title: 'Simhastha 2028 Signature Drive',
-        date: 'Ongoing',
-        location: 'Rahagiri Anandotsav & public events',
-        description: 'Signature campaign for cycle-friendly Simhastha 2028.',
+        description: 'A festive cycle procession that carries messages of water conservation and community awareness.',
       },
     ],
   },
+  
   gallery: {
     eyebrow: 'Gallery & Media',
     title: 'Stories and coverage from the ground',
-    note:
-      'Images and media coverage are managed in the admin panel with a graceful fallback to curated highlights.',
-    featured: [
-      { title: 'Newspaper Articles', outlet: 'Press' },
-      { title: 'Press Coverage', outlet: 'Media' },
-      { title: 'News Features', outlet: 'News' },
-    ],
-    galleryItems: [
-      { title: 'Char Dwar Cycle Yatra', type: 'Photo Album' },
-      { title: 'Ride for Nation', type: 'Highlights Reel' },
-      { title: 'Sunday Cycle Rides', type: 'Community Moments' },
-      { title: 'Signature Campaign', type: 'Photo Album' },
-    ],
-    mediaItems: [
-      { title: 'Press Coverage', source: 'Newspaper' },
-      { title: 'Media Features', source: 'Regional News' },
-      { title: 'Community Stories', source: 'Digital Media' },
+    collections: [
+      {
+        id: 'char-dwar-2024',
+        title: 'Char Dwar 2024',
+        eyebrow: 'Latest album',
+        summary: 'The newest Char Dwar ride set with portraits, route moments, and group energy.',
+        folder: '/chardwar 2024/',
+        featuredFileName: '0M3A6480.JPG',
+      },
+      {
+        id: 'char-dwar-2023',
+        title: 'Char Dwar 2023',
+        eyebrow: 'Ride archive',
+        summary: 'A mixed collection of ride photos and short clips from the 2023 circuit.',
+        folder: '/chardwar 2023/',
+        featuredFileName: 'IMG_1209.JPG',
+      },
+      {
+        id: 'char-dwar-2022',
+        title: 'Char Dwar 2022',
+        eyebrow: 'Earlier coverage',
+        summary: 'An earlier archive with images and on-ground ride videos.',
+        folder: '/chardwar 2022/',
+        featuredFileName: 'WhatsApp Image 2024-06-27 at 3.28.15 PM (3).jpeg',
+      },
+      {
+        id: 'cycle-day-2021',
+        title: 'Cycle Day 2021',
+        eyebrow: 'Drone clips',
+        summary: 'Aerial video moments from the 2021 Cycle Day rides.',
+        folder: '/cycle day 2021/',
+        featuredFileName: 'DJI_0148.mp4',
+      },
+      {
+        id: 'signature-campaign',
+        title: 'Signature Campaign',
+        eyebrow: 'Citizen drive',
+        summary: 'A public signature drive that turns support for safer cycling into visible collective action.',
+        folder: '/signature_campaign/',
+        featuredFileName: 'signature_image_4.jpg',
+      },
     ],
     view: 'View',
     open: 'Open',
@@ -219,35 +212,45 @@
   timeline: {
     eyebrow: 'Impact Timeline',
     title: 'Key milestones from the booklet',
-    note:
-      'Milestones documented in the SOGC 2026 booklet.',
     items: [
       {
+        direction: 'left',
         year: '03 Sep 2017',
         title: 'First Sunday cycle ride',
         description: 'The awareness ride series begins in Ujjain.',
       },
       {
+        direction: 'right',
         year: '2018',
         title: 'Cyclodaya begins',
         description: 'Cyclodaya (Vichar-Vimarsh) starts to promote cycling awareness.',
       },
       {
+        direction: 'left',
         year: '24 Jun 2019',
         title: 'Society formed',
         description: 'Society of Global Cycle formally established.',
       },
       {
+        direction: 'right',
         year: '28 Jul 2019',
         title: '100th Sunday ride',
         description: 'Continuous 100 Sunday rides completed.',
       },
       {
+        direction: 'left',
         year: '2021',
         title: 'Signature campaign begins',
         description: 'Signature drive for Cycle-yukt Simhastha 2028 starts.',
       },
       {
+        direction: 'right',
+        year: '2021',
+        title: 'Char Dwar Yatra started',
+        description: 'The heritage cycle yatra begins, connecting cycling with Ujjain\'s sacred route and public identity.',
+      },
+      {
+        direction: 'left',
         year: '2022',
         title: 'Simhastha 2028 campaign launched',
         description: 'Cycle-yukt Simhastha 2028 campaign starts in Ujjain.',
@@ -353,7 +356,7 @@
       phone: 'Phone number',
       phonePlaceholder: 'Optional',
       role: 'I am a',
-      roles: ['Volunteer', 'Partner', 'Media', 'Student', 'Other'],
+      roles: ['Volunteer', 'Sponser', 'Media', 'Student', 'Other'],
       message: 'Message',
       messagePlaceholder: 'Tell us how you want to help',
       note: 'We respect your privacy. No spam, ever.',
@@ -369,10 +372,13 @@
   footer: {
     name: 'Society of Global Cycle',
     address: 'EWS 2/202, Indira Nagar, Agar Road, Ujjain',
+    phone: { label: '+91 80858 08840', href: '+918085808840' },
     links: [
-      { label: 'X', url: 'https://x.com/SocietyOfGlobal' },
-      { label: 'Facebook', url: 'https://www.facebook.com/Sengarutk/' },
-      { label: 'Instagram', url: 'https://www.instagram.com/societyofglobalcycle/' },
+      { label: 'X', url: 'https://x.com/SocietyOfGlobal', icon: 'x' },
+      { label: 'Facebook', url: 'https://www.facebook.com/Sengarutk/', icon: 'facebook' },
+      { label: 'Instagram', url: 'https://www.instagram.com/societyofglobalcycle/', icon: 'instagram' },
+      { label: 'WhatsApp', url: 'https://chat.whatsapp.com/IlhNNf4YwuM2pHV4LwYkpP?mode=gi_t', icon: 'whatsapp' },
+      { label: 'YouTube', url: 'https://www.youtube.com/channel/UCK1vKC1VL2eID3PO8iX7ePw', icon: 'youtube' },
     ],
   },
   loader: {

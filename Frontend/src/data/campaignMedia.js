@@ -46,14 +46,10 @@ const sortedMedia = Object.entries(mediaModules)
   .sort((left, right) => left.fileName.localeCompare(right.fileName, undefined, { numeric: true, sensitivity: 'base' }))
 
 const campaignFoldersBySlug = {
-  'mission-cycle-city-ujjain': ['/cycle day 2023/', '/chardwar 2024/'],
-  'char-dwar-cycle-yatra': ['/chardwar 2024/', '/chardwar 2023/'],
-  'cyclodaya-dialogues': ['/cycle day 2023/'],
-  'ride-for-nation': ['/chardwar 2023/', '/chardwar 2022/'],
-  'sunday-cycle-ride': ['/chardwar 2023/', '/cycle day 2023/'],
-  'simhastha-2028-cycle-mission': ['/chardwar 2024/', '/cycle day 2023/'],
   'signature-campaign': ['/signature_campaign/'],
-  'voting-awareness': ['/voting_awareness/'],
+  'cycle-simhast': ['/chardwar 2024/', '/cycle day 2023/'],
+  'awareness-rides': ['/chardwar 2023/', '/chardwar 2022/'],
+  'awareness-for-bicycle-campaign': ['/cycle day 2023/', '/voting_awareness/'],
 }
 
 export function getCampaignMediaBySlug(slug, limit) {
