@@ -27,6 +27,9 @@
   justify-content: center;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  -webkit-tap-highlight-color: transparent;
+  /* Prevent tap flicker on mobile */
+  outline: none;
 }
 
 .chatbot-trigger:hover {
@@ -50,13 +53,18 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: slideIn 0.3s ease-out;
+  animation: slideIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  /* Hardware acceleration to prevent flicker */
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 @keyframes slideIn {
   from {
     opacity: 0;
-    transform: translateY(20px) scale(0.95);
+    transform: translateY(15px) scale(0.98);
   }
 
   to {
@@ -178,6 +186,7 @@
   cursor: pointer;
   transition: all 0.2s;
   font-weight: 500;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .option-btn:hover {

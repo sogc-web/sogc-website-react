@@ -85,14 +85,42 @@ const FAQChatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [history, setHistory] = useState([{ type: 'bot', ...FAQ_DATA.initial }]);
     const chatEndRef = useRef(null);
+    const chatbotRef = useRef(null);
 
-    const scrollToBottom = () => {
-        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const scrollToBottom = (instant = false) => {
+        if (chatEndRef.current) {
+            chatEndRef.current.scrollIntoView({
+                behavior: instant ? "auto" : "smooth",
+                block: "end"
+            });
+        }
     };
 
     useEffect(() => {
-        if (isOpen) scrollToBottom();
+        if (isOpen) {
+            // Tiny delay to ensure DOM is ready and animation has started
+            const timer = setTimeout(() => scrollToBottom(), 50);
+            return () => clearTimeout(timer);
+        }
     }, [history, isOpen]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+
+        const handleOutsideClick = (event) => {
+            if (chatbotRef.current && !chatbotRef.current.contains(event.target)) {
+                toggleChatbot();
+            }
+        };
+
+        document.addEventListener('mousedown', handleOutsideClick);
+        document.addEventListener('touchstart', handleOutsideClick);
+
+        return () => {
+            document.removeEventListener('mousedown', handleOutsideClick);
+            document.removeEventListener('touchstart', handleOutsideClick);
+        };
+    }, [isOpen]);
 
     const handleOptionClick = (option) => {
         const nextStep = FAQ_DATA[option.next];
@@ -124,7 +152,7 @@ const FAQChatbot = () => {
     };
 
     return (
-        <div className="faq-chatbot">
+        <div className="faq-chatbot" ref={chatbotRef}>
             {isOpen && (
                 <div className="chatbot-window">
                     <div className="chatbot-header">
