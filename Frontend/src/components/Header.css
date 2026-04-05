@@ -1,10 +1,17 @@
 .site-header {
   position: relative;
   display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 18px 0 14px;
+}
+
+.site-header__row {
+  width: 100%;
+  display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 24px;
-  padding: 18px 0 40px;
 }
 
 .brand {
@@ -58,12 +65,60 @@
 }
 
 @media (max-width: 1024px) {
-  .site-header {
+  .site-header__row {
     flex-direction: column;
     align-items: flex-start;
   }
 
   .nav {
     flex-wrap: wrap;
+  }
+}
+
+/* Mobile-specific header fixes to keep header compact and the hamburger aligned */
+@media (max-width: 768px) {
+  .site-header {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 4px !important;
+    /* Reduced from 8px to pull everything closer on mobile */
+    padding: 10px 0 6px;
+    width: 100% !important;
+  }
+
+  /* Force single-row layout on narrow screens so brand and toggle align
+     on the same horizontal line */
+  .site-header__row {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px;
+    width: 100%;
+  }
+
+  /* Ensure the menu toggle sits at top-right and is vertically centered */
+  .menu-toggle {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Remove extra spacing that could push the toggle down */
+  .header-actions {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Brand sizing for compact header */
+  .brand-mark {
+    width: 42px !important;
+    height: 42px !important;
+  }
+
+  .brand-title {
+    font-size: 16px !important;
   }
 }

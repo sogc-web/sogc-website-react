@@ -1,3 +1,7 @@
+.story-stage-section {
+  margin-top: 0 !important;
+}
+
 .story-stage-section__header {
   display: flex;
   align-items: flex-start;

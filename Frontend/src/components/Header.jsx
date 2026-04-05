@@ -1,5 +1,6 @@
-﻿import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import MobileMenuButton from './MobileMenuButton'
+import AnnouncementBar from './AnnouncementBar'
 import './Header.css'
 
 function Header({ t, onToggle }) {
@@ -41,58 +42,63 @@ function Header({ t, onToggle }) {
   }, [isOpen])
 
   return (
-    <header className="site-header">
-      <a className="brand" href="#">
-        <img className="brand-mark" src="/sogc-logo.png" alt="SOGC logo" loading="eager" fetchPriority="high" />
-        <div>
-          <p className="brand-title">Society of Global Cycle</p>
-        </div>
-      </a>
-      <nav ref={menuRef} className={`nav ${isOpen ? 'nav--open' : ''}`}>
-        {navItems.map((item) => (
-          <a key={item.key} href={item.href} onClick={closeMenu}>
-            {item.label}
+    <>
+      <header className="site-header">
+        <div className="site-header__row">
+          <a className="brand" href="#">
+            <img className="brand-mark" src="/sogc-logo.png" alt="SOGC logo" loading="eager" fetchPriority="high" />
+            <div>
+              <p className="brand-title">Society of Global Cycle</p>
+            </div>
           </a>
-        ))}
-        <div className="nav-actions">
-          <button
-            className="ghost-btn small"
-            onClick={() => {
-              onToggle()
-              closeMenu()
-            }}
-          >
-            {t.nav.toggle}
-          </button>
-          <button
-            className="primary-btn"
-            onClick={() => {
-              closeMenu()
-              window.dispatchEvent(new CustomEvent('open-volunteer-popup'))
-            }}
-          >
-            {t.nav.volunteer}
-          </button>
+          <nav ref={menuRef} className={`nav ${isOpen ? 'nav--open' : ''}`}>
+            {navItems.map((item) => (
+              <a key={item.key} href={item.href} onClick={closeMenu}>
+                {item.label}
+              </a>
+            ))}
+            <div className="nav-actions">
+              <button
+                className="ghost-btn small"
+                onClick={() => {
+                  onToggle()
+                  closeMenu()
+                }}
+              >
+                {t.nav.toggle}
+              </button>
+              <button
+                className="primary-btn"
+                onClick={() => {
+                  closeMenu()
+                  window.dispatchEvent(new CustomEvent('open-volunteer-popup'))
+                }}
+              >
+                {t.nav.volunteer}
+              </button>
+            </div>
+          </nav>
+          <div className="header-actions">
+            <button className="ghost-btn lang-toggle" onClick={onToggle}>
+              {t.nav.toggle}
+            </button>
+            <button
+              className="primary-btn"
+              onClick={() => {
+                closeMenu()
+                window.dispatchEvent(new CustomEvent('open-volunteer-popup'))
+              }}
+            >
+              {t.nav.volunteer}
+            </button>
+            <div className="menu-toggle md:hidden" ref={toggleRef}>
+              <MobileMenuButton isOpen={isOpen} onClick={toggleMenu} label="Toggle navigation" />
+            </div>
+          </div>
         </div>
-      </nav>
-      <div className="header-actions">
-        <button className="ghost-btn lang-toggle" onClick={onToggle}>
-          {t.nav.toggle}
-        </button>
-        <button
-          className="primary-btn"
-          onClick={() => {
-            closeMenu()
-            window.dispatchEvent(new CustomEvent('open-volunteer-popup'))
-          }}
-        >
-          {t.nav.volunteer}
-        </button>
-        <div className="menu-toggle md:hidden" ref={toggleRef}>
-          <MobileMenuButton isOpen={isOpen} onClick={toggleMenu} label="Toggle navigation" />
-        </div>
-      </div>
-    </header>
+        <AnnouncementBar t={t} />
+      </header>
+    </>
   )
 }
 

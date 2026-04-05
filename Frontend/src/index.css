@@ -50,7 +50,7 @@
   --section-text-strong: #f3ead2;
   --section-text-muted: rgba(238, 225, 195, 0.82);
   --section-text-soft: rgba(238, 225, 195, 0.68);
-  --section-gap: 96px;
+  --section-gap: 70px;
   --radius-lg: 28px;
   --radius-md: 18px;
   --radius-sm: 12px;
@@ -102,13 +102,13 @@ button {
 
 @media (max-width: 1024px) {
   :root {
-    --section-gap: 72px;
+    --section-gap: 55px;
   }
 }
 
 @media (max-width: 720px) {
   :root {
-    --section-gap: 56px;
+    --section-gap: 40px;
   }
 }
 

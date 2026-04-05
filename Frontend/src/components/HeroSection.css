@@ -1,7 +1,6 @@
-﻿.hero-stage {
+.hero-stage {
   position: relative;
   width: 100%;
-  margin: 0 0 var(--section-gap);
   padding: 18px 24px 24px;
   border-radius: 0;
   overflow: hidden;
@@ -51,9 +50,12 @@
 
 .hero-stage .site-header {
   z-index: 8;
-  gap: 18px;
-  padding: 4px 0 22px;
+  gap: 2px;
+  /* Pulling everything closer */
+  padding: 4px 0 2px;
+  /* Reduced bottom padding from 6px */
   align-items: center;
+  width: 100%;
 }
 
 .hero-stage .hero {
@@ -69,7 +71,7 @@
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.18);
 }
 
-.hero-stage .brand > div {
+.hero-stage .brand>div {
   min-width: 0;
 }
 
@@ -153,12 +155,13 @@
 
 .hero {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 32px;
-  align-items: end;
-  min-height: calc(100vh - 170px);
-  padding: 32px 32px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  /* Reduced gap between hero elements */
+  justify-content: center;
+  min-height: calc(100vh - 100px);
+  padding: 0 32px 24px;
   background: transparent;
   box-shadow: none;
   border-radius: 0;
@@ -169,6 +172,8 @@
   z-index: 1;
   width: 100%;
   max-width: 720px;
+  margin-top: -30px;
+  /* Pulling text above further */
 }
 
 .hero-content h1 {
@@ -195,9 +200,9 @@
 .hero-cta-row {
   display: flex;
   align-items: center;
-  gap: 18px 20px;
+  gap: 12px 16px;
   flex-wrap: wrap;
-  margin: 28px 0 36px;
+  margin: 16px 0 24px;
 }
 
 .hero-actions {
@@ -279,7 +284,7 @@
   gap: 16px;
 }
 
-.hero-stats > div {
+.hero-stats>div {
   padding: 16px 18px;
   border-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.12);
@@ -322,9 +327,15 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    padding: 0 0 12px;
+    gap: 8px;
+    padding: 0 0 8px;
     min-height: 64px;
+  }
+
+  .hero-stage .announcement-bar {
+    width: 100%;
+    max-width: none;
+    align-self: stretch;
   }
 
   .hero-stage .brand {
@@ -368,8 +379,8 @@
     z-index: 12;
   }
 
-  .hero-stage .header-actions > .ghost-btn,
-  .hero-stage .header-actions > .primary-btn {
+  .hero-stage .header-actions>.ghost-btn,
+  .hero-stage .header-actions>.primary-btn {
     display: none;
   }
 
@@ -452,6 +463,10 @@
 
   .hero-stage .site-header {
     align-items: center;
+  }
+
+  .hero-stage .announcement-bar {
+    margin-top: 0;
   }
 
   .hero-stage .brand {
@@ -545,6 +560,7 @@
     height: 26px;
   }
 }
+
 @keyframes heroImageZoomIn {
   from {
     transform: scale(1);
@@ -554,6 +570,3 @@
     transform: scale(1.06);
   }
 }
-
-
-

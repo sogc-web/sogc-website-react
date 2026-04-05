@@ -116,7 +116,7 @@
     },
     items: [
       {
-        title: 'Cyclodaya',
+        title: 'Cyclodaya (Vichar-Vimarsh)',
         date: '3 June',
         location: 'Community venues',
         description: 'Cyclodaya (Vichar-Vimarsh) creates public conversations around cycling, health, youth, and the environment.',
