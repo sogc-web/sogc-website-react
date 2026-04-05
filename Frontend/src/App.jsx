@@ -18,6 +18,7 @@ import Footer from './components/Footer'
 import BackgroundGradient from './components/BackgroundGradient'
 import MoveToTopButton from './components/MoveToTopButton'
 import VolunteerPopup from './components/VolunteerPopup'
+import FAQChatbot from './components/FAQChatbot'
 import ScrollReveal from './components/ScrollReveal'
 import { contentEn } from './data/content.en'
 import { contentHi } from './data/content.hi'
@@ -206,6 +207,7 @@ function App() {
         <Footer t={t} />
       </div>
       <VolunteerPopup />
+      <FAQChatbot />
       <MoveToTopButton />
     </BackgroundGradient>
   )
