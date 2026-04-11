@@ -13,7 +13,7 @@ const FAQ_DATA = {
     },
     about: {
         answer: "Society of Global Cycle (SOGC) is an NGO dedicated to promoting sustainable mobility and cycling culture in Ujjain. We believe in building a healthier city through everyday cycling.",
-        link: { label: "Learn more", href: "#story" },
+        link: { label: "Learn more", href: "#about-us" },
         options: [
             { label: "Our mission", next: "mission" },
             { label: "See our timeline", next: "timeline" },
@@ -22,7 +22,7 @@ const FAQ_DATA = {
     },
     mission: {
         answer: "Our mission is to create safer streets, advocate for cycling infrastructure, and inspire citizens to adopt cycling for health and environment.",
-        link: { label: "View Mission", href: "#story" },
+        link: { label: "View Mission", href: "#about-us" },
         options: [
             { label: "How to help?", next: "volunteer" },
             { label: "Back to main", next: "initial" }
@@ -226,3 +226,4 @@ const FAQChatbot = () => {
 };
 
 export default FAQChatbot;
+

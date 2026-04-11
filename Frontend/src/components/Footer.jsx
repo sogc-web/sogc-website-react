@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import SocialIcon from './SocialIcon'
 
 const SocialLink = ({ href, icon, label }) => (
@@ -48,7 +48,8 @@ function Footer({ t }) {
             <div>
               <h3 className="text-white font-semibold mb-4 uppercase tracking-wider text-xs">Quick Links</h3>
               <ul className="flex flex-col gap-3 text-sm">
-                <li><a href="#story" className="hover:text-[#f8d35c] transition-colors">About Us</a></li>
+                <li><a href="#about-us" className="hover:text-[#f8d35c] transition-colors">About Us</a></li>
+                <li><a href="#story" className="hover:text-[#f8d35c] transition-colors">Story</a></li>
                 <li><a href="#campaigns" className="hover:text-[#f8d35c] transition-colors">Programs</a></li>
                 <li>
                   <button
@@ -139,3 +140,5 @@ function Footer({ t }) {
 }
 
 export default Footer
+
+

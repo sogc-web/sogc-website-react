@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import './App.css'
 import './components/HeroSection.css'
 import Loader from './components/Loader'
 import Header from './components/Header'
 import Hero from './components/Hero'
 import Campaigns, { CampaignDetailPage } from './components/Campaigns'
-import Events from './components/Events'
+import Events, { EventDetailPage } from './components/Events'
 import GalleryMedia from './components/GalleryMedia'
 import GalleryStory from './components/GalleryStory'
+import AboutUsSection, { AboutDetailPage } from './components/AboutUsSection'
 import Timeline from './components/Timeline'
 import PressMentions from './components/PressMentions'
 import MediaCoveragePage from './components/MediaCoveragePage'
@@ -20,15 +21,17 @@ import MoveToTopButton from './components/MoveToTopButton'
 import VolunteerPopup from './components/VolunteerPopup'
 import FAQChatbot from './components/FAQChatbot'
 import ScrollReveal from './components/ScrollReveal'
-import { contentEn } from './data/content.en'
-import { contentHi } from './data/content.hi'
+import { getContent } from './data/content'
 import { campaignContentEn } from './data/campaign_content.en'
 import { campaignContentHi } from './data/campaign_content.hi'
+import { getEventCatalog } from './data/eventDetails'
 
 const LANGUAGE_STORAGE_KEY = 'sogc-language'
 const HERO_IMAGE_ROTATION_MS = 5000
 const MEDIA_COVERAGE_HASH = '#media-coverage'
 const CAMPAIGN_HASH_PREFIX = '#campaign/'
+const EVENT_HASH_PREFIX = '#event/'
+const ABOUT_HASH_PREFIX = '#about/'
 const HEADER_LOGO_SRC = '/sogc-logo.png'
 const heroBackgroundImageModules = import.meta.glob(
   [
@@ -49,7 +52,7 @@ function shuffleItems(items) {
 
   for (let index = shuffledItems.length - 1; index > 0; index -= 1) {
     const randomIndex = Math.floor(Math.random() * (index + 1))
-      ;[shuffledItems[index], shuffledItems[randomIndex]] = [shuffledItems[randomIndex], shuffledItems[index]]
+    ;[shuffledItems[index], shuffledItems[randomIndex]] = [shuffledItems[randomIndex], shuffledItems[index]]
   }
 
   return shuffledItems
@@ -68,9 +71,16 @@ function getCurrentRoute() {
     return { type: 'campaign', slug: hash.slice(CAMPAIGN_HASH_PREFIX.length) }
   }
 
+  if (hash.startsWith(EVENT_HASH_PREFIX)) {
+    return { type: 'event', slug: hash.slice(EVENT_HASH_PREFIX.length) }
+  }
+
+  if (hash.startsWith(ABOUT_HASH_PREFIX)) {
+    return { type: 'about', slug: hash.slice(ABOUT_HASH_PREFIX.length) }
+  }
+
   return { type: 'home' }
 }
-
 
 function preloadImage(src, fetchPriority = 'auto') {
   if (typeof window === 'undefined' || !src) return undefined
@@ -110,7 +120,6 @@ function App() {
     return () => window.removeEventListener('hashchange', handleHashChange)
   }, [])
 
-  // Reset scroll position to top whenever the route changes
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [currentRoute.type, currentRoute.slug])
@@ -127,13 +136,20 @@ function App() {
     return () => window.clearInterval(intervalId)
   }, [heroCarouselImages])
 
-  const t = lang === 'hi' ? contentHi : contentEn
+  const t = getContent(lang)
   const campaignCatalog = lang === 'hi' ? campaignContentHi : campaignContentEn
+  const eventCatalog = getEventCatalog(t.events, lang)
   const toggleLang = () => setLang((prev) => (prev === 'en' ? 'hi' : 'en'))
   const campaign = currentRoute.type === 'campaign'
     ? campaignCatalog.find((item) => item.slug === currentRoute.slug)
     : null
-  const isSubpage = currentRoute.type === 'media-coverage' || Boolean(campaign)
+  const event = currentRoute.type === 'event'
+    ? eventCatalog.find((item) => item.slug === currentRoute.slug)
+    : null
+  const aboutTab = currentRoute.type === 'about'
+    ? t.aboutUs.tabs.find((item) => item.slug === currentRoute.slug)
+    : null
+  const isSubpage = currentRoute.type === 'media-coverage' || Boolean(campaign) || Boolean(event) || Boolean(aboutTab)
 
   useEffect(() => {
     document.documentElement.lang = lang
@@ -165,6 +181,8 @@ function App() {
             <main className="subpage-main">
               {currentRoute.type === 'media-coverage' ? <MediaCoveragePage t={t} /> : null}
               {campaign ? <CampaignDetailPage t={t} campaign={campaign} /> : null}
+              {event ? <EventDetailPage event={event} lang={lang} /> : null}
+              {aboutTab ? <AboutDetailPage t={t} tab={aboutTab} /> : null}
             </main>
           </>
         ) : (
@@ -193,9 +211,10 @@ function App() {
             </section>
             <main>
               <CTA t={t} />
+              <AboutUsSection t={t} />
               <GalleryStory t={t} />
               <Campaigns t={t} campaigns={campaignCatalog} />
-              <Events t={t} />
+              <Events t={t} events={eventCatalog} lang={lang} />
               <GalleryMedia t={t} />
               <Timeline t={t} />
               <PressMentions t={t} />
