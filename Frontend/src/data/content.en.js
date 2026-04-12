@@ -310,24 +310,28 @@
     items: [
       {
         title: 'Cyclodaya (Vichar-Vimarsh)',
-        date: '3 June',
+        tag: 'Timing',
+        date: '3 June (World Bicycle Day)',
         location: 'Community venues',
         description: 'Cyclodaya (Vichar-Vimarsh) creates public conversations around cycling, health, youth, and the environment.',
       },
       {
         title: 'Sunday Cycle Ride',
+        tag: 'Timing',
         date: 'Weekly',
         location: 'Ujjain city routes',
         description: 'Weekly community rides that keep the movement active and make cycling a familiar public habit.',
       },
       {
         title: 'Ride For Nation',
+        tag: 'Timing',
         date: '15 August',
         location: 'Ujjain city',
         description: 'An Independence Day ride linking clean mobility with civic pride and public participation.',
       },
       {
         title: 'Cycle Gair',
+        tag: 'Timing',
         date: 'Rang Panchami',
         location: 'Ujjain city',
         description: 'A festive cycle procession that carries messages of water conservation and community awareness.',

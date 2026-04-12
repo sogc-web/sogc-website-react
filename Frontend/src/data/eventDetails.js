@@ -56,7 +56,7 @@ const eventDetails = {
     },
     {
       slug: 'cyclodaya-vichar-vimarsh',
-      scheduleLine: '3 June',
+      scheduleLine: '3 June (World Bicycle Day)',
       bookletScheduleNote:
         'The booklet places Cyclodaya around World Bicycle Day and presents it as an ongoing public dialogue platform started in 2018.',
       about:
@@ -113,7 +113,7 @@ const eventDetails = {
     },
     {
       slug: 'cyclodaya-vichar-vimarsh',
-      scheduleLine: '3 जून',
+      scheduleLine: '3 जून (विश्व साइकिल दिवस)',
       bookletScheduleNote:
         'बुकलेट में साइक्लोदय को 2018 से विश्व साइकिल दिवस के संदर्भ में चल रहे संवाद-आधारित कार्यक्रम के रूप में बताया गया है।',
       about:
