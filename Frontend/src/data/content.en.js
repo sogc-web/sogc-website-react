@@ -9,7 +9,7 @@
     press: 'Press',
     testimonials: 'Testimonials',
     contact: 'Contact',
-    volunteer: 'Volunteer',
+    volunteer: 'Cycle Mitra',
     toggle: 'Hindi',
   },
   aboutUs: {
@@ -491,7 +491,7 @@
       },
       {
         name: 'Rohan Verma',
-        role: 'Volunteer',
+        role: 'Cycle Mitra',
         quote: 'People actually stop, talk, and join in. That community energy is what keeps this movement alive.',
       },
       {
@@ -528,10 +528,10 @@
   },
   contact: {
     eyebrow: 'Contact',
-    title: 'Ride with us or volunteer',
+    title: 'Ride with us or Cycle Mitra',
     description:
       'Tell us how you want to contribute. We will reply with next steps.',
-    kicker: 'Volunteer desk',
+    kicker: 'Cycle Mitra desk',
     cardTitle: 'Cycle for a greener Ujjain',
     cardDescription:
       'Join rides, coordinate events, or help with outreach and awareness.',
@@ -541,7 +541,7 @@
       { label: 'City', value: 'Ujjain, Madhya Pradesh' },
     ],
     steps: [
-      { title: 'Choose a role', description: 'Volunteer, partner, or media support.' },
+      { title: 'Choose a role', description: 'Cycle Mitra, partner, or media support.' },
       { title: 'Get a welcome call', description: 'We share ride schedules and tasks.' },
       { title: 'Join the movement', description: 'Start riding or supporting locally.' },
     ],
@@ -553,7 +553,7 @@
       phone: 'Phone number',
       phonePlaceholder: 'Optional',
       role: 'I am a',
-      roles: ['Volunteer', 'Sponser', 'Media', 'Student', 'Other'],
+      roles: ['Cycle Mitra', 'Sponser', 'Media', 'Student', 'Other'],
       message: 'Message',
       messagePlaceholder: 'Tell us how you want to help',
       note: 'We respect your privacy. No spam, ever.',
@@ -563,8 +563,8 @@
   cta: {
     title: 'Ready to ride with us?',
     description:
-      'Become a volunteer, join upcoming rides, or help spread awareness across Ujjain.',
-    button: 'Become a Volunteer',
+      'Become a Cycle Mitra, join upcoming rides, or help spread awareness across Ujjain.',
+    button: 'Become a Cycle Mitra',
   },
   footer: {
     name: 'Society of Global Cycle',

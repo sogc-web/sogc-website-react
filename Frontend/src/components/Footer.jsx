@@ -14,6 +14,14 @@ const SocialLink = ({ href, icon, label }) => (
 )
 
 function Footer({ t }) {
+  const navItems = [
+    { key: 'about', href: '#about-us', label: t.nav.about },
+    { key: 'story', href: '#story', label: t.nav.stories },
+    { key: 'campaigns', href: '#campaigns', label: t.nav.campaigns },
+    { key: 'events', href: '#events', label: t.nav.events },
+    { key: 'contact', href: '#contact', label: t.nav.contact },
+  ]
+
   return (
     <footer className="bg-gradient-to-b from-[#0b1410] to-[#040806] text-gray-300 pt-20 pb-6 border-t border-white/10 font-sans" style={{ marginTop: 'var(--section-gap)' }}>
       <div className="max-w-[1200px] mx-auto px-6 lg:px-8">
@@ -48,19 +56,13 @@ function Footer({ t }) {
             <div>
               <h3 className="text-white font-semibold mb-4 uppercase tracking-wider text-xs">Quick Links</h3>
               <ul className="flex flex-col gap-3 text-sm">
-                <li><a href="#about-us" className="hover:text-[#f8d35c] transition-colors">About Us</a></li>
-                <li><a href="#story" className="hover:text-[#f8d35c] transition-colors">Story</a></li>
-                <li><a href="#campaigns" className="hover:text-[#f8d35c] transition-colors">Programs</a></li>
-                <li>
-                  <button
-                    onClick={() => window.dispatchEvent(new CustomEvent('open-volunteer-popup'))}
-                    className="hover:text-[#f8d35c] transition-colors"
-                  >
-                    Volunteer
-                  </button>
-                </li>
-                <li><a href="#" className="hover:text-[#f8d35c] transition-colors">Donate</a></li>
-                <li><a href="#contact" className="hover:text-[#f8d35c] transition-colors">Contact</a></li>
+                {navItems.map((item) => (
+                  <li key={item.key}>
+                    <a href={item.href} className="hover:text-[#f8d35c] transition-colors">
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
               </ul>
             </div>
             <div>
@@ -140,5 +142,4 @@ function Footer({ t }) {
 }
 
 export default Footer
-
 

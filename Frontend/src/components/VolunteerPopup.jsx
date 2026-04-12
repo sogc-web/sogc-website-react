@@ -124,7 +124,7 @@ export default function VolunteerPopup() {
                 {/* Header */}
                 <div className="mb-7 text-center">
                     <h2 id="volunteer-popup-title" className="mb-2 font-serif text-2xl font-bold text-white tracking-wide">
-                        Become a Volunteer
+                        Become a Cycle Mitra
                     </h2>
                     <p className="text-sm text-gray-400">
                         Join our mission and make cycling safer for everyone.
@@ -162,7 +162,7 @@ export default function VolunteerPopup() {
                        active:translate-y-0 active:scale-[0.98] 
                        disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                     >
-                        I want to become a volunteer
+                        I want to become a Cycle Mitra
                     </button>
                 </form>
             </div>
