@@ -1,5 +1,8 @@
 # Node / JS
 node_modules/
+Admin/node_modules/
+Backend/node_modules/
+Frontend/node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -8,7 +11,13 @@ lerna-debug.log*
 
 # Vite / React
 dist/
+Admin/dist/
+Backend/dist/
+Frontend/dist/
 dist-ssr/
+Admin/dist-ssr/
+Backend/dist-ssr/
+Frontend/dist-ssr/
 vite.config.*.timestamp-*
 
 # Environment files
@@ -30,8 +39,4 @@ Desktop.ini
 # Misc
 *.tmp
 *.swp
-
-
-SOGC BOOKLET 2026.pdf
-PROJECT_SPEC.md
-SOGC_objective_mission_vision.md
+documentation/
