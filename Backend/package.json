@@ -1,19 +1,28 @@
 {
-  "name": "backend",
+  "name": "sogc-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Backend for SOGC admin panel and public form submissions",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "check": "node --check server.js && node --check src/app.js"
   },
-  "keywords": [],
+  "keywords": [
+    "express",
+    "admin",
+    "email",
+    "cloudinary"
+  ],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "cloudinary": "^2.6.1",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
+    "mongoose": "^8.19.1",
     "nodemailer": "^8.0.2"
   },
   "devDependencies": {
