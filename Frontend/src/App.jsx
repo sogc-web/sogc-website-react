@@ -25,6 +25,7 @@ import { getContent } from './data/content'
 import { campaignContentEn } from './data/campaign_content.en'
 import { campaignContentHi } from './data/campaign_content.hi'
 import { getEventCatalog } from './data/eventDetails'
+import { fetchAdminEvents, mergeEventCatalog } from './lib/publicEvents'
 
 const LANGUAGE_STORAGE_KEY = 'sogc-language'
 const HERO_IMAGE_ROTATION_MS = 5000
@@ -101,6 +102,7 @@ function App() {
   const [currentRoute, setCurrentRoute] = useState(getCurrentRoute)
   const [heroCarouselImages] = useState(() => shuffleItems(heroBackgroundImages))
   const [heroImageIndex, setHeroImageIndex] = useState(0)
+  const [adminEvents, setAdminEvents] = useState([])
   const [lang, setLang] = useState(() => {
     if (typeof window === 'undefined') return 'en'
 
@@ -111,6 +113,25 @@ function App() {
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 3000)
     return () => clearTimeout(timer)
+  }, [])
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    fetchAdminEvents(controller.signal)
+      .then((events) => {
+        setAdminEvents(events)
+      })
+      .catch((error) => {
+        if (error.name === 'AbortError') {
+          return
+        }
+
+        console.error('Unable to load admin events:', error)
+        setAdminEvents([])
+      })
+
+    return () => controller.abort()
   }, [])
 
   useEffect(() => {
@@ -138,7 +159,8 @@ function App() {
 
   const t = getContent(lang)
   const campaignCatalog = lang === 'hi' ? campaignContentHi : campaignContentEn
-  const eventCatalog = getEventCatalog(t.events, lang)
+  const staticEventCatalog = getEventCatalog(t.events, lang)
+  const eventCatalog = mergeEventCatalog(staticEventCatalog, adminEvents)
   const toggleLang = () => setLang((prev) => (prev === 'en' ? 'hi' : 'en'))
   const campaign = currentRoute.type === 'campaign'
     ? campaignCatalog.find((item) => item.slug === currentRoute.slug)
