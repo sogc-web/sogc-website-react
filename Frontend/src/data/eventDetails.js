@@ -76,28 +76,28 @@ const eventDetails = {
         'Expect a welcoming recurring group ride with community participation, accessible city routes, and a familiar weekly rhythm that helps new riders join comfortably.',
       highlights: ['Weekly community ride', 'City heritage routes', 'Beginner-friendly participation'],
     },
-    {
-      slug: 'ride-for-nation',
-      scheduleLine: '15 August, on the eve of Independence Day',
-      bookletScheduleNote:
-        'The booklet ties Ride For Nation to 15 August and describes it as a city rally held on the eve of Independence Day, often with cultural and literary presentations after the ride.',
-      about:
-        'Ride For Nation connects clean mobility with civic pride. The event brings together educational and social institutions for a public cycle rally that frames cycling as part of a healthier, more responsible city culture.',
-      experience:
-        'Expect a patriotic public ride, multi-organization participation, and a larger city-event atmosphere. The booklet also mentions cultural and literary programming as part of the overall event format.',
-      highlights: ['15 August program', 'Institution-led city rally', 'Cultural presentations'],
-    },
-    {
-      slug: 'cycle-gair',
-      scheduleLine: 'Rang Panchami',
-      bookletScheduleNote:
-        'The booklet describes Cycle Gair as a unique Rang Panchami cycle procession that carries a water-conservation message and uses herbal gulal.',
-      about:
-        'Cycle Gair brings together celebration, message, and movement. It turns a festive city tradition into a cycle-led procession that spreads awareness around water conservation and community action.',
-      experience:
-        'Expect a vibrant, highly visible public procession with festive energy. The booklet specifically frames it as a distinct cycle-based gair and notes the use of herbal gulal.',
-      highlights: ['Festive cycle procession', 'Water conservation message', 'Herbal gulal'],
-    },
+    // {
+    //   slug: 'ride-for-nation',
+    //   scheduleLine: '15 August, on the eve of Independence Day',
+    //   bookletScheduleNote:
+    //     'The booklet ties Ride For Nation to 15 August and describes it as a city rally held on the eve of Independence Day, often with cultural and literary presentations after the ride.',
+    //   about:
+    //     'Ride For Nation connects clean mobility with civic pride. The event brings together educational and social institutions for a public cycle rally that frames cycling as part of a healthier, more responsible city culture.',
+    //   experience:
+    //     'Expect a patriotic public ride, multi-organization participation, and a larger city-event atmosphere. The booklet also mentions cultural and literary programming as part of the overall event format.',
+    //   highlights: ['15 August program', 'Institution-led city rally', 'Cultural presentations'],
+    // },
+    // {
+    //   slug: 'cycle-gair',
+    //   scheduleLine: 'Rang Panchami',
+    //   bookletScheduleNote:
+    //     'The booklet describes Cycle Gair as a unique Rang Panchami cycle procession that carries a water-conservation message and uses herbal gulal.',
+    //   about:
+    //     'Cycle Gair brings together celebration, message, and movement. It turns a festive city tradition into a cycle-led procession that spreads awareness around water conservation and community action.',
+    //   experience:
+    //     'Expect a vibrant, highly visible public procession with festive energy. The booklet specifically frames it as a distinct cycle-based gair and notes the use of herbal gulal.',
+    //   highlights: ['Festive cycle procession', 'Water conservation message', 'Herbal gulal'],
+    // },
   ],
   hi: [
     {
@@ -133,28 +133,28 @@ const eventDetails = {
         'यह एक स्वागतपूर्ण सामुदायिक राइड होती है, जिसमें अलग-अलग शहर मार्ग, नियमित भागीदारी और नए राइडर्स के लिए सहज जुड़ाव का अवसर मिलता है।',
       highlights: ['साप्ताहिक सामुदायिक राइड', 'शहर के मार्ग', 'नए राइडर्स के लिए अनुकूल'],
     },
-    {
-      slug: 'ride-for-nation',
-      scheduleLine: '15 अगस्त, स्वतंत्रता दिवस की पूर्व संध्या',
-      bookletScheduleNote:
-        'बुकलेट में राइड फॉर नेशन को 15 अगस्त से जुड़ा कार्यक्रम बताया गया है, जो स्वतंत्रता दिवस की पूर्व संध्या पर शहर में आयोजित साइकिल रैली के रूप में प्रस्तुत है।',
-      about:
-        'राइड फॉर नेशन स्वच्छ गतिशीलता को नागरिक गर्व से जोड़ती है। इसमें शहर की शैक्षणिक और सामाजिक संस्थाएं मिलकर सार्वजनिक साइकिल रैली आयोजित करती हैं।',
-      experience:
-        'यह एक उत्साहपूर्ण और अधिक सार्वजनिक दृश्यता वाला आयोजन है। बुकलेट में राइड के बाद सांस्कृतिक और साहित्यिक प्रस्तुतियों का भी उल्लेख मिलता है।',
-      highlights: ['15 अगस्त कार्यक्रम', 'संस्थागत शहर रैली', 'सांस्कृतिक प्रस्तुतियां'],
-    },
-    {
-      slug: 'cycle-gair',
-      scheduleLine: 'रंग पंचमी',
-      bookletScheduleNote:
-        'बुकलेट के अनुसार साइकिल गैर रंग पंचमी पर निकलने वाली एक अनोखी साइकिल गैर है, जो जल संरक्षण का संदेश देती है और हर्बल गुलाल का उपयोग करती है।',
-      about:
-        'साइकिल गैर उत्सव, संदेश और साइक्लिंग को एक साथ लाती है। यह शहर की उत्सवी परंपरा को साइकिल-आधारित जुलूस में बदलकर जन-जागरूकता पैदा करती है।',
-      experience:
-        'इसमें रंग, दृश्य ऊर्जा और सामुदायिक उत्साह प्रमुख रहते हैं। बुकलेट इसे जल संरक्षण संदेश वाली विशिष्ट साइकिल गैर के रूप में प्रस्तुत करती है।',
-      highlights: ['उत्सवी साइकिल जुलूस', 'जल संरक्षण संदेश', 'हर्बल गुलाल'],
-    },
+    // {
+    //   slug: 'ride-for-nation',
+    //   scheduleLine: '15 अगस्त, स्वतंत्रता दिवस की पूर्व संध्या',
+    //   bookletScheduleNote:
+    //     'बुकलेट में राइड फॉर नेशन को 15 अगस्त से जुड़ा कार्यक्रम बताया गया है, जो स्वतंत्रता दिवस की पूर्व संध्या पर शहर में आयोजित साइकिल रैली के रूप में प्रस्तुत है।',
+    //   about:
+    //     'राइड फॉर नेशन स्वच्छ गतिशीलता को नागरिक गर्व से जोड़ती है। इसमें शहर की शैक्षणिक और सामाजिक संस्थाएं मिलकर सार्वजनिक साइकिल रैली आयोजित करती हैं।',
+    //   experience:
+    //     'यह एक उत्साहपूर्ण और अधिक सार्वजनिक दृश्यता वाला आयोजन है। बुकलेट में राइड के बाद सांस्कृतिक और साहित्यिक प्रस्तुतियों का भी उल्लेख मिलता है।',
+    //   highlights: ['15 अगस्त कार्यक्रम', 'संस्थागत शहर रैली', 'सांस्कृतिक प्रस्तुतियां'],
+    // },
+    // {
+    //   slug: 'cycle-gair',
+    //   scheduleLine: 'रंग पंचमी',
+    //   bookletScheduleNote:
+    //     'बुकलेट के अनुसार साइकिल गैर रंग पंचमी पर निकलने वाली एक अनोखी साइकिल गैर है, जो जल संरक्षण का संदेश देती है और हर्बल गुलाल का उपयोग करती है।',
+    //   about:
+    //     'साइकिल गैर उत्सव, संदेश और साइक्लिंग को एक साथ लाती है। यह शहर की उत्सवी परंपरा को साइकिल-आधारित जुलूस में बदलकर जन-जागरूकता पैदा करती है।',
+    //   experience:
+    //     'इसमें रंग, दृश्य ऊर्जा और सामुदायिक उत्साह प्रमुख रहते हैं। बुकलेट इसे जल संरक्षण संदेश वाली विशिष्ट साइकिल गैर के रूप में प्रस्तुत करती है।',
+    //   highlights: ['उत्सवी साइकिल जुलूस', 'जल संरक्षण संदेश', 'हर्बल गुलाल'],
+    // },
   ],
 }
 
