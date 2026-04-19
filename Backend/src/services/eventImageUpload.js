@@ -29,6 +29,14 @@ function extractCloudinaryPublicId(imageUrl) {
 }
 
 async function uploadEventImage(imageFileData, slug) {
+  return uploadManagedImage(imageFileData, slug, 'sogc/events')
+}
+
+async function uploadPopupImage(imageFileData, slug) {
+  return uploadManagedImage(imageFileData, slug, 'sogc/popups')
+}
+
+async function uploadManagedImage(imageFileData, slug, folder) {
   const cloudinary = configureCloudinary()
 
   if (!cloudinary.configured || !cloudinary.client) {
@@ -36,7 +44,7 @@ async function uploadEventImage(imageFileData, slug) {
   }
 
   const result = await cloudinary.client.uploader.upload(imageFileData, {
-    folder: 'sogc/events',
+    folder,
     public_id: slug ? `${slug}-${Date.now()}` : undefined,
     resource_type: 'image',
   })
@@ -48,6 +56,14 @@ async function uploadEventImage(imageFileData, slug) {
 }
 
 async function deleteEventImage(imagePublicId, imageUrl = '') {
+  return deleteManagedImage(imagePublicId, imageUrl)
+}
+
+async function deletePopupImage(imagePublicId, imageUrl = '') {
+  return deleteManagedImage(imagePublicId, imageUrl)
+}
+
+async function deleteManagedImage(imagePublicId, imageUrl = '') {
   const cloudinary = configureCloudinary()
 
   if (!cloudinary.configured || !cloudinary.client) {
@@ -65,4 +81,4 @@ async function deleteEventImage(imagePublicId, imageUrl = '') {
   })
 }
 
-module.exports = { deleteEventImage, uploadEventImage }
+module.exports = { deleteEventImage, deletePopupImage, uploadEventImage, uploadPopupImage }

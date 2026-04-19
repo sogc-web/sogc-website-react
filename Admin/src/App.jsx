@@ -9,6 +9,8 @@ import EventShowPage from './pages/EventShowPage'
 import GalleryPage from './pages/GalleryPage'
 import GalleryEditorPage from './pages/GalleryEditorPage'
 import PopupPage from './pages/PopupPage'
+import PopupsPage from './pages/PopupsPage'
+import PopupShowPage from './pages/PopupShowPage'
 
 function App() {
   return (
@@ -24,7 +26,10 @@ function App() {
         <Route path="gallery" element={<GalleryPage />} />
         <Route path="gallery/new" element={<GalleryEditorPage mode="create" />} />
         <Route path="gallery/:collectionId/edit" element={<GalleryEditorPage mode="edit" />} />
-        <Route path="popup" element={<PopupPage />} />
+        <Route path="popup" element={<PopupsPage />} />
+        <Route path="popup/new" element={<PopupPage mode="create" />} />
+        <Route path="popup/:popupId" element={<PopupShowPage />} />
+        <Route path="popup/:popupId/edit" element={<PopupPage mode="edit" />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

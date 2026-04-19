@@ -1,5 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import SectionCard from '../components/SectionCard'
+import { fetchAdminEvents } from '../lib/adminEvents'
+import { createAdminPopup, fetchAdminPopup, updateAdminPopup } from '../lib/adminPopup'
 
 const inputClassName =
   'w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none placeholder:text-[#6e8178]'
@@ -7,45 +10,183 @@ const inputClassName =
 const textareaClassName =
   'w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none placeholder:text-[#6e8178]'
 
+const selectClassName =
+  'w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none'
+
+const staticEventOptions = [
+  {
+    slug: 'char-dwar-cycle-yatra',
+    title: 'Char Dwar Cycle Yatra',
+    description:
+      'A full-day, 118 km heritage ride across Ujjain\'s sacred route that blends endurance, devotion, and public visibility.',
+    source: 'Website event',
+  },
+  {
+    slug: 'cyclodaya-vichar-vimarsh',
+    title: 'Cyclodaya (Vichar-Vimarsh)',
+    description: 'Cyclodaya creates public conversations around cycling, health, youth, and the environment.',
+    source: 'Website event',
+  },
+  {
+    slug: 'sunday-cycle-ride',
+    title: 'Sunday Cycle Ride',
+    description: 'Weekly community rides that keep the movement active and make cycling a familiar public habit.',
+    source: 'Website event',
+  },
+  {
+    slug: 'ride-for-nation',
+    title: 'Ride For Nation',
+    description: 'An Independence Day ride linking clean mobility with civic pride and public participation.',
+    source: 'Website event',
+  },
+  {
+    slug: 'cycle-gair',
+    title: 'Cycle Gair',
+    description: 'A festive cycle procession that carries messages of water conservation and community awareness.',
+    source: 'Website event',
+  },
+]
+
 const defaultFormState = {
-  isEnabled: true,
+  title: 'Ride For Nation',
+  description: 'Celebrate with SOGC and explore this event in detail before you join the ride.',
+  buttonText: 'View event details',
+  linkedEventSlug: 'ride-for-nation',
+  linkedEventTitle: 'Ride For Nation',
+  imageUrl: '',
+  imagePublicId: '',
+  imageFileData: '',
+  imageFileName: '',
+  removeImage: false,
+  isActive: false,
   openOnScroll: true,
   openOnManualTrigger: true,
-  sessionStorageKey: 'volunteer_popup_seen',
-  title: 'Become a Cycle Mitra',
-  description: 'Join our mission and make cycling safer for everyone.',
-  closeAriaLabel: 'Close popup',
-  submitButtonText: 'I want to become a Cycle Mitra',
-  fields: [
-    {
-      id: 'volunteer-name',
-      name: 'name',
-      label: 'Name',
-      type: 'text',
-      placeholder: 'Your full name',
-      required: true,
-    },
-    {
-      id: 'volunteer-email',
-      name: 'email',
-      label: 'Email',
-      type: 'email',
-      placeholder: 'you@example.com',
-      required: true,
-    },
-    {
-      id: 'volunteer-phone',
-      name: 'phone',
-      label: 'Phone',
-      type: 'tel',
-      placeholder: '+91 00000 00000',
-      required: true,
-    },
-  ],
+  sessionStorageKey: 'event_popup_seen',
 }
 
-function PopupPage() {
+function PopupPage({ mode }) {
+  const isEdit = mode === 'edit'
+  const navigate = useNavigate()
+  const { popupId } = useParams()
   const [form, setForm] = useState(defaultFormState)
+  const [adminEvents, setAdminEvents] = useState([])
+  const [status, setStatus] = useState('loading')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [statusMessage, setStatusMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoading, setIsLoading] = useState(isEdit)
+
+  useEffect(() => {
+    let isMounted = true
+
+    fetchAdminEvents()
+      .then((items) => {
+        if (!isMounted) return
+        setAdminEvents(items)
+        setStatus('ready')
+      })
+      .catch(() => {
+        if (!isMounted) return
+        setAdminEvents([])
+        setStatus('error')
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isEdit || !popupId) {
+      return
+    }
+
+    let isMounted = true
+
+    fetchAdminPopup(popupId)
+      .then((item) => {
+        if (!isMounted) return
+        setForm({
+          title: item.title ?? '',
+          description: item.description ?? '',
+          buttonText: item.buttonText ?? '',
+          linkedEventSlug: item.linkedEventSlug ?? '',
+          linkedEventTitle: item.linkedEventTitle ?? '',
+          imageUrl: item.imageUrl ?? '',
+          imagePublicId: item.imagePublicId ?? '',
+          imageFileData: '',
+          imageFileName: '',
+          removeImage: false,
+          isActive: Boolean(item.isActive),
+          openOnScroll: Boolean(item.openOnScroll),
+          openOnManualTrigger: Boolean(item.openOnManualTrigger),
+          sessionStorageKey: item.sessionStorageKey ?? 'event_popup_seen',
+        })
+        setIsLoading(false)
+      })
+      .catch((error) => {
+        if (!isMounted) return
+        setErrorMessage(error.message)
+        setIsLoading(false)
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [isEdit, popupId])
+
+  const eventOptions = useMemo(() => {
+    const seenSlugs = new Set()
+    const mergedEvents = []
+
+    staticEventOptions.forEach((event) => {
+      if (!event.slug || seenSlugs.has(event.slug)) {
+        return
+      }
+
+      seenSlugs.add(event.slug)
+      mergedEvents.push(event)
+    })
+
+    adminEvents.forEach((event) => {
+      if (!event?.slug || seenSlugs.has(event.slug)) {
+        return
+      }
+
+      seenSlugs.add(event.slug)
+      mergedEvents.push({
+        slug: event.slug,
+        title: event.title,
+        description: event.description ?? '',
+        source: event.isPublished ? 'Admin event - Published' : 'Admin event - Draft',
+      })
+    })
+
+    return mergedEvents
+  }, [adminEvents])
+
+  useEffect(() => {
+    if (!eventOptions.length) {
+      return
+    }
+
+    const linkedEventExists = eventOptions.some((event) => event.slug === form.linkedEventSlug)
+
+    if (!linkedEventExists) {
+      const firstEvent = eventOptions[0]
+
+      setForm((current) => ({
+        ...current,
+        linkedEventSlug: firstEvent.slug,
+        linkedEventTitle: firstEvent.title,
+        title: current.title || firstEvent.title,
+        description: current.description || firstEvent.description || '',
+      }))
+    }
+  }, [eventOptions, form.linkedEventSlug])
+
+  const selectedEvent = eventOptions.find((event) => event.slug === form.linkedEventSlug) ?? null
+  const eventLinkPreview = selectedEvent ? `/#event/${selectedEvent.slug}` : ''
 
   const updateField = (field, value) => {
     setForm((current) => ({
@@ -54,267 +195,299 @@ function PopupPage() {
     }))
   }
 
-  const updatePopupField = (index, field, value) => {
+  const handleLinkedEventChange = (slug) => {
+    const nextEvent = eventOptions.find((event) => event.slug === slug)
+
     setForm((current) => ({
       ...current,
-      fields: current.fields.map((item, itemIndex) =>
-        itemIndex === index
-          ? {
-              ...item,
-              [field]: value,
-            }
-          : item,
-      ),
+      linkedEventSlug: slug,
+      linkedEventTitle: nextEvent?.title ?? '',
+      title: nextEvent?.title ?? current.title,
+      description: nextEvent?.description ?? current.description,
     }))
   }
 
-  const handleSubmit = (event) => {
+  const handleImageFileChange = (event) => {
+    const [file] = event.target.files ?? []
+
+    if (!file) {
+      setForm((current) => ({
+        ...current,
+        imageFileData: '',
+        imageFileName: '',
+        removeImage: false,
+      }))
+      return
+    }
+
+    const reader = new FileReader()
+
+    reader.onload = () => {
+      setForm((current) => ({
+        ...current,
+        imageFileData: typeof reader.result === 'string' ? reader.result : '',
+        imageFileName: file.name,
+        removeImage: false,
+      }))
+    }
+
+    reader.onerror = () => {
+      setErrorMessage('Unable to read the selected popup image.')
+    }
+
+    reader.readAsDataURL(file)
+  }
+
+  const handleRemoveImage = () => {
+    setForm((current) => ({
+      ...current,
+      imageUrl: '',
+      imagePublicId: '',
+      imageFileData: '',
+      imageFileName: '',
+      removeImage: true,
+    }))
+  }
+
+  const handleSubmit = async (event) => {
     event.preventDefault()
+    setErrorMessage('')
+    setStatusMessage('')
+    setIsSubmitting(true)
+
+    try {
+      const payload = {
+        ...form,
+        linkedEventTitle: selectedEvent?.title ?? form.linkedEventTitle,
+      }
+
+      const savedPopup = isEdit && popupId
+        ? await updateAdminPopup(popupId, payload)
+        : await createAdminPopup(payload)
+
+      setStatusMessage('Popup settings saved successfully.')
+      navigate(`/popup/${savedPopup.id}`)
+    } catch (error) {
+      setErrorMessage(error.message)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
     <div className="space-y-6">
       <SectionCard
-        eyebrow="Popup schema"
-        title="Frontend-aligned volunteer popup form"
-        description="This editor is mapped directly to the current public `VolunteerPopup.jsx` structure instead of a generic popup CMS. It reflects the actual copy, field list, CTA, and trigger behavior that the frontend uses today."
-      >
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <div className="rounded-[24px] border border-white/10 bg-white/5 p-5">
-            <p className="text-xs uppercase tracking-[0.25em] text-[#f8d35c]">Trigger behavior</p>
-            <ul className="mt-4 space-y-2 text-sm text-[#b7c6bf]">
-              <li>`open-volunteer-popup` event listener</li>
-              <li>scroll trigger after 100vh</li>
-              <li>`sessionStorage` guard</li>
-            </ul>
-          </div>
-          <div className="rounded-[24px] border border-white/10 bg-white/5 p-5">
-            <p className="text-xs uppercase tracking-[0.25em] text-[#f8d35c]">Visible copy</p>
-            <ul className="mt-4 space-y-2 text-sm text-[#b7c6bf]">
-              <li>`title`</li>
-              <li>`description`</li>
-              <li>`closeAriaLabel`</li>
-              <li>`submitButtonText`</li>
-            </ul>
-          </div>
-          <div className="rounded-[24px] border border-white/10 bg-white/5 p-5">
-            <p className="text-xs uppercase tracking-[0.25em] text-[#f8d35c]">Form fields</p>
-            <ul className="mt-4 space-y-2 text-sm text-[#b7c6bf]">
-              <li>name field</li>
-              <li>email field</li>
-              <li>phone field</li>
-            </ul>
-          </div>
-          <div className="rounded-[24px] border border-white/10 bg-white/5 p-5">
-            <p className="text-xs uppercase tracking-[0.25em] text-[#f8d35c]">Current reality</p>
-            <p className="mt-4 text-sm leading-6 text-[#b7c6bf]">
-              The public popup is still a hardcoded volunteer modal, so this admin form mirrors that exact shape instead
-              of inventing unsupported frontend fields.
-            </p>
-          </div>
-        </div>
-      </SectionCard>
+        eyebrow="Popup details"
+        title={isEdit ? 'Edit popup' : 'Create popup'}
+        description="Choose an event, auto-fill the popup content from it, then save this popup for review or activation."
+      />
 
       <SectionCard
-        eyebrow="Volunteer popup"
-        title="Edit current popup structure"
-        description="These fields map to the live volunteer popup component: trigger behavior, visible text, field labels, field placeholders, and submit CTA."
+        eyebrow="Popup editor"
+        title={isEdit ? 'Update popup content' : 'Add a new popup'}
+        description="Only one popup can be live on the website at a time. If you mark this popup as live, any other live popup will be turned off automatically."
       >
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div className="grid gap-6 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-            <div className="space-y-6">
-              <div className="rounded-[24px] border border-white/10 bg-white/5 p-4 md:rounded-[28px] md:p-6">
-                <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Trigger settings</p>
-                <div className="mt-5 space-y-4">
-                  <label className="flex items-start gap-3 rounded-[24px] border border-white/10 bg-[#0f1513] p-4">
-                    <input
-                      type="checkbox"
-                      checked={form.isEnabled}
-                      onChange={(event) => updateField('isEnabled', event.target.checked)}
-                      className="mt-1 h-4 w-4 accent-[#f8d35c]"
-                    />
-                    <span>
-                      <span className="block text-sm font-medium text-white">Popup enabled</span>
-                      <span className="mt-1 block text-sm text-[#9db0a7]">
-                        Master switch for rendering the volunteer popup at all.
-                      </span>
-                    </span>
-                  </label>
+        {errorMessage ? (
+          <div className="mb-4 rounded-2xl border border-[#ffb4a2]/20 bg-[#5a2318]/30 px-4 py-3 text-sm text-[#ffd5ca]">
+            {errorMessage}
+          </div>
+        ) : null}
+        {statusMessage ? (
+          <div className="mb-4 rounded-2xl border border-[#f8d35c]/20 bg-[#f8d35c]/8 px-4 py-3 text-sm text-[#fff0b5]">
+            {statusMessage}
+          </div>
+        ) : null}
+        {isLoading ? (
+          <div className="rounded-[24px] border border-white/10 bg-white/5 px-4 py-6 text-sm text-[#b7c6bf]">
+            Loading popup details...
+          </div>
+        ) : null}
+        {!isLoading ? (
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+              <div className="space-y-6">
+                <div className="rounded-[24px] border border-white/10 bg-white/5 p-4 md:rounded-[28px] md:p-6">
+                  <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Popup content</p>
+                  <div className="mt-5 space-y-4">
+                    <label className="space-y-2">
+                      <span className="text-sm text-[#b7c6bf]">Popup title</span>
+                      <input
+                        value={form.title}
+                        onChange={(event) => updateField('title', event.target.value)}
+                        placeholder="Ride For Nation"
+                        className={inputClassName}
+                      />
+                    </label>
 
-                  <label className="flex items-start gap-3 rounded-[24px] border border-white/10 bg-[#0f1513] p-4">
-                    <input
-                      type="checkbox"
-                      checked={form.openOnManualTrigger}
-                      onChange={(event) => updateField('openOnManualTrigger', event.target.checked)}
-                      className="mt-1 h-4 w-4 accent-[#f8d35c]"
-                    />
-                    <span>
-                      <span className="block text-sm font-medium text-white">Allow manual trigger event</span>
-                      <span className="mt-1 block text-sm text-[#9db0a7]">
-                        Used by the current `open-volunteer-popup` custom event from the site.
-                      </span>
-                    </span>
-                  </label>
+                    <label className="space-y-2">
+                      <span className="text-sm text-[#b7c6bf]">Popup description</span>
+                      <textarea
+                        rows="4"
+                        value={form.description}
+                        onChange={(event) => updateField('description', event.target.value)}
+                        placeholder="Invite visitors to learn more and join the event."
+                        className={textareaClassName}
+                      />
+                    </label>
 
-                  <label className="flex items-start gap-3 rounded-[24px] border border-white/10 bg-[#0f1513] p-4">
-                    <input
-                      type="checkbox"
-                      checked={form.openOnScroll}
-                      onChange={(event) => updateField('openOnScroll', event.target.checked)}
-                      className="mt-1 h-4 w-4 accent-[#f8d35c]"
-                    />
-                    <span>
-                      <span className="block text-sm font-medium text-white">Open after scroll past 100vh</span>
-                      <span className="mt-1 block text-sm text-[#9db0a7]">
-                        Matches the current scroll-based trigger logic in `VolunteerPopup.jsx`.
-                      </span>
-                    </span>
-                  </label>
+                    <label className="space-y-2">
+                      <span className="text-sm text-[#b7c6bf]">Button label</span>
+                      <input
+                        value={form.buttonText}
+                        onChange={(event) => updateField('buttonText', event.target.value)}
+                        placeholder="View event details"
+                        className={inputClassName}
+                      />
+                    </label>
+                  </div>
+                </div>
 
-                  <label className="space-y-2">
-                    <span className="text-sm text-[#b7c6bf]">Session storage key</span>
-                    <input
-                      value={form.sessionStorageKey}
-                      onChange={(event) => updateField('sessionStorageKey', event.target.value)}
-                      placeholder="volunteer_popup_seen"
-                      className={inputClassName}
-                    />
-                  </label>
+                <div className="rounded-[24px] border border-white/10 bg-white/5 p-4 md:rounded-[28px] md:p-6">
+                  <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Popup behavior</p>
+                  <div className="mt-5 space-y-4">
+                    <label className="flex items-start gap-3 rounded-[24px] border border-white/10 bg-[#0f1513] p-4">
+                      <input
+                        type="checkbox"
+                        checked={form.isActive}
+                        onChange={(event) => updateField('isActive', event.target.checked)}
+                        className="mt-1 h-4 w-4 accent-[#f8d35c]"
+                      />
+                      <span>
+                        <span className="block text-sm font-medium text-white">Show this popup on website</span>
+                        <span className="mt-1 block text-sm text-[#9db0a7]">
+                          If enabled, this popup becomes the only live popup on the website.
+                        </span>
+                      </span>
+                    </label>
+
+                    <label className="flex items-start gap-3 rounded-[24px] border border-white/10 bg-[#0f1513] p-4">
+                      <input
+                        type="checkbox"
+                        checked={form.openOnManualTrigger}
+                        onChange={(event) => updateField('openOnManualTrigger', event.target.checked)}
+                        className="mt-1 h-4 w-4 accent-[#f8d35c]"
+                      />
+                      <span>
+                        <span className="block text-sm font-medium text-white">Allow popup to open from site actions</span>
+                        <span className="mt-1 block text-sm text-[#9db0a7]">
+                          Lets website buttons or actions open this popup directly.
+                        </span>
+                      </span>
+                    </label>
+
+                    <label className="flex items-start gap-3 rounded-[24px] border border-white/10 bg-[#0f1513] p-4">
+                      <input
+                        type="checkbox"
+                        checked={form.openOnScroll}
+                        onChange={(event) => updateField('openOnScroll', event.target.checked)}
+                        className="mt-1 h-4 w-4 accent-[#f8d35c]"
+                      />
+                      <span>
+                        <span className="block text-sm font-medium text-white">Open after scroll</span>
+                        <span className="mt-1 block text-sm text-[#9db0a7]">
+                          Shows the popup after a visitor scrolls down the page.
+                        </span>
+                      </span>
+                    </label>
+
+                    <label className="space-y-2">
+                      <span className="text-sm text-[#b7c6bf]">Visitor memory key</span>
+                      <input
+                        value={form.sessionStorageKey}
+                        onChange={(event) => updateField('sessionStorageKey', event.target.value)}
+                        placeholder="event_popup_seen"
+                        className={inputClassName}
+                      />
+                    </label>
+                  </div>
                 </div>
               </div>
 
-              <div className="rounded-[24px] border border-white/10 bg-white/5 p-4 md:rounded-[28px] md:p-6">
-                <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Visible copy</p>
-                <div className="mt-5 space-y-4">
-                  <label className="space-y-2">
-                    <span className="text-sm text-[#b7c6bf]">Popup title</span>
-                    <input
-                      value={form.title}
-                      onChange={(event) => updateField('title', event.target.value)}
-                      placeholder="Become a Cycle Mitra"
-                      className={inputClassName}
-                    />
-                  </label>
-                  <label className="space-y-2">
-                    <span className="text-sm text-[#b7c6bf]">Popup description</span>
-                    <textarea
-                      rows="4"
-                      value={form.description}
-                      onChange={(event) => updateField('description', event.target.value)}
-                      placeholder="Join our mission and make cycling safer for everyone."
-                      className={textareaClassName}
-                    />
-                  </label>
-                  <label className="space-y-2">
-                    <span className="text-sm text-[#b7c6bf]">Close button aria label</span>
-                    <input
-                      value={form.closeAriaLabel}
-                      onChange={(event) => updateField('closeAriaLabel', event.target.value)}
-                      placeholder="Close popup"
-                      className={inputClassName}
-                    />
-                  </label>
-                  <label className="space-y-2">
-                    <span className="text-sm text-[#b7c6bf]">Submit CTA text</span>
-                    <input
-                      value={form.submitButtonText}
-                      onChange={(event) => updateField('submitButtonText', event.target.value)}
-                      placeholder="I want to become a Cycle Mitra"
-                      className={inputClassName}
-                    />
-                  </label>
-                </div>
-              </div>
-            </div>
+              <div className="space-y-6">
+                <div className="rounded-[24px] border border-white/10 bg-white/5 p-4 md:rounded-[28px] md:p-6">
+                  <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Linked event</p>
+                  <div className="mt-5 space-y-4">
+                    <label className="space-y-2">
+                      <span className="text-sm text-[#b7c6bf]">Select event</span>
+                      <select
+                        value={form.linkedEventSlug}
+                        onChange={(event) => handleLinkedEventChange(event.target.value)}
+                        className={selectClassName}
+                      >
+                        {eventOptions.map((event) => (
+                          <option key={event.slug} value={event.slug} className="bg-[#0f1513]">
+                            {event.title}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
 
-            <div className="space-y-6">
-              <div className="rounded-[24px] border border-white/10 bg-white/5 p-4 md:rounded-[28px] md:p-6">
-                <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Form field definitions</p>
-                <div className="mt-5 space-y-4">
-                  {form.fields.map((field, index) => (
-                    <div key={field.id} className="rounded-[24px] border border-white/10 bg-[#0f1513] p-4">
-                      <div className="grid gap-4 md:grid-cols-2">
-                        <label className="space-y-2">
-                          <span className="text-sm text-[#b7c6bf]">DOM id</span>
-                          <input
-                            value={field.id}
-                            onChange={(event) => updatePopupField(index, 'id', event.target.value)}
-                            className={inputClassName}
-                          />
-                        </label>
-                        <label className="space-y-2">
-                          <span className="text-sm text-[#b7c6bf]">Input name</span>
-                          <input
-                            value={field.name}
-                            onChange={(event) => updatePopupField(index, 'name', event.target.value)}
-                            className={inputClassName}
-                          />
-                        </label>
-                        <label className="space-y-2">
-                          <span className="text-sm text-[#b7c6bf]">Label</span>
-                          <input
-                            value={field.label}
-                            onChange={(event) => updatePopupField(index, 'label', event.target.value)}
-                            className={inputClassName}
-                          />
-                        </label>
-                        <label className="space-y-2">
-                          <span className="text-sm text-[#b7c6bf]">Type</span>
-                          <input
-                            value={field.type}
-                            onChange={(event) => updatePopupField(index, 'type', event.target.value)}
-                            className={inputClassName}
-                          />
-                        </label>
-                        <label className="space-y-2 md:col-span-2">
-                          <span className="text-sm text-[#b7c6bf]">Placeholder</span>
-                          <input
-                            value={field.placeholder}
-                            onChange={(event) => updatePopupField(index, 'placeholder', event.target.value)}
-                            className={inputClassName}
-                          />
-                        </label>
-                        <label className="flex items-start gap-3 rounded-[20px] border border-white/10 bg-white/5 p-4 md:col-span-2">
-                          <input
-                            type="checkbox"
-                            checked={field.required}
-                            onChange={(event) => updatePopupField(index, 'required', event.target.checked)}
-                            className="mt-1 h-4 w-4 accent-[#f8d35c]"
-                          />
-                          <span>
-                            <span className="block text-sm font-medium text-white">Required field</span>
-                            <span className="mt-1 block text-sm text-[#9db0a7]">
-                              Matches the current frontend form validation requirement.
-                            </span>
-                          </span>
-                        </label>
+                    {status === 'loading' ? (
+                      <p className="text-sm text-[#b7c6bf]">Loading static and admin event options...</p>
+                    ) : null}
+                    {status === 'error' ? (
+                      <p className="text-sm text-[#ffb4a2]">
+                        Admin-created events could not be loaded right now. Static website events are still available in
+                        the dropdown.
+                      </p>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="rounded-[24px] border border-white/10 bg-white/5 p-4 md:rounded-[28px] md:p-6">
+                  <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Popup image</p>
+                  <div className="mt-5 space-y-4">
+                    <label className="space-y-2">
+                      <span className="text-sm text-[#b7c6bf]">Image file</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageFileChange}
+                        className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white file:mr-4 file:rounded-xl file:border-0 file:bg-[#f8d35c] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[#1b1b12]"
+                      />
+                    </label>
+
+                    {form.imageFileName ? <p className="text-sm text-[#b7c6bf]">Selected file: {form.imageFileName}</p> : null}
+
+                    {form.imageUrl || form.imageFileData ? (
+                      <div className="space-y-3">
+                        <img
+                          src={form.imageFileData || form.imageUrl}
+                          alt={form.title || 'Popup preview'}
+                          className="h-48 w-full rounded-[24px] border border-white/10 object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleRemoveImage}
+                          className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white"
+                        >
+                          Remove image
+                        </button>
                       </div>
-                    </div>
-                  ))}
+                    ) : (
+                      <div className="rounded-[24px] border border-dashed border-white/15 bg-[#0f1513] px-4 py-10 text-center text-sm text-[#9db0a7]">
+                        Upload an image to preview how the popup visual can look.
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-
-              <div className="rounded-[24px] border border-[#f8d35c]/20 bg-[#f8d35c]/8 p-4 md:rounded-[28px] md:p-6">
-                <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Frontend mapping</p>
-                <ul className="mt-4 space-y-2 text-sm leading-6 text-[#e5ede8]">
-                  <li>The current public popup is a volunteer modal, not a generic popup builder.</li>
-                  <li>The form always uses three visible fields: name, email, and phone.</li>
-                  <li>The CTA is disabled in frontend until all three fields are filled.</li>
-                  <li>Manual open and scroll open are both part of the current component logic.</li>
-                </ul>
-              </div>
             </div>
-          </div>
 
-          <div className="flex flex-wrap gap-3 border-t border-white/10 pt-6 max-md:[&>*]:w-full">
-            <button type="submit" className="rounded-2xl bg-[#f8d35c] px-5 py-3 font-medium text-[#1b1b12]">
-              Save popup settings
-            </button>
-            <button type="button" className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-white">
-              Preview volunteer popup
-            </button>
-          </div>
-        </form>
+            <div className="flex flex-wrap gap-3 border-t border-white/10 pt-6 max-md:[&>*]:w-full">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="rounded-2xl bg-[#f8d35c] px-5 py-3 font-medium text-[#1b1b12] disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {isEdit ? 'Save popup changes' : 'Create popup'}
+              </button>
+              <button type="button" className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-white">
+                Preview popup
+              </button>
+            </div>
+          </form>
+        ) : null}
       </SectionCard>
     </div>
   )
