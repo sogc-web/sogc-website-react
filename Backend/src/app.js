@@ -6,6 +6,7 @@ const healthRoutes = require('./routes/healthRoutes')
 const formRoutes = require('./routes/forms')
 const adminRoutes = require('./routes/admin')
 const publicEventRoutes = require('./routes/public/eventsRoutes')
+const publicPopupRoutes = require('./routes/public/popupRoutes')
 
 const app = express()
 
@@ -27,6 +28,7 @@ app.get('/', (_request, response) => {
 
 app.use('/api/health', healthRoutes)
 app.use('/api/events', publicEventRoutes)
+app.use('/api/popup', publicPopupRoutes)
 app.use('/api/forms', formRoutes)
 app.use('/api/admin', adminRoutes)
 
