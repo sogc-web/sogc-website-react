@@ -1,4 +1,4 @@
-const ADMIN_API_BASE_URL = import.meta.env.VITE_ADMIN_API_URL || 'http://localhost:8080'
+import { ADMIN_API_BASE_URL } from './env'
 
 async function request(path, options = {}) {
   const response = await fetch(`${ADMIN_API_BASE_URL}${path}`, {

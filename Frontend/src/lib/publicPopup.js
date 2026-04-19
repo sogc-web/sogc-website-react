@@ -1,4 +1,4 @@
-const PUBLIC_API_BASE_URL = import.meta.env.VITE_PUBLIC_API_URL || 'http://localhost:8080'
+import { PUBLIC_API_BASE_URL } from './env'
 
 export async function fetchActivePopup(signal) {
   const response = await fetch(`${PUBLIC_API_BASE_URL}/api/popup`, {
