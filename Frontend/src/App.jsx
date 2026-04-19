@@ -19,6 +19,7 @@ import Footer from './components/Footer'
 import BackgroundGradient from './components/BackgroundGradient'
 import MoveToTopButton from './components/MoveToTopButton'
 import VolunteerPopup from './components/VolunteerPopup'
+import AdminPopup from './components/AdminPopup'
 import FAQChatbot from './components/FAQChatbot'
 import ScrollReveal from './components/ScrollReveal'
 import { getContent } from './data/content'
@@ -26,6 +27,7 @@ import { campaignContentEn } from './data/campaign_content.en'
 import { campaignContentHi } from './data/campaign_content.hi'
 import { getEventCatalog } from './data/eventDetails'
 import { fetchAdminEvents, mergeEventCatalog } from './lib/publicEvents'
+import { fetchActivePopup } from './lib/publicPopup'
 
 const LANGUAGE_STORAGE_KEY = 'sogc-language'
 const HERO_IMAGE_ROTATION_MS = 5000
@@ -103,6 +105,7 @@ function App() {
   const [heroCarouselImages] = useState(() => shuffleItems(heroBackgroundImages))
   const [heroImageIndex, setHeroImageIndex] = useState(0)
   const [adminEvents, setAdminEvents] = useState([])
+  const [activePopup, setActivePopup] = useState(null)
   const [lang, setLang] = useState(() => {
     if (typeof window === 'undefined') return 'en'
 
@@ -129,6 +132,25 @@ function App() {
 
         console.error('Unable to load admin events:', error)
         setAdminEvents([])
+      })
+
+    return () => controller.abort()
+  }, [])
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    fetchActivePopup(controller.signal)
+      .then((popup) => {
+        setActivePopup(popup)
+      })
+      .catch((error) => {
+        if (error.name === 'AbortError') {
+          return
+        }
+
+        console.error('Unable to load active popup:', error)
+        setActivePopup(null)
       })
 
     return () => controller.abort()
@@ -247,7 +269,8 @@ function App() {
         )}
         <Footer t={t} />
       </div>
-      <VolunteerPopup />
+      <VolunteerPopup enableScrollTrigger={!activePopup?.isActive} />
+      <AdminPopup popup={activePopup} />
       <FAQChatbot />
       <MoveToTopButton />
     </BackgroundGradient>
