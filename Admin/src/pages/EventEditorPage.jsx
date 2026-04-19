@@ -266,16 +266,16 @@ function EventEditorPage({ mode }) {
   return (
     <div className="space-y-6">
       <SectionCard
-        eyebrow="Event schema"
+        eyebrow="Event details"
         title={isEdit ? 'Edit event' : 'Create event'}
-        description="This editor now mirrors the public frontend event shape used by the event card listing and the event detail page, so every displayed field can become backend-driven."
+        description="Add the event information, upload its image, and control whether it stays as a draft or appears on the website."
       >
       </SectionCard>
 
       <SectionCard
         eyebrow="Event editor"
-        title={isEdit ? 'Frontend-aligned event form' : 'Frontend-aligned event form'}
-        description="The fields below are grouped by how the public site consumes them: event cards first, then detail-page content, then admin-only publishing controls."
+        title={isEdit ? 'Update event information' : 'Add a new event'}
+        description="Complete the sections below to set the event card content, detail page content, image, highlights, and publish status."
       >
         {errorMessage ? (
           <div className="mb-4 rounded-2xl border border-[#ffb4a2]/20 bg-[#5a2318]/30 px-4 py-3 text-sm text-[#ffd5ca]">

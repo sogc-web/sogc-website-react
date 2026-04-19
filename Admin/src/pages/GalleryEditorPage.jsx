@@ -44,41 +44,40 @@ function GalleryEditorPage({ mode }) {
   return (
     <div className="space-y-6">
       <SectionCard
-        eyebrow="Gallery schema"
+        eyebrow="Gallery collection"
         title={isEdit ? 'Edit collection' : 'Create collection'}
-        description="This editor now follows the real collection contract used in `GalleryMedia.jsx`. The public frontend currently builds gallery collections from metadata plus local folder scanning."
+        description="Set up the collection name, summary, cover image preference, and media folder details for this gallery collection."
       >
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-[24px] border border-white/10 bg-white/5 p-5">
             <p className="text-xs uppercase tracking-[0.25em] text-[#f8d35c]">Collection identity</p>
             <ul className="mt-4 space-y-2 text-sm text-[#b7c6bf]">
-              <li>`id`</li>
-              <li>`title`</li>
-              <li>`eyebrow`</li>
-              <li>`summary`</li>
+              <li>Collection ID</li>
+              <li>Title</li>
+              <li>Section label</li>
+              <li>Summary</li>
             </ul>
           </div>
           <div className="rounded-[24px] border border-white/10 bg-white/5 p-5">
             <p className="text-xs uppercase tracking-[0.25em] text-[#f8d35c]">Media source</p>
             <ul className="mt-4 space-y-2 text-sm text-[#b7c6bf]">
-              <li>`folder`</li>
-              <li>folder-based media lookup</li>
-              <li>mixed image/video support</li>
+              <li>Folder path</li>
+              <li>Linked media lookup</li>
+              <li>Image and video support</li>
             </ul>
           </div>
           <div className="rounded-[24px] border border-white/10 bg-white/5 p-5">
-            <p className="text-xs uppercase tracking-[0.25em] text-[#f8d35c]">Cover resolution</p>
+            <p className="text-xs uppercase tracking-[0.25em] text-[#f8d35c]">Cover selection</p>
             <ul className="mt-4 space-y-2 text-sm text-[#b7c6bf]">
-              <li>`featuredFileName`</li>
-              <li>fallback to first image</li>
-              <li>fallback to first media item</li>
+              <li>Featured file name</li>
+              <li>Falls back to the first image</li>
+              <li>Falls back to the first media item</li>
             </ul>
           </div>
           <div className="rounded-[24px] border border-white/10 bg-white/5 p-5">
-            <p className="text-xs uppercase tracking-[0.25em] text-[#f8d35c]">Current reality</p>
+            <p className="text-xs uppercase tracking-[0.25em] text-[#f8d35c]">Admin note</p>
             <p className="mt-4 text-sm leading-6 text-[#b7c6bf]">
-              The public gallery does not currently read uploaded media records. It reads collection metadata and then
-              scans static folders from the local asset tree.
+              Keep collection names clear and folder paths consistent so each gallery album stays easy to manage.
             </p>
           </div>
         </div>
@@ -86,8 +85,8 @@ function GalleryEditorPage({ mode }) {
 
       <SectionCard
         eyebrow="Collection editor"
-        title={isEdit ? 'Frontend-aligned gallery form' : 'Frontend-aligned gallery form'}
-        description="These fields map directly to the collection objects consumed by `GalleryMedia.jsx`, so the admin metadata matches the current frontend behavior exactly."
+        title={isEdit ? 'Update gallery collection' : 'Create gallery collection'}
+        description="Fill in the collection details below to control how this album appears and which media folder it uses."
       >
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div className="grid gap-6 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
@@ -136,10 +135,10 @@ function GalleryEditorPage({ mode }) {
               </div>
 
               <div className="rounded-[24px] border border-white/10 bg-white/5 p-4 md:rounded-[28px] md:p-6">
-                <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Folder-based media source</p>
+                <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Media folder</p>
                 <div className="mt-5 space-y-4">
                   <label className="space-y-2">
-                    <span className="text-sm text-[#b7c6bf]">Folder path as used by frontend metadata</span>
+                    <span className="text-sm text-[#b7c6bf]">Folder path</span>
                     <input
                       value={form.folder}
                       onChange={(event) => updateField('folder', event.target.value)}
@@ -157,8 +156,8 @@ function GalleryEditorPage({ mode }) {
                     />
                   </label>
                   <div className="rounded-[24px] border border-dashed border-white/15 bg-[#0f1513] p-4 text-sm leading-6 text-[#9db0a7]">
-                    `GalleryMedia.jsx` currently resolves media by matching this folder path against statically imported
-                    asset paths. This is not yet a true uploaded-media backend flow.
+                    Use the same folder name that contains this collection's media so the correct items are shown on the
+                    website.
                   </div>
                 </div>
               </div>
@@ -166,7 +165,7 @@ function GalleryEditorPage({ mode }) {
 
             <div className="space-y-6">
               <div className="rounded-[24px] border border-white/10 bg-white/5 p-4 md:rounded-[28px] md:p-6">
-                <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Frontend expectations</p>
+                <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Accepted media types</p>
                 <div className="mt-5 space-y-3">
                   {form.expectedMediaPatterns.map((pattern) => (
                     <div
@@ -180,21 +179,20 @@ function GalleryEditorPage({ mode }) {
               </div>
 
               <div className="rounded-[24px] border border-[#f8d35c]/20 bg-[#f8d35c]/8 p-4 md:rounded-[28px] md:p-6">
-                <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Frontend mapping</p>
+                <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Helpful notes</p>
                 <ul className="mt-4 space-y-2 text-sm leading-6 text-[#e5ede8]">
-                  <li>The card stack uses `title`, `eyebrow`, `summary`, and the resolved `cover` item.</li>
-                  <li>`folder` controls which local media files are included in a collection.</li>
-                  <li>`featuredFileName` decides the preferred cover media before image/file fallbacks.</li>
-                  <li>Slides and lightbox content are currently derived from the matched folder assets.</li>
+                  <li>The title, label, and summary are used in the collection card.</li>
+                  <li>The folder path decides which media belongs to this collection.</li>
+                  <li>The featured file name helps choose the preferred cover image or video.</li>
+                  <li>Make sure the folder and file names match your actual media exactly.</li>
                 </ul>
               </div>
 
               <div className="rounded-[24px] border border-white/10 bg-white/5 p-4 md:rounded-[28px] md:p-6">
-                <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Migration note</p>
+                <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Planning note</p>
                 <p className="mt-4 text-sm leading-6 text-[#9db0a7]">
-                  When you later move gallery to backend-managed uploads, this form can expand into collection records +
-                  media item records. Right now this editor is intentionally aligned to the exact current frontend
-                  metadata shape.
+                  This form can later expand to support direct uploads and deeper media management without changing the
+                  collection basics.
                 </p>
               </div>
             </div>
@@ -202,10 +200,10 @@ function GalleryEditorPage({ mode }) {
 
           <div className="flex flex-wrap gap-3 border-t border-white/10 pt-6 max-md:[&>*]:w-full">
             <button type="submit" className="rounded-2xl bg-[#f8d35c] px-5 py-3 font-medium text-[#1b1b12]">
-              {isEdit ? 'Save collection metadata' : 'Create collection metadata'}
+              {isEdit ? 'Save collection changes' : 'Create collection'}
             </button>
             <button type="button" className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-white">
-              Validate folder mapping
+              Check media folder
             </button>
           </div>
         </form>

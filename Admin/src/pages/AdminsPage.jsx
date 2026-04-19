@@ -52,7 +52,7 @@ function AdminsPage() {
       <SectionCard
         eyebrow="Add admin"
         title="Create a new admin"
-        description="Version 1 should support adding a new admin email, optional name, and active state without direct database edits."
+        description="Add a team member who should be allowed to access the admin panel."
       >
         <form className="grid gap-4 md:grid-cols-2">
           <label className="space-y-2">

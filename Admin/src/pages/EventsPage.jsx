@@ -31,7 +31,7 @@ function EventsPage() {
     <SectionCard
       eyebrow="Events"
       title="Manage event records"
-      description="These rows are placeholders for the Mongo-backed event list. Publish state, order, cover image, and detail copy should be managed here."
+      description="Create, review, and update event records from one place, then publish only the events that should appear on the website."
       action={
         <Link
           to="/events/new"
@@ -71,7 +71,7 @@ function EventsPage() {
             {status === 'ready' && rows.length === 0 ? (
               <tr>
                 <td colSpan="5" className="px-4 py-6 text-[#b7c6bf]">
-                  No admin-managed events yet. Create the first one to test the full flow.
+                  No events have been added yet. Create your first event to get started.
                 </td>
               </tr>
             ) : null}

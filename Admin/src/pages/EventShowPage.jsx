@@ -76,7 +76,7 @@ function EventShowPage() {
             ) : null}
           </span>
         }
-        description="Review the saved event exactly as the admin backend stores it before making further edits or publishing changes."
+        description="Review the saved event information before making further changes or updating its publish status."
         action={
           event ? (
             <div className="flex flex-wrap gap-3 max-md:[&>*]:w-full">

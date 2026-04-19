@@ -10,7 +10,7 @@ function GalleryPage() {
     <SectionCard
       eyebrow="Gallery"
       title="Manage gallery collections"
-      description="Collections and media should come from MongoDB instead of local folder scanning. This screen is the control point for cover media, visibility, and ordering."
+      description="Create and organize gallery collections, review their status, and manage which albums are ready for the website."
       action={
         <Link
           to="/gallery/new"
@@ -25,7 +25,7 @@ function GalleryPage() {
           <article key={collection.id} className="rounded-[24px] border border-white/10 bg-white/5 p-5">
             <p className="text-xs uppercase tracking-[0.25em] text-[#f8d35c]">{collection.status}</p>
             <h3 className="mt-3 text-xl font-medium text-white">{collection.title}</h3>
-            <p className="mt-2 text-sm text-[#b7c6bf]">{collection.items} media items connected</p>
+            <p className="mt-2 text-sm text-[#b7c6bf]">{collection.items} media items linked</p>
             <Link to={`/gallery/${collection.id}/edit`} className="mt-5 inline-flex text-sm text-[#f8d35c] hover:text-[#ffbf2f]">
               Edit collection
             </Link>
