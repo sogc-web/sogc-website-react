@@ -1,5 +1,5 @@
 const { env } = require('../../config/env')
-const { sendEmail } = require('../../services/mailer')
+const { sendContactNotification } = require('../../services/formMailer')
 const { httpError } = require('../../utils/httpError')
 
 async function submitContactForm(request, response) {
@@ -9,32 +9,13 @@ async function submitContactForm(request, response) {
     throw httpError(400, 'Name, email, and message are required.')
   }
 
-  const subject = `New contact form submission from ${name}`
-  const text = [
-    `Name: ${name}`,
-    `Email: ${email}`,
-    `Phone: ${phone || '-'}`,
-    `Role: ${role || '-'}`,
-    '',
-    'Message:',
-    message,
-  ].join('\n')
-
-  const html = `
-    <h2>New contact form submission</h2>
-    <p><strong>Name:</strong> ${name}</p>
-    <p><strong>Email:</strong> ${email}</p>
-    <p><strong>Phone:</strong> ${phone || '-'}</p>
-    <p><strong>Role:</strong> ${role || '-'}</p>
-    <p><strong>Message:</strong></p>
-    <p>${String(message).replace(/\n/g, '<br />')}</p>
-  `
-
-  const mailResult = await sendEmail({
+  const mailResult = await sendContactNotification({
     to: env.contactToEmail,
-    subject,
-    text,
-    html,
+    name,
+    email,
+    phone,
+    role,
+    message,
   })
 
   response.status(201).json({

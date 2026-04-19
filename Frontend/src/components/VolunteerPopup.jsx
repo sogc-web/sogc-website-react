@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { submitVolunteerForm } from '../lib/publicForms'
 
 const VOLUNTEER_POPUP_SESSION_KEY = 'volunteer_popup_seen'
 
@@ -6,6 +7,8 @@ export default function VolunteerPopup({ enableScrollTrigger = true }) {
     const [isOpen, setIsOpen] = useState(false)
     const [isRendered, setIsRendered] = useState(false)
     const [formData, setFormData] = useState({ name: '', email: '', phone: '' })
+    const [submitState, setSubmitState] = useState('idle')
+    const [statusMessage, setStatusMessage] = useState('')
 
     const modalRef = useRef(null)
     const firstInputRef = useRef(null)
@@ -81,12 +84,37 @@ export default function VolunteerPopup({ enableScrollTrigger = true }) {
 
     const handleChange = (e) => {
         setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }))
+        if (submitState !== 'idle') {
+            setSubmitState('idle')
+            setStatusMessage('')
+        }
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        console.log('Volunteer signup submitted:', formData)
-        handleClose()
+
+        setSubmitState('submitting')
+        setStatusMessage('')
+
+        try {
+            await submitVolunteerForm({
+                name: formData.name.trim(),
+                email: formData.email.trim(),
+                phone: formData.phone.trim(),
+            })
+
+            setSubmitState('success')
+            setStatusMessage('Thanks for signing up. We have received your details and will reach out soon.')
+            setFormData({ name: '', email: '', phone: '' })
+            window.setTimeout(() => {
+                handleClose()
+                setSubmitState('idle')
+                setStatusMessage('')
+            }, 1600)
+        } catch (error) {
+            setSubmitState('error')
+            setStatusMessage(error.message || 'Unable to submit the volunteer form right now.')
+        }
     }
 
     const isFormValid = formData.name.trim() && formData.email.trim() && formData.phone.trim()
@@ -184,12 +212,23 @@ export default function VolunteerPopup({ enableScrollTrigger = true }) {
                         />
                     </div>
 
+                    {statusMessage ? (
+                        <div
+                            className={`rounded-xl border px-4 py-3 text-sm ${submitState === 'error'
+                                    ? 'border-[#ffb4a2]/20 bg-[#ffb4a2]/10 text-[#ffd7cd]'
+                                    : 'border-[#f8d35c]/20 bg-[#f8d35c]/10 text-[#f3e7b2]'
+                                }`}
+                        >
+                            {statusMessage}
+                        </div>
+                    ) : null}
+
                     <button
                         type="submit"
-                        disabled={!isFormValid}
+                        disabled={!isFormValid || submitState === 'submitting'}
                         className="mt-3 w-full rounded-xl bg-[#f8d35c] px-4 py-3.5 text-sm font-bold text-[#0b1410] shadow-[0_0_20px_rgba(248,211,92,0.15)] transition-all duration-200 hover:bg-[#f9da75] hover:shadow-[0_0_25px_rgba(248,211,92,0.25)] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none"
                     >
-                        I want to become a Cycle Mitra
+                        {submitState === 'submitting' ? 'Submitting...' : 'I want to become a Cycle Mitra'}
                     </button>
                 </form>
             </div>

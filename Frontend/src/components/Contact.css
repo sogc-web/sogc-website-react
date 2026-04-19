@@ -129,14 +129,24 @@
 
 .custom-select__option {
   margin: 2px;
+  padding: 0;
+  border-radius: 8px;
+}
+
+.custom-select__option-btn {
+  display: block;
+  width: 100%;
   padding: 8px 12px;
   color: #ddd;
+  text-align: left;
+  background: transparent;
+  border: 0;
   border-radius: 8px;
   cursor: pointer;
 }
 
-.custom-select__option:hover,
-.custom-select__option.is-selected {
+.custom-select__option-btn:hover,
+.custom-select__option.is-selected .custom-select__option-btn {
   color: #fff;
   background: rgba(248, 211, 92, 0.15);
 }
