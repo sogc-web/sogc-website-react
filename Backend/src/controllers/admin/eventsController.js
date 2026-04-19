@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const { Event } = require('../../models/Event')
 const { deleteEventImage, uploadEventImage } = require('../../services/eventImageUpload')
+const { notifyAdminActivity } = require('../../services/adminActivityMailer')
 const { httpError } = require('../../utils/httpError')
 const { slugify } = require('../../utils/slugify')
 
@@ -125,6 +126,17 @@ async function createAdminEvent(request, response) {
   delete payload.removeImage
 
   const item = await Event.create(payload)
+  await notifyAdminActivity({
+    entityType: 'Event',
+    operation: 'created',
+    details: {
+      Title: item.title,
+      Slug: item.slug,
+      Published: item.isPublished ? 'Yes' : 'No',
+      Date: item.date,
+      Location: item.location,
+    },
+  })
   response.status(201).json({ item })
 }
 
@@ -162,6 +174,18 @@ async function updateAdminEvent(request, response) {
   Object.assign(item, payload)
   await item.save()
 
+  await notifyAdminActivity({
+    entityType: 'Event',
+    operation: 'updated',
+    details: {
+      Title: item.title,
+      Slug: item.slug,
+      Published: item.isPublished ? 'Yes' : 'No',
+      Date: item.date,
+      Location: item.location,
+    },
+  })
+
   response.json({ item })
 }
 
@@ -175,6 +199,17 @@ async function deleteAdminEvent(request, response) {
   }
 
   await deleteEventImage(item.imagePublicId, item.imageUrl)
+  await notifyAdminActivity({
+    entityType: 'Event',
+    operation: 'deleted',
+    details: {
+      Title: item.title,
+      Slug: item.slug,
+      Published: item.isPublished ? 'Yes' : 'No',
+      Date: item.date,
+      Location: item.location,
+    },
+  })
 
   response.status(204).send()
 }

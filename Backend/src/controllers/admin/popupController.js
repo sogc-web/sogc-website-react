@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const { Popup } = require('../../models/Popup')
+const { notifyAdminActivity } = require('../../services/adminActivityMailer')
 const { deletePopupImage, uploadPopupImage } = require('../../services/eventImageUpload')
 const { httpError } = require('../../utils/httpError')
 
@@ -90,6 +91,17 @@ async function createAdminPopup(request, response) {
     await ensureSingleActivePopup(item._id)
   }
 
+  await notifyAdminActivity({
+    entityType: 'Popup',
+    operation: 'created',
+    details: {
+      Title: item.title,
+      LinkedEvent: item.linkedEventTitle || item.linkedEventSlug,
+      Live: item.isActive ? 'Yes' : 'No',
+      ScrollTrigger: item.openOnScroll ? 'Enabled' : 'Disabled',
+    },
+  })
+
   response.status(201).json({ item })
 }
 
@@ -129,6 +141,17 @@ async function updateAdminPopup(request, response) {
     await ensureSingleActivePopup(item._id)
   }
 
+  await notifyAdminActivity({
+    entityType: 'Popup',
+    operation: 'updated',
+    details: {
+      Title: item.title,
+      LinkedEvent: item.linkedEventTitle || item.linkedEventSlug,
+      Live: item.isActive ? 'Yes' : 'No',
+      ScrollTrigger: item.openOnScroll ? 'Enabled' : 'Disabled',
+    },
+  })
+
   response.json({ item })
 }
 
@@ -145,6 +168,17 @@ async function activateAdminPopup(request, response) {
   await item.save()
   await ensureSingleActivePopup(item._id)
 
+  await notifyAdminActivity({
+    entityType: 'Popup',
+    operation: 'activated',
+    details: {
+      Title: item.title,
+      LinkedEvent: item.linkedEventTitle || item.linkedEventSlug,
+      Live: 'Yes',
+      ScrollTrigger: item.openOnScroll ? 'Enabled' : 'Disabled',
+    },
+  })
+
   response.json({ item })
 }
 
@@ -158,6 +192,16 @@ async function deleteAdminPopup(request, response) {
   }
 
   await deletePopupImage(item.imagePublicId, item.imageUrl)
+  await notifyAdminActivity({
+    entityType: 'Popup',
+    operation: 'deleted',
+    details: {
+      Title: item.title,
+      LinkedEvent: item.linkedEventTitle || item.linkedEventSlug,
+      Live: item.isActive ? 'Yes' : 'No',
+      ScrollTrigger: item.openOnScroll ? 'Enabled' : 'Disabled',
+    },
+  })
 
   response.status(204).send()
 }
