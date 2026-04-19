@@ -5,7 +5,9 @@ function readRequiredEnv(name) {
     throw new Error(`${name} is not configured. Add it to the Admin environment variables.`)
   }
 
-  return value.replace(/\/+$/, '')
+  return value.trim()
 }
 
-export const ADMIN_API_BASE_URL = readRequiredEnv('VITE_ADMIN_API_URL')
+export const ADMIN_API_BASE_URL = readRequiredEnv('VITE_ADMIN_API_URL').replace(/\/+$/, '')
+export const ADMIN_LOGIN_EMAIL = readRequiredEnv('VITE_ADMIN_LOGIN_EMAIL')
+export const ADMIN_LOGIN_PASSWORD = readRequiredEnv('VITE_ADMIN_LOGIN_PASSWORD')
