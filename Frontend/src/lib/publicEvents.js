@@ -3,6 +3,7 @@ const PUBLIC_API_BASE_URL = import.meta.env.VITE_PUBLIC_API_URL || 'http://local
 function normalizeBackendEvent(event) {
   return {
     ...event,
+    image: event.image ?? event.imageUrl ?? '',
     highlights: Array.isArray(event.highlights) ? event.highlights : [],
     registrationUrl: event.registrationUrl ?? '',
   }
