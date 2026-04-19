@@ -85,10 +85,6 @@ function LoginPage() {
             Sign in
           </button>
         </form>
-
-        <div className="mt-8 rounded-2xl border border-[#f8d35c]/20 bg-[#f8d35c]/8 p-4 text-sm leading-6 text-[#dfe8e3]">
-          Temporary setup: single admin email and password from environment variables.
-        </div>
       </div>
     </div>
   )
