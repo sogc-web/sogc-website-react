@@ -5,6 +5,7 @@ import DashboardPage from './pages/DashboardPage'
 import AdminsPage from './pages/AdminsPage'
 import EventsPage from './pages/EventsPage'
 import EventEditorPage from './pages/EventEditorPage'
+import EventShowPage from './pages/EventShowPage'
 import GalleryPage from './pages/GalleryPage'
 import GalleryEditorPage from './pages/GalleryEditorPage'
 import PopupPage from './pages/PopupPage'
@@ -18,6 +19,7 @@ function App() {
         <Route path="admins" element={<AdminsPage />} />
         <Route path="events" element={<EventsPage />} />
         <Route path="events/new" element={<EventEditorPage mode="create" />} />
+        <Route path="events/:eventId" element={<EventShowPage />} />
         <Route path="events/:eventId/edit" element={<EventEditorPage mode="edit" />} />
         <Route path="gallery" element={<GalleryPage />} />
         <Route path="gallery/new" element={<GalleryEditorPage mode="create" />} />

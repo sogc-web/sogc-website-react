@@ -1,17 +1,32 @@
 import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import SectionCard from '../components/SectionCard'
-
-const rows = [
-  {
-    id: 'placeholder-char-dwar',
-    title: 'Char Dwar Cycle Yatra',
-    status: 'Draft',
-    date: 'Annual',
-    location: 'Ujjain Sacred Circuit',
-  },
-]
+import { fetchAdminEvents } from '../lib/adminEvents'
 
 function EventsPage() {
+  const [rows, setRows] = useState([])
+  const [status, setStatus] = useState('loading')
+
+  useEffect(() => {
+    let isMounted = true
+
+    fetchAdminEvents()
+      .then((items) => {
+        if (!isMounted) return
+        setRows(items)
+        setStatus('ready')
+      })
+      .catch(() => {
+        if (!isMounted) return
+        setRows([])
+        setStatus('error')
+      })
+
+    return () => {
+      isMounted = false
+    }
+  }, [])
+
   return (
     <SectionCard
       eyebrow="Events"
@@ -39,19 +54,49 @@ function EventsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-white/10 bg-[#0f1513]">
-            {rows.map((row) => (
+            {status === 'loading' ? (
+              <tr>
+                <td colSpan="5" className="px-4 py-6 text-[#b7c6bf]">
+                  Loading events...
+                </td>
+              </tr>
+            ) : null}
+            {status === 'error' ? (
+              <tr>
+                <td colSpan="5" className="px-4 py-6 text-[#ffb4a2]">
+                  Unable to load events from the backend right now.
+                </td>
+              </tr>
+            ) : null}
+            {status === 'ready' && rows.length === 0 ? (
+              <tr>
+                <td colSpan="5" className="px-4 py-6 text-[#b7c6bf]">
+                  No admin-managed events yet. Create the first one to test the full flow.
+                </td>
+              </tr>
+            ) : null}
+            {status === 'ready' ? rows.map((row) => (
               <tr key={row.id}>
-                <td className="px-4 py-4 text-white">{row.title}</td>
-                <td className="px-4 py-4 text-[#b7c6bf]">{row.status}</td>
+                <td className="px-4 py-4 text-white">
+                  <Link to={`/events/${row.id}`} className="hover:text-[#f8d35c]">
+                    {row.title}
+                  </Link>
+                </td>
+                <td className="px-4 py-4 text-[#b7c6bf]">{row.isPublished ? 'Published' : 'Draft'}</td>
                 <td className="px-4 py-4 text-[#b7c6bf]">{row.date}</td>
                 <td className="px-4 py-4 text-[#b7c6bf]">{row.location}</td>
                 <td className="px-4 py-4">
-                  <Link to={`/events/${row.id}/edit`} className="text-[#f8d35c] hover:text-[#ffbf2f]">
-                    Edit
-                  </Link>
+                  <div className="flex flex-wrap gap-3">
+                    <Link to={`/events/${row.id}`} className="text-[#b7c6bf] hover:text-white">
+                      View
+                    </Link>
+                    <Link to={`/events/${row.id}/edit`} className="text-[#f8d35c] hover:text-[#ffbf2f]">
+                      Edit
+                    </Link>
+                  </div>
                 </td>
               </tr>
-            ))}
+            )) : null}
           </tbody>
           </table>
         </div>
