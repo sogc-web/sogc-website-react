@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import SectionCard from '../components/SectionCard'
 import { fetchAdminEvents } from '../lib/adminEvents'
@@ -9,9 +9,6 @@ const inputClassName =
 
 const textareaClassName =
   'w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none placeholder:text-[#6e8178]'
-
-const selectClassName =
-  'w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none'
 
 const staticEventOptions = [
   {
@@ -75,6 +72,8 @@ function PopupPage({ mode }) {
   const [statusMessage, setStatusMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoading, setIsLoading] = useState(isEdit)
+  const [isEventDropdownOpen, setIsEventDropdownOpen] = useState(false)
+  const eventDropdownRef = useRef(null)
 
   useEffect(() => {
     let isMounted = true
@@ -95,6 +94,26 @@ function PopupPage({ mode }) {
       isMounted = false
     }
   }, [])
+
+  useEffect(() => {
+    if (!isEventDropdownOpen) {
+      return undefined
+    }
+
+    const handleOutsideClick = (event) => {
+      if (!eventDropdownRef.current?.contains(event.target)) {
+        setIsEventDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleOutsideClick)
+    document.addEventListener('touchstart', handleOutsideClick)
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick)
+      document.removeEventListener('touchstart', handleOutsideClick)
+    }
+  }, [isEventDropdownOpen])
 
   useEffect(() => {
     if (!isEdit || !popupId) {
@@ -149,7 +168,7 @@ function PopupPage({ mode }) {
     })
 
     adminEvents.forEach((event) => {
-      if (!event?.slug || seenSlugs.has(event.slug)) {
+      if (!event?.slug || seenSlugs.has(event.slug) || !event.isPublished) {
         return
       }
 
@@ -158,7 +177,7 @@ function PopupPage({ mode }) {
         slug: event.slug,
         title: event.title,
         description: event.description ?? '',
-        source: event.isPublished ? 'Admin event - Published' : 'Admin event - Draft',
+        source: 'Admin event - Published',
       })
     })
 
@@ -205,6 +224,7 @@ function PopupPage({ mode }) {
       title: nextEvent?.title ?? current.title,
       description: nextEvent?.description ?? current.description,
     }))
+    setIsEventDropdownOpen(false)
   }
 
   const handleImageFileChange = (event) => {
@@ -407,20 +427,54 @@ function PopupPage({ mode }) {
                 <div className="rounded-[24px] border border-white/10 bg-white/5 p-4 md:rounded-[28px] md:p-6">
                   <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Linked event</p>
                   <div className="mt-5 space-y-4">
-                    <label className="space-y-2">
+                    <div ref={eventDropdownRef} className="space-y-2">
                       <span className="text-sm text-[#b7c6bf]">Select event</span>
-                      <select
-                        value={form.linkedEventSlug}
-                        onChange={(event) => handleLinkedEventChange(event.target.value)}
-                        className={selectClassName}
-                      >
-                        {eventOptions.map((event) => (
-                          <option key={event.slug} value={event.slug} className="bg-[#0f1513]">
-                            {event.title}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => setIsEventDropdownOpen((current) => !current)}
+                          className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-white outline-none transition hover:border-white/15 hover:bg-white/7"
+                        >
+                          <span className="truncate">{selectedEvent?.title || 'Select an event'}</span>
+                          <svg
+                            className={`h-5 w-5 shrink-0 text-[#f8d35c] transition-transform ${isEventDropdownOpen ? 'rotate-180' : ''}`}
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            aria-hidden="true"
+                          >
+                            <path d="m6 9 6 6 6-6" />
+                          </svg>
+                        </button>
+
+                        {isEventDropdownOpen ? (
+                          <div className="absolute z-20 mt-2 max-h-72 w-full overflow-y-auto rounded-2xl border border-white/10 bg-[#101815] p-2 shadow-2xl shadow-black/30">
+                            {eventOptions.map((event) => {
+                              const isSelected = event.slug === form.linkedEventSlug
+
+                              return (
+                                <button
+                                  key={event.slug}
+                                  type="button"
+                                  onClick={() => handleLinkedEventChange(event.slug)}
+                                  className={`w-full rounded-xl px-4 py-3 text-left transition ${
+                                    isSelected
+                                      ? 'bg-[#f8d35c]/12 text-[#f8d35c]'
+                                      : 'text-white hover:bg-white/5'
+                                  }`}
+                                >
+                                  <span className="block text-sm font-medium">{event.title}</span>
+                                  <span className="mt-1 block text-xs text-[#91a39a]">{event.source}</span>
+                                </button>
+                              )
+                            })}
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
 
                     {status === 'loading' ? (
                       <p className="text-sm text-[#b7c6bf]">Loading static and admin event options...</p>

@@ -37,7 +37,6 @@ function validatePopupPayload(payload) {
   if (!payload.description) missingFields.push('popup description')
   if (!payload.buttonText) missingFields.push('button label')
   if (!payload.linkedEventSlug) missingFields.push('linked event')
-  if (!payload.imageUrl && !payload.imageFileData) missingFields.push('popup image')
 
   if (missingFields.length > 0) {
     throw httpError(400, `Please provide: ${missingFields.join(', ')}`)
