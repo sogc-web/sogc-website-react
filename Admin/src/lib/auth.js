@@ -1,5 +1,5 @@
 import { ADMIN_API_BASE_URL } from './env'
-import { adminRequest } from './adminRequest'
+import { adminRequest, clearAdminCsrfToken, primeAdminCsrfToken } from './adminRequest'
 
 const ADMIN_SESSION_KEY = 'sogc_admin_session'
 const SUPERADMIN_EMAIL = 'societyofglobalcycle@gmail.com'
@@ -49,6 +49,7 @@ export function setAdminSession(session) {
 export function clearAdminSession() {
   if (typeof window === 'undefined') return
   window.localStorage.removeItem(ADMIN_SESSION_KEY)
+  clearAdminCsrfToken()
 }
 
 export async function fetchAdminMe() {
@@ -63,6 +64,7 @@ export async function fetchAdminMe() {
   }
 
   setAdminSession(session)
+  primeAdminCsrfToken().catch(() => {})
   return session
 }
 
