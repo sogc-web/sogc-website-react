@@ -31,6 +31,7 @@ const env = {
   googleClientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
   googleCallbackUrl: process.env.GOOGLE_CALLBACK_URL || '',
   sessionSecret: process.env.SESSION_SECRET || '',
+  adminInviteTtlHours: Number(process.env.ADMIN_INVITE_TTL_HOURS || 72),
 }
 
 module.exports = { env }
