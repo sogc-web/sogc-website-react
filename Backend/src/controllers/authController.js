@@ -72,6 +72,10 @@ async function handleGoogleCallback(request, response) {
       throw httpError(401, 'Google account email is unavailable.')
     }
 
+    if (googleProfile.email_verified !== true) {
+      throw httpError(403, 'Only Google accounts with a verified email address can access admin sign-in.')
+    }
+
     let admin
 
     if (state.inviteToken) {
