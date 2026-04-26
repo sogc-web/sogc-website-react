@@ -81,6 +81,18 @@ const eventSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    createdByEmail: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      default: '',
+    },
+    updatedByEmail: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      default: '',
+    },
     sortOrder: {
       type: Number,
       default: 0,

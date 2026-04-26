@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const { Popup } = require('../../models/Popup')
+const { recordAdminActivity } = require('../../services/adminActivityLogger')
 const { notifyAdminActivity } = require('../../services/adminActivityMailer')
 const { deletePopupImage, uploadPopupImage } = require('../../services/eventImageUpload')
 const { httpError } = require('../../utils/httpError')
@@ -75,6 +76,8 @@ async function createAdminPopup(request, response) {
 
   const payload = normalizePayload(request.body)
   validatePopupPayload(payload)
+  payload.createdByEmail = request.admin.email
+  payload.updatedByEmail = request.admin.email
 
   if (payload.imageFileData) {
     const uploadedImage = await uploadPopupImage(payload.imageFileData, payload.linkedEventSlug || 'popup')
@@ -91,9 +94,22 @@ async function createAdminPopup(request, response) {
     await ensureSingleActivePopup(item._id)
   }
 
+  await recordAdminActivity({
+    entityType: 'Popup',
+    entityId: item._id,
+    entityTitle: item.title,
+    operation: 'created',
+    actorEmail: request.admin.email,
+    actorRole: request.admin.role,
+    metadata: {
+      linkedEventSlug: item.linkedEventSlug,
+      isActive: item.isActive,
+    },
+  })
   await notifyAdminActivity({
     entityType: 'Popup',
     operation: 'created',
+    actorEmail: request.admin.email,
     details: {
       Title: item.title,
       LinkedEvent: item.linkedEventTitle || item.linkedEventSlug,
@@ -119,6 +135,7 @@ async function updateAdminPopup(request, response) {
 
   const previousImagePublicId = item.imagePublicId
   const previousImageUrl = item.imageUrl
+  payload.updatedByEmail = request.admin.email
 
   if (payload.imageFileData) {
     const uploadedImage = await uploadPopupImage(payload.imageFileData, payload.linkedEventSlug || 'popup')
@@ -141,9 +158,22 @@ async function updateAdminPopup(request, response) {
     await ensureSingleActivePopup(item._id)
   }
 
+  await recordAdminActivity({
+    entityType: 'Popup',
+    entityId: item._id,
+    entityTitle: item.title,
+    operation: 'updated',
+    actorEmail: request.admin.email,
+    actorRole: request.admin.role,
+    metadata: {
+      linkedEventSlug: item.linkedEventSlug,
+      isActive: item.isActive,
+    },
+  })
   await notifyAdminActivity({
     entityType: 'Popup',
     operation: 'updated',
+    actorEmail: request.admin.email,
     details: {
       Title: item.title,
       LinkedEvent: item.linkedEventTitle || item.linkedEventSlug,
@@ -165,12 +195,26 @@ async function activateAdminPopup(request, response) {
   }
 
   item.isActive = true
+  item.updatedByEmail = request.admin.email
   await item.save()
   await ensureSingleActivePopup(item._id)
 
+  await recordAdminActivity({
+    entityType: 'Popup',
+    entityId: item._id,
+    entityTitle: item.title,
+    operation: 'activated',
+    actorEmail: request.admin.email,
+    actorRole: request.admin.role,
+    metadata: {
+      linkedEventSlug: item.linkedEventSlug,
+      isActive: item.isActive,
+    },
+  })
   await notifyAdminActivity({
     entityType: 'Popup',
     operation: 'activated',
+    actorEmail: request.admin.email,
     details: {
       Title: item.title,
       LinkedEvent: item.linkedEventTitle || item.linkedEventSlug,
@@ -192,9 +236,22 @@ async function deleteAdminPopup(request, response) {
   }
 
   await deletePopupImage(item.imagePublicId, item.imageUrl)
+  await recordAdminActivity({
+    entityType: 'Popup',
+    entityId: item._id,
+    entityTitle: item.title,
+    operation: 'deleted',
+    actorEmail: request.admin.email,
+    actorRole: request.admin.role,
+    metadata: {
+      linkedEventSlug: item.linkedEventSlug,
+      isActive: item.isActive,
+    },
+  })
   await notifyAdminActivity({
     entityType: 'Popup',
     operation: 'deleted',
+    actorEmail: request.admin.email,
     details: {
       Title: item.title,
       LinkedEvent: item.linkedEventTitle || item.linkedEventSlug,

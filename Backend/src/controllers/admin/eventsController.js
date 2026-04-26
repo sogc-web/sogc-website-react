@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const { Event } = require('../../models/Event')
+const { recordAdminActivity } = require('../../services/adminActivityLogger')
 const { deleteEventImage, uploadEventImage } = require('../../services/eventImageUpload')
 const { notifyAdminActivity } = require('../../services/adminActivityMailer')
 const { httpError } = require('../../utils/httpError')
@@ -115,6 +116,8 @@ async function createAdminEvent(request, response) {
   const payload = normalizePayload(request.body)
   validateRequiredFields(payload)
   payload.slug = await buildUniqueSlug(payload.title)
+  payload.createdByEmail = request.admin.email
+  payload.updatedByEmail = request.admin.email
 
   if (payload.imageFileData) {
     const uploadedImage = await uploadEventImage(payload.imageFileData, payload.slug)
@@ -126,9 +129,22 @@ async function createAdminEvent(request, response) {
   delete payload.removeImage
 
   const item = await Event.create(payload)
+  await recordAdminActivity({
+    entityType: 'Event',
+    entityId: item._id,
+    entityTitle: item.title,
+    operation: 'created',
+    actorEmail: request.admin.email,
+    actorRole: request.admin.role,
+    metadata: {
+      slug: item.slug,
+      isPublished: item.isPublished,
+    },
+  })
   await notifyAdminActivity({
     entityType: 'Event',
     operation: 'created',
+    actorEmail: request.admin.email,
     details: {
       Title: item.title,
       Slug: item.slug,
@@ -153,6 +169,7 @@ async function updateAdminEvent(request, response) {
   }
 
   payload.slug = await buildUniqueSlug(payload.title, item._id)
+  payload.updatedByEmail = request.admin.email
 
   const previousImagePublicId = item.imagePublicId
   const previousImageUrl = item.imageUrl
@@ -174,9 +191,22 @@ async function updateAdminEvent(request, response) {
   Object.assign(item, payload)
   await item.save()
 
+  await recordAdminActivity({
+    entityType: 'Event',
+    entityId: item._id,
+    entityTitle: item.title,
+    operation: 'updated',
+    actorEmail: request.admin.email,
+    actorRole: request.admin.role,
+    metadata: {
+      slug: item.slug,
+      isPublished: item.isPublished,
+    },
+  })
   await notifyAdminActivity({
     entityType: 'Event',
     operation: 'updated',
+    actorEmail: request.admin.email,
     details: {
       Title: item.title,
       Slug: item.slug,
@@ -199,9 +229,22 @@ async function deleteAdminEvent(request, response) {
   }
 
   await deleteEventImage(item.imagePublicId, item.imageUrl)
+  await recordAdminActivity({
+    entityType: 'Event',
+    entityId: item._id,
+    entityTitle: item.title,
+    operation: 'deleted',
+    actorEmail: request.admin.email,
+    actorRole: request.admin.role,
+    metadata: {
+      slug: item.slug,
+      isPublished: item.isPublished,
+    },
+  })
   await notifyAdminActivity({
     entityType: 'Event',
     operation: 'deleted',
+    actorEmail: request.admin.email,
     details: {
       Title: item.title,
       Slug: item.slug,

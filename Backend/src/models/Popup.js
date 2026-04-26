@@ -46,6 +46,18 @@ const popupSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    createdByEmail: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      default: '',
+    },
+    updatedByEmail: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      default: '',
+    },
     openOnScroll: {
       type: Boolean,
       default: true,

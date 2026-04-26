@@ -38,11 +38,12 @@ function buildRows(details) {
     .join('')
 }
 
-function buildAdminActivityTemplate({ subject, entityType, operation, details }) {
+function buildAdminActivityTemplate({ subject, entityType, operation, details, actorEmail }) {
   const logoUrl = getLogoUrl()
   const rows = buildRows({
     Type: entityType,
     Operation: operation,
+    PerformedBy: actorEmail || '',
     ...details,
     Timestamp: new Date().toISOString(),
   })
@@ -72,6 +73,7 @@ function buildAdminActivityTemplate({ subject, entityType, operation, details })
     '',
     `Type: ${entityType}`,
     `Operation: ${operation}`,
+    ...(actorEmail ? [`PerformedBy: ${actorEmail}`] : []),
     ...Object.entries(details)
       .filter(([, value]) => value !== undefined && value !== null && value !== '')
       .map(([label, value]) => `${label}: ${Array.isArray(value) ? value.join(', ') : value}`),
@@ -81,13 +83,13 @@ function buildAdminActivityTemplate({ subject, entityType, operation, details })
   return { html, text }
 }
 
-async function notifyAdminActivity({ entityType, operation, details }) {
+async function notifyAdminActivity({ entityType, operation, details, actorEmail }) {
   if (!env.sendToMail) {
     return { delivered: false, skipped: true, reason: 'missing-send-to-mail' }
   }
 
   const subject = `${entityType} ${operation}`
-  const { html, text } = buildAdminActivityTemplate({ subject, entityType, operation, details })
+  const { html, text } = buildAdminActivityTemplate({ subject, entityType, operation, details, actorEmail })
 
   try {
     return await sendEmail({
