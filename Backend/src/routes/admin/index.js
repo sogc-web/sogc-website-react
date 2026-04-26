@@ -2,6 +2,7 @@ const express = require('express')
 const { getAdminBootstrap } = require('../../controllers/admin/metaController')
 const {
   disableAdmin,
+  enableAdmin,
   getInviteStatus,
   inviteAdmin,
   listAdmins,
@@ -37,6 +38,7 @@ router.get('/admins', requireSuperAdmin, asyncHandler(listAdmins))
 router.post('/admins/invite', requireSuperAdmin, asyncHandler(inviteAdmin))
 router.post('/admins/:id/resend-invite', requireSuperAdmin, asyncHandler(resendInvite))
 router.patch('/admins/:id/disable', requireSuperAdmin, asyncHandler(disableAdmin))
+router.patch('/admins/:id/enable', requireSuperAdmin, asyncHandler(enableAdmin))
 router.delete('/admins/:id', requireSuperAdmin, asyncHandler(removeAdmin))
 router.get('/events', requireAdminAuth, asyncHandler(listAdminEvents))
 router.get('/events/:id', requireAdminAuth, asyncHandler(getAdminEvent))

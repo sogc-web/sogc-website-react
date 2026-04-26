@@ -156,6 +156,26 @@ async function disableAdmin(request, response) {
   })
 }
 
+async function enableAdmin(request, response) {
+  const admin = await Admin.findById(request.params.id)
+
+  if (!admin) {
+    throw httpError(404, 'Admin not found.')
+  }
+
+  if (admin.role === 'superadmin') {
+    throw httpError(400, 'Superadmin does not need to be enabled through this route.')
+  }
+
+  admin.status = 'active'
+  await admin.save()
+
+  response.json({
+    item: toAdminListItem(admin),
+    message: 'Admin enabled.',
+  })
+}
+
 async function removeAdmin(request, response) {
   const admin = await Admin.findById(request.params.id)
 
@@ -205,6 +225,7 @@ async function getInviteStatus(request, response) {
 
 module.exports = {
   disableAdmin,
+  enableAdmin,
   getInviteStatus,
   inviteAdmin,
   listAdmins,
