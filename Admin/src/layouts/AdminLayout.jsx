@@ -1,17 +1,47 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import Topbar from '../components/Topbar'
-import { getAdminRole, isAdminAuthenticated } from '../lib/auth'
+import { fetchAdminMe, getAdminRole, isAdminAuthenticated } from '../lib/auth'
 
 function AdminLayout() {
   const location = useLocation()
-  const isAuthenticated = isAdminAuthenticated()
+  const [authStatus, setAuthStatus] = useState(isAdminAuthenticated() ? 'loading' : 'loading')
   const role = getAdminRole()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  if (!isAuthenticated) {
+  useEffect(() => {
+    let cancelled = false
+
+    fetchAdminMe()
+      .then(() => {
+        if (!cancelled) {
+          setAuthStatus('authenticated')
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setAuthStatus('unauthenticated')
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  if (authStatus === 'loading') {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-4 py-8 text-[#dfe8e3]">
+        <div className="rounded-[28px] border border-white/10 bg-[#101815]/85 px-8 py-6 text-sm">
+          Checking admin session…
+        </div>
+      </div>
+    )
+  }
+
+  if (authStatus !== 'authenticated') {
     return <Navigate to="/login" replace state={{ from: location }} />
   }
 

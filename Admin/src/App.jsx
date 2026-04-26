@@ -29,6 +29,7 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/invite/accept" element={<LoginPage />} />
       <Route path="/" element={<AdminLayout />}>
         <Route index element={<DashboardPage />} />
         <Route

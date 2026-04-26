@@ -1,3 +1,6 @@
+import { ADMIN_API_BASE_URL } from './env'
+import { adminRequest } from './adminRequest'
+
 const ADMIN_SESSION_KEY = 'sogc_admin_session'
 const SUPERADMIN_EMAIL = 'societyofglobalcycle@gmail.com'
 
@@ -46,4 +49,48 @@ export function setAdminSession(session) {
 export function clearAdminSession() {
   if (typeof window === 'undefined') return
   window.localStorage.removeItem(ADMIN_SESSION_KEY)
+}
+
+export async function fetchAdminMe() {
+  const payload = await adminRequest('/api/admin/me')
+  const session = {
+    isAuthenticated: true,
+    id: payload.item.id,
+    email: payload.item.email,
+    name: payload.item.name || 'SOGC Admin',
+    role: payload.item.role,
+    status: payload.item.status,
+  }
+
+  setAdminSession(session)
+  return session
+}
+
+export function beginGoogleSignIn({ inviteToken = '', redirectTo = '/' } = {}) {
+  const query = new URLSearchParams()
+
+  if (inviteToken) {
+    query.set('inviteToken', inviteToken)
+  }
+
+  if (redirectTo) {
+    query.set('redirectTo', redirectTo)
+  }
+
+  window.location.href = `${ADMIN_API_BASE_URL}/auth/google?${query.toString()}`
+}
+
+export async function logoutAdminSession() {
+  try {
+    await adminRequest('/auth/logout', {
+      method: 'POST',
+    })
+  } finally {
+    clearAdminSession()
+  }
+}
+
+export async function fetchInviteStatus(token) {
+  const payload = await adminRequest(`/api/admin/invites/${encodeURIComponent(token)}`)
+  return payload.item
 }
