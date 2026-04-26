@@ -1,4 +1,4 @@
-import { getAdminSession } from '../lib/auth'
+import { getAdminRole, getAdminSession } from '../lib/auth'
 
 function MenuIcon() {
   return (
@@ -19,6 +19,7 @@ function MenuIcon() {
 
 function Topbar({ onToggleSidebar }) {
   const session = getAdminSession()
+  const role = getAdminRole()
 
   return (
     <header className="rounded-[18px] border border-white/10 bg-[#101815]/65 px-3 py-2.5 backdrop-blur md:rounded-[24px] md:px-6 md:py-4">
@@ -46,6 +47,9 @@ function Topbar({ onToggleSidebar }) {
           {session?.email ? (
             <p className="max-w-[320px] truncate text-sm text-[#9db0a7]">{session.email}</p>
           ) : null}
+          <div className="rounded-2xl border border-[#f8d35c]/20 bg-[#f8d35c]/10 px-4 py-2 text-xs uppercase tracking-[0.2em] text-[#f8d35c]">
+            {role}
+          </div>
           <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-[#b9c8c1]">
             Admin routes protected
           </div>

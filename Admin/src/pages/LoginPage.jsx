@@ -25,6 +25,7 @@ function LoginPage() {
       isAuthenticated: true,
       email,
       name: 'SOGC Admin',
+      role: email.trim().toLowerCase() === 'societyofglobalcycle@gmail.com' ? 'superadmin' : 'admin',
     })
     navigate(redirectPath, { replace: true })
   }

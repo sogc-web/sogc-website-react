@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { clearAdminSession, getAdminSession } from '../lib/auth'
+import { clearAdminSession, getAdminRole, getAdminSession } from '../lib/auth'
 import { navigationItems } from '../lib/navigation'
 
 function Icon({ name, className = 'h-5 w-5' }) {
@@ -73,7 +73,11 @@ function Icon({ name, className = 'h-5 w-5' }) {
 function Sidebar({ collapsed = false, mobileOpen = false, onClose, onToggleCollapse }) {
   const navigate = useNavigate()
   const session = getAdminSession()
+  const role = getAdminRole()
   const desktopCollapsed = collapsed
+  const visibleNavigationItems = navigationItems.filter(
+    (item) => !item.requiresRole || item.requiresRole === role,
+  )
 
   return (
     <>
@@ -122,7 +126,7 @@ function Sidebar({ collapsed = false, mobileOpen = false, onClose, onToggleColla
         </div>
 
         <nav className={`space-y-2 ${desktopCollapsed ? 'md:mt-4' : 'md:mt-2'}`}>
-          {navigationItems.map((item) => (
+          {visibleNavigationItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}

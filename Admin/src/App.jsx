@@ -11,6 +11,19 @@ import GalleryEditorPage from './pages/GalleryEditorPage'
 import PopupPage from './pages/PopupPage'
 import PopupsPage from './pages/PopupsPage'
 import PopupShowPage from './pages/PopupShowPage'
+import { getAdminRole, isAdminAuthenticated } from './lib/auth'
+
+function SuperAdminOnly({ children }) {
+  if (!isAdminAuthenticated()) {
+    return <Navigate to="/login" replace />
+  }
+
+  if (getAdminRole() !== 'superadmin') {
+    return <Navigate to="/" replace />
+  }
+
+  return children
+}
 
 function App() {
   return (
@@ -18,7 +31,14 @@ function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/" element={<AdminLayout />}>
         <Route index element={<DashboardPage />} />
-        <Route path="admins" element={<AdminsPage />} />
+        <Route
+          path="admins"
+          element={
+            <SuperAdminOnly>
+              <AdminsPage />
+            </SuperAdminOnly>
+          }
+        />
         <Route path="events" element={<EventsPage />} />
         <Route path="events/new" element={<EventEditorPage mode="create" />} />
         <Route path="events/:eventId" element={<EventShowPage />} />

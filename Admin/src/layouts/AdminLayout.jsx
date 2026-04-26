@@ -2,16 +2,21 @@ import { useState } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import Sidebar from '../components/Sidebar'
 import Topbar from '../components/Topbar'
-import { isAdminAuthenticated } from '../lib/auth'
+import { getAdminRole, isAdminAuthenticated } from '../lib/auth'
 
 function AdminLayout() {
   const location = useLocation()
   const isAuthenticated = isAdminAuthenticated()
+  const role = getAdminRole()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location }} />
+  }
+
+  if (location.pathname.startsWith('/admins') && role !== 'superadmin') {
+    return <Navigate to="/" replace />
   }
 
   return (
