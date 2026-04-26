@@ -1,13 +1,16 @@
 const { Admin } = require('../models/Admin')
+const { readAdminSessionToken } = require('../services/adminSession')
 const { httpError } = require('../utils/httpError')
+const { decodeOAuthStateToken } = require('../services/adminSession')
 
 function hasAllowedAdminRole(admin) {
   return Boolean(admin && admin.status === 'active' && ['superadmin', 'admin'].includes(admin.role))
 }
 
 async function hydrateAdminSession(request, _response, next) {
-  // TODO: Populate request.session.adminId after Google OAuth is wired.
-  const adminId = request.session?.adminId
+  const sessionToken = readAdminSessionToken(request)
+  const session = decodeOAuthStateToken(sessionToken)
+  const adminId = session?.adminId
 
   if (!adminId) {
     return next()
