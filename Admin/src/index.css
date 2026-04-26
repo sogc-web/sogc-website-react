@@ -58,3 +58,42 @@ select option {
   background: #101815;
   color: #ecf3ee;
 }
+
+.admin-loader {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(165deg, #fff8df 0%, #f8d35c 38%, #c9931e 78%, #3b2502 100%);
+  border-radius: 50%;
+  position: relative;
+}
+
+.admin-loader::before {
+  position: absolute;
+  content: "";
+  inset: 0;
+  border-radius: 100%;
+  border-bottom: 0 solid rgba(255, 243, 200, 0.06);
+  box-shadow:
+    0 -10px 20px 20px rgba(255, 235, 171, 0.25) inset,
+    0 -5px 15px 10px rgba(255, 220, 120, 0.32) inset,
+    0 -2px 5px rgba(255, 246, 212, 0.7) inset,
+    0 -3px 2px rgba(255, 249, 228, 0.78) inset,
+    0 2px 0px rgba(255, 246, 212, 0.9),
+    0 2px 3px rgba(255, 238, 179, 0.85),
+    0 5px 5px rgba(248, 211, 92, 0.52),
+    0 10px 15px rgba(248, 211, 92, 0.34),
+    0 10px 20px 20px rgba(248, 211, 92, 0.18);
+  filter: blur(3px);
+  animation: admin-loader-rotate 2s linear infinite;
+}
+
+.admin-loader--compact {
+  width: 72px;
+  height: 72px;
+}
+
+@keyframes admin-loader-rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
