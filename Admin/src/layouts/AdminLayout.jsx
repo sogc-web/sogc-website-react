@@ -38,8 +38,8 @@ function AdminLayout() {
 
   if (authStatus === 'loading') {
     return (
-      <div className="flex min-h-screen items-center justify-center px-4 py-8 text-[#dfe8e3]">
-        <div className="flex flex-col items-center gap-5 rounded-[32px] border border-[#f8d35c]/20 bg-[#101815]/92 px-8 py-8 text-sm shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+      <div className="flex min-h-screen items-center justify-center bg-[#050707]/40 px-4 py-8 text-[#dfe8e3] backdrop-blur-sm">
+        <div className="flex flex-col items-center gap-5 text-sm">
           <div className="admin-loader admin-loader--compact" aria-hidden="true" />
           <div className="uppercase tracking-[0.14em] text-[#f8d35c]">Checking admin session...</div>
         </div>
