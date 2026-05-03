@@ -12,7 +12,7 @@ A premium, modern web presence for the Society of Global Cycle NGO in Ujjain. Th
 
 ## Tech Stack
 
-Frontend
+Frontend 
 - React
 - Vite
 - Custom CSS (premium design system)
