@@ -95,7 +95,7 @@ function DashboardPage() {
                 <li>{events.filter((event) => event.isPublished).length} events are visible on the public website</li>
                 <li>{popups.length} popup records created in admin</li>
                 <li>{popups.some((popup) => popup.isActive) ? 'An admin popup is live on the website' : 'Static volunteer popup is currently the fallback'}</li>
-                <li>Gallery management UI exists, but gallery data is still static for now</li>
+                <li>Gallery collections and media are managed from the gallery workspace</li>
               </ul>
             ) : null}
           </div>
@@ -151,7 +151,7 @@ function DashboardPage() {
               <li>Keep draft events in admin until the event details are ready for visitors</li>
               <li>Create multiple popups in admin, but keep only one marked live at a time</li>
               <li>When no popup is live, the website falls back to the default volunteer popup</li>
-              <li>Gallery cards are still static right now, so dashboard gallery numbers remain placeholder-only</li>
+              <li>Use the gallery workspace to organize collections, uploads, and presentation details</li>
             </ul>
           </div>
         </div>

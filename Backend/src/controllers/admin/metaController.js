@@ -5,12 +5,12 @@ function getAdminBootstrap(_request, response) {
   const cloudinary = configureCloudinary()
 
   response.json({
-    message: 'Admin backend auth foundation ready.',
+    message: 'Admin workspace is available.',
     features: {
-      auth: 'foundation-ready',
-      admins: 'invite-foundation-ready',
+      auth: 'ready',
+      admins: 'available',
       events: 'protected',
-      gallery: 'pending',
+      gallery: 'available',
       popup: 'protected',
       cloudinary: cloudinary.configured ? 'configured' : 'missing-config',
     },

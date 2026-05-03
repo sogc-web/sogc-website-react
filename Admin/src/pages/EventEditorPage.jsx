@@ -371,7 +371,7 @@ function EventEditorPage({ mode }) {
                       rows="4"
                       value={form.bookletScheduleNote}
                       onChange={(event) => updateField('bookletScheduleNote', event.target.value)}
-                      placeholder="Used inside the event info card and coming-soon modal."
+                      placeholder="Used inside the event info card and related website content."
                       className={textareaClassName}
                     />
                     {fieldErrors.bookletScheduleNote ? (
