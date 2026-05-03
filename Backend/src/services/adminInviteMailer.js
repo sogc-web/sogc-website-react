@@ -1,15 +1,29 @@
 const { env } = require('../config/env')
 const { sendEmail } = require('./mailer')
 
+function formatInviteExpiry(expiresAt) {
+  return new Intl.DateTimeFormat('en-IN', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: 'Asia/Calcutta',
+    timeZoneName: 'short',
+  }).format(expiresAt)
+}
+
 function buildInviteEmail({ inviteeEmail, invitedByName, inviteUrl, expiresAt }) {
   const subject = 'SOGC Admin invitation'
+  const formattedExpiry = formatInviteExpiry(expiresAt)
   const text = [
     'You have been invited to access the SOGC admin panel.',
     '',
     `Email: ${inviteeEmail}`,
     `Invited by: ${invitedByName || 'SOGC Superadmin'}`,
     `Accept invite: ${inviteUrl}`,
-    `Expires at: ${expiresAt.toISOString()}`,
+    `Expires at: ${formattedExpiry}`,
     '',
     'You must sign in with Google using the same invited email address.',
   ].join('\n')
@@ -28,7 +42,7 @@ function buildInviteEmail({ inviteeEmail, invitedByName, inviteUrl, expiresAt })
           </p>
           <p style="margin:0 0 24px;font-size:16px;line-height:1.7;color:#d6d2c8;">
             Sign in with Google using <strong>${inviteeEmail}</strong>. The invite link below is valid until
-            <strong>${expiresAt.toISOString()}</strong>.
+            <strong>${formattedExpiry}</strong>.
           </p>
           <a href="${inviteUrl}" style="display:inline-block;padding:14px 22px;border-radius:999px;background:#f8d35c;color:#151515;font-weight:700;text-decoration:none;">Accept invite</a>
           <p style="margin:24px 0 0;font-size:14px;line-height:1.7;color:#a9a59b;">
