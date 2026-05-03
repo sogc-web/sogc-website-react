@@ -78,6 +78,9 @@ const popupSchema = new mongoose.Schema(
   },
 )
 
+popupSchema.index({ isActive: 1, updatedAt: -1 })
+popupSchema.index({ createdAt: -1 })
+
 popupSchema.set('toJSON', {
   transform: (_doc, popup) => {
     popup.id = popup._id.toString()

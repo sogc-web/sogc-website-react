@@ -55,6 +55,9 @@ const galleryCollectionSchema = new mongoose.Schema(
   },
 )
 
+galleryCollectionSchema.index({ isPublished: 1, sortOrder: 1, createdAt: -1 })
+galleryCollectionSchema.index({ createdAt: -1 })
+
 galleryCollectionSchema.set('toJSON', {
   transform: (_doc, collection) => {
     collection.id = collection._id.toString()

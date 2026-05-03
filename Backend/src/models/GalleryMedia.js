@@ -92,6 +92,9 @@ const galleryMediaSchema = new mongoose.Schema(
   },
 )
 
+galleryMediaSchema.index({ collectionId: 1, sortOrder: 1, createdAt: 1 })
+galleryMediaSchema.index({ collectionId: 1, isPublished: 1, sortOrder: 1, createdAt: 1 })
+
 galleryMediaSchema.set('toJSON', {
   transform: (_doc, media) => {
     media.id = media._id.toString()

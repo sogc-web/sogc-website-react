@@ -4,6 +4,7 @@ const { recordAdminActivity } = require('../../services/adminActivityLogger')
 const { notifyAdminActivity } = require('../../services/adminActivityMailer')
 const { deletePopupImage, uploadPopupImage } = require('../../services/eventImageUpload')
 const { httpError } = require('../../utils/httpError')
+const { runDeferred } = require('../../utils/runDeferred')
 
 function ensureDatabaseConnection() {
   if (mongoose.connection.readyState !== 1) {
@@ -52,6 +53,10 @@ async function ensureSingleActivePopup(activePopupId) {
   )
 }
 
+function queueAdminActivity(activity, label) {
+  runDeferred(() => recordAdminActivity(activity), label)
+}
+
 async function listAdminPopups(_request, response) {
   ensureDatabaseConnection()
 
@@ -94,7 +99,7 @@ async function createAdminPopup(request, response) {
     await ensureSingleActivePopup(item._id)
   }
 
-  await recordAdminActivity({
+  queueAdminActivity({
     entityType: 'Popup',
     entityId: item._id,
     entityTitle: item.title,
@@ -105,18 +110,22 @@ async function createAdminPopup(request, response) {
       linkedEventSlug: item.linkedEventSlug,
       isActive: item.isActive,
     },
-  })
-  await notifyAdminActivity({
-    entityType: 'Popup',
-    operation: 'created',
-    actorEmail: request.admin.email,
-    details: {
-      Title: item.title,
-      LinkedEvent: item.linkedEventTitle || item.linkedEventSlug,
-      Live: item.isActive ? 'Yes' : 'No',
-      ScrollTrigger: item.openOnScroll ? 'Enabled' : 'Disabled',
-    },
-  })
+  }, 'popup-created-activity')
+  runDeferred(
+    () =>
+      notifyAdminActivity({
+        entityType: 'Popup',
+        operation: 'created',
+        actorEmail: request.admin.email,
+        details: {
+          Title: item.title,
+          LinkedEvent: item.linkedEventTitle || item.linkedEventSlug,
+          Live: item.isActive ? 'Yes' : 'No',
+          ScrollTrigger: item.openOnScroll ? 'Enabled' : 'Disabled',
+        },
+      }),
+    'popup-created-notify',
+  )
 
   response.status(201).json({ item })
 }
@@ -158,7 +167,7 @@ async function updateAdminPopup(request, response) {
     await ensureSingleActivePopup(item._id)
   }
 
-  await recordAdminActivity({
+  queueAdminActivity({
     entityType: 'Popup',
     entityId: item._id,
     entityTitle: item.title,
@@ -169,18 +178,22 @@ async function updateAdminPopup(request, response) {
       linkedEventSlug: item.linkedEventSlug,
       isActive: item.isActive,
     },
-  })
-  await notifyAdminActivity({
-    entityType: 'Popup',
-    operation: 'updated',
-    actorEmail: request.admin.email,
-    details: {
-      Title: item.title,
-      LinkedEvent: item.linkedEventTitle || item.linkedEventSlug,
-      Live: item.isActive ? 'Yes' : 'No',
-      ScrollTrigger: item.openOnScroll ? 'Enabled' : 'Disabled',
-    },
-  })
+  }, 'popup-updated-activity')
+  runDeferred(
+    () =>
+      notifyAdminActivity({
+        entityType: 'Popup',
+        operation: 'updated',
+        actorEmail: request.admin.email,
+        details: {
+          Title: item.title,
+          LinkedEvent: item.linkedEventTitle || item.linkedEventSlug,
+          Live: item.isActive ? 'Yes' : 'No',
+          ScrollTrigger: item.openOnScroll ? 'Enabled' : 'Disabled',
+        },
+      }),
+    'popup-updated-notify',
+  )
 
   response.json({ item })
 }
@@ -199,7 +212,7 @@ async function activateAdminPopup(request, response) {
   await item.save()
   await ensureSingleActivePopup(item._id)
 
-  await recordAdminActivity({
+  queueAdminActivity({
     entityType: 'Popup',
     entityId: item._id,
     entityTitle: item.title,
@@ -210,18 +223,22 @@ async function activateAdminPopup(request, response) {
       linkedEventSlug: item.linkedEventSlug,
       isActive: item.isActive,
     },
-  })
-  await notifyAdminActivity({
-    entityType: 'Popup',
-    operation: 'activated',
-    actorEmail: request.admin.email,
-    details: {
-      Title: item.title,
-      LinkedEvent: item.linkedEventTitle || item.linkedEventSlug,
-      Live: 'Yes',
-      ScrollTrigger: item.openOnScroll ? 'Enabled' : 'Disabled',
-    },
-  })
+  }, 'popup-activated-activity')
+  runDeferred(
+    () =>
+      notifyAdminActivity({
+        entityType: 'Popup',
+        operation: 'activated',
+        actorEmail: request.admin.email,
+        details: {
+          Title: item.title,
+          LinkedEvent: item.linkedEventTitle || item.linkedEventSlug,
+          Live: 'Yes',
+          ScrollTrigger: item.openOnScroll ? 'Enabled' : 'Disabled',
+        },
+      }),
+    'popup-activated-notify',
+  )
 
   response.json({ item })
 }
@@ -236,7 +253,7 @@ async function deleteAdminPopup(request, response) {
   }
 
   await deletePopupImage(item.imagePublicId, item.imageUrl)
-  await recordAdminActivity({
+  queueAdminActivity({
     entityType: 'Popup',
     entityId: item._id,
     entityTitle: item.title,
@@ -247,18 +264,22 @@ async function deleteAdminPopup(request, response) {
       linkedEventSlug: item.linkedEventSlug,
       isActive: item.isActive,
     },
-  })
-  await notifyAdminActivity({
-    entityType: 'Popup',
-    operation: 'deleted',
-    actorEmail: request.admin.email,
-    details: {
-      Title: item.title,
-      LinkedEvent: item.linkedEventTitle || item.linkedEventSlug,
-      Live: item.isActive ? 'Yes' : 'No',
-      ScrollTrigger: item.openOnScroll ? 'Enabled' : 'Disabled',
-    },
-  })
+  }, 'popup-deleted-activity')
+  runDeferred(
+    () =>
+      notifyAdminActivity({
+        entityType: 'Popup',
+        operation: 'deleted',
+        actorEmail: request.admin.email,
+        details: {
+          Title: item.title,
+          LinkedEvent: item.linkedEventTitle || item.linkedEventSlug,
+          Live: item.isActive ? 'Yes' : 'No',
+          ScrollTrigger: item.openOnScroll ? 'Enabled' : 'Disabled',
+        },
+      }),
+    'popup-deleted-notify',
+  )
 
   response.status(204).send()
 }

@@ -7,6 +7,7 @@ const { assertGalleryQuotaCapacity, getGalleryQuotaSnapshot } = require('../../s
 const { formatBytes, validateGalleryUploadCandidate } = require('../../services/galleryUploadPolicy')
 const { deleteGalleryMedia, uploadGalleryMedia } = require('../../services/galleryMediaUpload')
 const { httpError } = require('../../utils/httpError')
+const { runDeferred } = require('../../utils/runDeferred')
 const { slugify } = require('../../utils/slugify')
 
 function ensureDatabaseConnection() {
@@ -60,9 +61,11 @@ async function countMediaForCollection(collectionId) {
 }
 
 async function serializeCollection(collection) {
-  const mediaCount = await countMediaForCollection(collection._id)
-  const totalBytes = await sumMediaBytes(collection._id)
-  const media = await GalleryMedia.find({ collectionId: collection._id }).sort({ sortOrder: 1, createdAt: 1 })
+  const [mediaCount, totalBytes, media] = await Promise.all([
+    countMediaForCollection(collection._id),
+    sumMediaBytes(collection._id),
+    GalleryMedia.find({ collectionId: collection._id }).sort({ sortOrder: 1, createdAt: 1 }),
+  ])
 
   return {
     ...collection.toJSON(),
@@ -74,6 +77,42 @@ async function serializeCollection(collection) {
 
 function serializeMediaItem(item) {
   return item.toJSON()
+}
+
+function queueAdminActivity(activity, label) {
+  runDeferred(() => recordAdminActivity(activity), label)
+}
+
+async function serializeCollectionList(collections) {
+  if (!collections.length) {
+    return []
+  }
+
+  const collectionIds = collections.map((item) => item._id)
+  const mediaItems = await GalleryMedia.find({
+    collectionId: { $in: collectionIds },
+  }).sort({ sortOrder: 1, createdAt: 1 })
+
+  const mediaByCollectionId = new Map()
+
+  for (const mediaItem of mediaItems) {
+    const collectionId = mediaItem.collectionId.toString()
+    const bucket = mediaByCollectionId.get(collectionId) || []
+    bucket.push(mediaItem)
+    mediaByCollectionId.set(collectionId, bucket)
+  }
+
+  return collections.map((collection) => {
+    const collectionId = collection._id.toString()
+    const media = mediaByCollectionId.get(collectionId) || []
+
+    return {
+      ...collection.toJSON(),
+      mediaCount: media.length,
+      totalBytes: media.reduce((total, item) => total + Number(item.bytes || 0), 0),
+      media: media.map((item) => item.toJSON()),
+    }
+  })
 }
 
 async function sumMediaBytes(collectionId) {
@@ -89,7 +128,7 @@ async function listAdminGalleryCollections(_request, response) {
   ensureDatabaseConnection()
 
   const items = await GalleryCollection.find().sort({ createdAt: -1 })
-  const serializedItems = await Promise.all(items.map((item) => serializeCollection(item)))
+  const serializedItems = await serializeCollectionList(items)
   response.json({ items: serializedItems })
 }
 
@@ -126,7 +165,7 @@ async function createAdminGalleryCollection(request, response) {
 
   const item = await GalleryCollection.create(payload)
 
-  await recordAdminActivity({
+  queueAdminActivity({
     entityType: 'GalleryCollection',
     entityId: item._id,
     entityTitle: item.title,
@@ -137,19 +176,23 @@ async function createAdminGalleryCollection(request, response) {
       slug: item.slug,
       isPublished: item.isPublished,
     },
-  })
+  }, 'gallery-collection-created-activity')
 
-  await notifyAdminActivity({
-    entityType: 'Gallery collection',
-    operation: 'created',
-    actorEmail: request.admin.email,
-    details: {
-      Title: item.title,
-      Slug: item.slug,
-      Published: item.isPublished ? 'Yes' : 'No',
-      'Media count': '0',
-    },
-  })
+  runDeferred(
+    () =>
+      notifyAdminActivity({
+        entityType: 'Gallery collection',
+        operation: 'created',
+        actorEmail: request.admin.email,
+        details: {
+          Title: item.title,
+          Slug: item.slug,
+          Published: item.isPublished ? 'Yes' : 'No',
+          'Media count': '0',
+        },
+      }),
+    'gallery-collection-created-notify',
+  )
 
   response.status(201).json({
     item: await serializeCollection(item),
@@ -185,7 +228,7 @@ async function updateAdminGalleryCollection(request, response) {
 
   const mediaCount = await countMediaForCollection(item._id)
 
-  await recordAdminActivity({
+  queueAdminActivity({
     entityType: 'GalleryCollection',
     entityId: item._id,
     entityTitle: item.title,
@@ -197,19 +240,23 @@ async function updateAdminGalleryCollection(request, response) {
       isPublished: item.isPublished,
       mediaCount,
     },
-  })
+  }, 'gallery-collection-updated-activity')
 
-  await notifyAdminActivity({
-    entityType: 'Gallery collection',
-    operation: 'updated',
-    actorEmail: request.admin.email,
-    details: {
-      Title: item.title,
-      Slug: item.slug,
-      Published: item.isPublished ? 'Yes' : 'No',
-      'Media count': String(mediaCount),
-    },
-  })
+  runDeferred(
+    () =>
+      notifyAdminActivity({
+        entityType: 'Gallery collection',
+        operation: 'updated',
+        actorEmail: request.admin.email,
+        details: {
+          Title: item.title,
+          Slug: item.slug,
+          Published: item.isPublished ? 'Yes' : 'No',
+          'Media count': String(mediaCount),
+        },
+      }),
+    'gallery-collection-updated-notify',
+  )
 
   response.json({
     item: await serializeCollection(item),
@@ -239,7 +286,7 @@ async function deleteAdminGalleryCollection(request, response) {
   await GalleryMedia.deleteMany({ collectionId: item._id })
   await item.deleteOne()
 
-  await recordAdminActivity({
+  queueAdminActivity({
     entityType: 'GalleryCollection',
     entityId: item._id,
     entityTitle: item.title,
@@ -251,19 +298,23 @@ async function deleteAdminGalleryCollection(request, response) {
       isPublished: item.isPublished,
       mediaCount,
     },
-  })
+  }, 'gallery-collection-deleted-activity')
 
-  await notifyAdminActivity({
-    entityType: 'Gallery collection',
-    operation: 'deleted',
-    actorEmail: request.admin.email,
-    details: {
-      Title: item.title,
-      Slug: item.slug,
-      Published: item.isPublished ? 'Yes' : 'No',
-      'Media count': String(mediaCount),
-    },
-  })
+  runDeferred(
+    () =>
+      notifyAdminActivity({
+        entityType: 'Gallery collection',
+        operation: 'deleted',
+        actorEmail: request.admin.email,
+        details: {
+          Title: item.title,
+          Slug: item.slug,
+          Published: item.isPublished ? 'Yes' : 'No',
+          'Media count': String(mediaCount),
+        },
+      }),
+    'gallery-collection-deleted-notify',
+  )
 
   response.status(204).send()
 }
@@ -372,20 +423,6 @@ async function createAdminGalleryMedia(request, response) {
 
       createdMediaDocs.push(mediaItem)
 
-      await recordAdminActivity({
-        entityType: 'GalleryMedia',
-        entityId: mediaItem._id,
-        entityTitle: collection.title,
-        operation: 'uploaded',
-        actorEmail: request.admin.email,
-        actorRole: request.admin.role,
-        metadata: {
-          collectionId: collection._id.toString(),
-          publicId: mediaItem.publicId,
-          bytes: mediaItem.bytes,
-          type: mediaItem.type,
-        },
-      })
     }
   } catch (error) {
     for (const mediaDoc of createdMediaDocs) {
@@ -399,17 +436,41 @@ async function createAdminGalleryMedia(request, response) {
     throw error
   }
 
-  await notifyAdminActivity({
-    entityType: 'Gallery media',
-    operation: files.length > 1 ? 'bulk uploaded' : 'uploaded',
-    actorEmail: request.admin.email,
-    details: {
-      Collection: collection.title,
-      Files: String(createdMediaDocs.length),
-      Published: collection.isPublished ? 'Yes' : 'No',
-      'Total bytes': formatBytes(createdMediaDocs.reduce((total, item) => total + Number(item.bytes || 0), 0)),
-    },
-  })
+  for (const mediaItem of createdMediaDocs) {
+    queueAdminActivity(
+      {
+        entityType: 'GalleryMedia',
+        entityId: mediaItem._id,
+        entityTitle: collection.title,
+        operation: 'uploaded',
+        actorEmail: request.admin.email,
+        actorRole: request.admin.role,
+        metadata: {
+          collectionId: collection._id.toString(),
+          publicId: mediaItem.publicId,
+          bytes: mediaItem.bytes,
+          type: mediaItem.type,
+        },
+      },
+      'gallery-media-uploaded-activity',
+    )
+  }
+
+  runDeferred(
+    () =>
+      notifyAdminActivity({
+        entityType: 'Gallery media',
+        operation: files.length > 1 ? 'bulk uploaded' : 'uploaded',
+        actorEmail: request.admin.email,
+        details: {
+          Collection: collection.title,
+          Files: String(createdMediaDocs.length),
+          Published: collection.isPublished ? 'Yes' : 'No',
+          'Total bytes': formatBytes(createdMediaDocs.reduce((total, item) => total + Number(item.bytes || 0), 0)),
+        },
+      }),
+    'gallery-media-uploaded-notify',
+  )
 
   response.status(201).json({
     items: createdMediaDocs,
@@ -447,7 +508,7 @@ async function deleteAdminGalleryMedia(request, response) {
 
   await mediaItem.deleteOne()
 
-  await recordAdminActivity({
+  queueAdminActivity({
     entityType: 'GalleryMedia',
     entityId: mediaItem._id,
     entityTitle: collection.title,
@@ -460,19 +521,23 @@ async function deleteAdminGalleryMedia(request, response) {
       bytes: mediaItem.bytes,
       type: mediaItem.type,
     },
-  })
+  }, 'gallery-media-deleted-activity')
 
-  await notifyAdminActivity({
-    entityType: 'Gallery media',
-    operation: 'deleted',
-    actorEmail: request.admin.email,
-    details: {
-      Collection: collection.title,
-      Type: mediaItem.type,
-      Bytes: String(mediaItem.bytes),
-      Published: mediaItem.isPublished ? 'Yes' : 'No',
-    },
-  })
+  runDeferred(
+    () =>
+      notifyAdminActivity({
+        entityType: 'Gallery media',
+        operation: 'deleted',
+        actorEmail: request.admin.email,
+        details: {
+          Collection: collection.title,
+          Type: mediaItem.type,
+          Bytes: String(mediaItem.bytes),
+          Published: mediaItem.isPublished ? 'Yes' : 'No',
+        },
+      }),
+    'gallery-media-deleted-notify',
+  )
 
   response.status(204).send()
 }
@@ -500,7 +565,7 @@ async function updateAdminGalleryMedia(request, response) {
   mediaItem.updatedByEmail = request.admin.email
   await mediaItem.save()
 
-  await recordAdminActivity({
+  queueAdminActivity({
     entityType: 'GalleryMedia',
     entityId: mediaItem._id,
     entityTitle: collection.title,
@@ -512,7 +577,7 @@ async function updateAdminGalleryMedia(request, response) {
       publicId: mediaItem.publicId,
       type: mediaItem.type,
     },
-  })
+  }, 'gallery-media-updated-activity')
 
   response.json({
     item: serializeMediaItem(mediaItem),
@@ -554,7 +619,7 @@ async function reorderAdminGalleryMedia(request, response) {
 
   const updatedItems = await GalleryMedia.find({ collectionId: collection._id }).sort({ sortOrder: 1, createdAt: 1 })
 
-  await recordAdminActivity({
+  queueAdminActivity({
     entityType: 'GalleryCollection',
     entityId: collection._id,
     entityTitle: collection.title,
@@ -564,7 +629,7 @@ async function reorderAdminGalleryMedia(request, response) {
     metadata: {
       mediaIds: orderedMediaIds,
     },
-  })
+  }, 'gallery-media-reordered-activity')
 
   response.json({
     items: updatedItems.map((item) => serializeMediaItem(item)),
@@ -600,7 +665,7 @@ async function updateAdminGalleryCover(request, response) {
   collection.updatedByEmail = request.admin.email
   await collection.save()
 
-  await recordAdminActivity({
+  queueAdminActivity({
     entityType: 'GalleryCollection',
     entityId: collection._id,
     entityTitle: collection.title,
@@ -610,7 +675,7 @@ async function updateAdminGalleryCover(request, response) {
     metadata: {
       coverMediaId: collection.coverMediaId ? collection.coverMediaId.toString() : '',
     },
-  })
+  }, 'gallery-cover-updated-activity')
 
   response.json({
     item: await serializeCollection(collection),

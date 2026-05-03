@@ -4,6 +4,7 @@ const { recordAdminActivity } = require('../../services/adminActivityLogger')
 const { deleteEventImage, uploadEventImage } = require('../../services/eventImageUpload')
 const { notifyAdminActivity } = require('../../services/adminActivityMailer')
 const { httpError } = require('../../utils/httpError')
+const { runDeferred } = require('../../utils/runDeferred')
 const { slugify } = require('../../utils/slugify')
 
 function ensureDatabaseConnection() {
@@ -91,6 +92,10 @@ async function buildUniqueSlug(title, excludeId = null) {
   }
 }
 
+function queueAdminActivity(activity, label) {
+  runDeferred(() => recordAdminActivity(activity), label)
+}
+
 async function listAdminEvents(_request, response) {
   ensureDatabaseConnection()
 
@@ -129,7 +134,7 @@ async function createAdminEvent(request, response) {
   delete payload.removeImage
 
   const item = await Event.create(payload)
-  await recordAdminActivity({
+  queueAdminActivity({
     entityType: 'Event',
     entityId: item._id,
     entityTitle: item.title,
@@ -140,19 +145,23 @@ async function createAdminEvent(request, response) {
       slug: item.slug,
       isPublished: item.isPublished,
     },
-  })
-  await notifyAdminActivity({
-    entityType: 'Event',
-    operation: 'created',
-    actorEmail: request.admin.email,
-    details: {
-      Title: item.title,
-      Slug: item.slug,
-      Published: item.isPublished ? 'Yes' : 'No',
-      Date: item.date,
-      Location: item.location,
-    },
-  })
+  }, 'event-created-activity')
+  runDeferred(
+    () =>
+      notifyAdminActivity({
+        entityType: 'Event',
+        operation: 'created',
+        actorEmail: request.admin.email,
+        details: {
+          Title: item.title,
+          Slug: item.slug,
+          Published: item.isPublished ? 'Yes' : 'No',
+          Date: item.date,
+          Location: item.location,
+        },
+      }),
+    'event-created-notify',
+  )
   response.status(201).json({ item })
 }
 
@@ -191,7 +200,7 @@ async function updateAdminEvent(request, response) {
   Object.assign(item, payload)
   await item.save()
 
-  await recordAdminActivity({
+  queueAdminActivity({
     entityType: 'Event',
     entityId: item._id,
     entityTitle: item.title,
@@ -202,19 +211,23 @@ async function updateAdminEvent(request, response) {
       slug: item.slug,
       isPublished: item.isPublished,
     },
-  })
-  await notifyAdminActivity({
-    entityType: 'Event',
-    operation: 'updated',
-    actorEmail: request.admin.email,
-    details: {
-      Title: item.title,
-      Slug: item.slug,
-      Published: item.isPublished ? 'Yes' : 'No',
-      Date: item.date,
-      Location: item.location,
-    },
-  })
+  }, 'event-updated-activity')
+  runDeferred(
+    () =>
+      notifyAdminActivity({
+        entityType: 'Event',
+        operation: 'updated',
+        actorEmail: request.admin.email,
+        details: {
+          Title: item.title,
+          Slug: item.slug,
+          Published: item.isPublished ? 'Yes' : 'No',
+          Date: item.date,
+          Location: item.location,
+        },
+      }),
+    'event-updated-notify',
+  )
 
   response.json({ item })
 }
@@ -229,7 +242,7 @@ async function deleteAdminEvent(request, response) {
   }
 
   await deleteEventImage(item.imagePublicId, item.imageUrl)
-  await recordAdminActivity({
+  queueAdminActivity({
     entityType: 'Event',
     entityId: item._id,
     entityTitle: item.title,
@@ -240,19 +253,23 @@ async function deleteAdminEvent(request, response) {
       slug: item.slug,
       isPublished: item.isPublished,
     },
-  })
-  await notifyAdminActivity({
-    entityType: 'Event',
-    operation: 'deleted',
-    actorEmail: request.admin.email,
-    details: {
-      Title: item.title,
-      Slug: item.slug,
-      Published: item.isPublished ? 'Yes' : 'No',
-      Date: item.date,
-      Location: item.location,
-    },
-  })
+  }, 'event-deleted-activity')
+  runDeferred(
+    () =>
+      notifyAdminActivity({
+        entityType: 'Event',
+        operation: 'deleted',
+        actorEmail: request.admin.email,
+        details: {
+          Title: item.title,
+          Slug: item.slug,
+          Published: item.isPublished ? 'Yes' : 'No',
+          Date: item.date,
+          Location: item.location,
+        },
+      }),
+    'event-deleted-notify',
+  )
 
   response.status(204).send()
 }

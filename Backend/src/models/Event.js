@@ -104,6 +104,9 @@ const eventSchema = new mongoose.Schema(
   },
 )
 
+eventSchema.index({ isPublished: 1, createdAt: -1 })
+eventSchema.index({ createdAt: -1 })
+
 eventSchema.set('toJSON', {
   transform: (_doc, event) => {
     event.id = event._id.toString()

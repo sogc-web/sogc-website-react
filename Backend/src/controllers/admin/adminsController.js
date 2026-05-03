@@ -3,6 +3,7 @@ const { env } = require('../../config/env')
 const { Admin } = require('../../models/Admin')
 const { sendAdminInviteEmail } = require('../../services/adminInviteMailer')
 const { httpError } = require('../../utils/httpError')
+const { runDeferred } = require('../../utils/runDeferred')
 
 function normalizeEmail(value = '') {
   return value.trim().toLowerCase()
@@ -32,6 +33,35 @@ function toAdminListItem(admin) {
     lastLoginAt: admin.lastLoginAt,
     createdAt: admin.createdAt,
     updatedAt: admin.updatedAt,
+  }
+}
+
+async function sendInviteWithFallback({ admin, inviter }) {
+  const inviteUrl = buildInviteUrl(admin.inviteToken)
+
+  runDeferred(
+    async () => {
+      try {
+        await sendAdminInviteEmail({
+          inviteeEmail: admin.email,
+          invitedByName: inviter.name || inviter.email,
+          inviteUrl,
+          expiresAt: admin.inviteTokenExpiresAt,
+        })
+      } catch (error) {
+        console.error('[admin-invite] Failed to send invite email:', error)
+      }
+    },
+    'admin-invite-email',
+  )
+
+  return {
+    emailDelivery: {
+      delivered: false,
+      pending: true,
+      error: '',
+    },
+    inviteUrl,
   }
 }
 
@@ -82,16 +112,19 @@ async function inviteAdmin(request, response) {
     invitedBy: request.admin._id,
   })
 
-  await sendAdminInviteEmail({
-    inviteeEmail: admin.email,
-    invitedByName: request.admin.name || request.admin.email,
-    inviteUrl: buildInviteUrl(inviteToken),
-    expiresAt: inviteTokenExpiresAt,
+  const inviteResult = await sendInviteWithFallback({
+    admin,
+    inviter: request.admin,
   })
 
   response.status(201).json({
     item: toAdminListItem(admin),
-    message: 'Admin invitation created.',
+    invite: {
+      url: inviteResult.inviteUrl,
+      expiresAt: admin.inviteTokenExpiresAt,
+      emailDelivery: inviteResult.emailDelivery,
+    },
+    message: 'Admin invitation created. The invite email is being sent in the background.',
   })
 }
 
@@ -117,16 +150,19 @@ async function resendInvite(request, response) {
   admin.invitedBy = request.admin._id
   await admin.save()
 
-  await sendAdminInviteEmail({
-    inviteeEmail: admin.email,
-    invitedByName: request.admin.name || request.admin.email,
-    inviteUrl: buildInviteUrl(inviteToken),
-    expiresAt: inviteTokenExpiresAt,
+  const inviteResult = await sendInviteWithFallback({
+    admin,
+    inviter: request.admin,
   })
 
   response.json({
     item: toAdminListItem(admin),
-    message: 'Admin invitation resent.',
+    invite: {
+      url: inviteResult.inviteUrl,
+      expiresAt: admin.inviteTokenExpiresAt,
+      emailDelivery: inviteResult.emailDelivery,
+    },
+    message: 'Admin invitation refreshed. The invite email is being sent in the background.',
   })
 }
 

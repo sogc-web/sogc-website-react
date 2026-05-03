@@ -11,6 +11,9 @@ function createTransporter() {
     port: env.mailPort,
     secure: env.mailSecure,
     auth: env.mailUser && env.mailPass ? { user: env.mailUser, pass: env.mailPass } : undefined,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000,
   })
 }
 
