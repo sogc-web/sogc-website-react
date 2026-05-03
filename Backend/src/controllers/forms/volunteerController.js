@@ -1,6 +1,7 @@
 const { env } = require('../../config/env')
 const { sendVolunteerNotification } = require('../../services/formMailer')
 const { httpError } = require('../../utils/httpError')
+const { runDeferred } = require('../../utils/runDeferred')
 
 async function submitVolunteerForm(request, response) {
   const { name, email, phone } = request.body
@@ -9,17 +10,26 @@ async function submitVolunteerForm(request, response) {
     throw httpError(400, 'Name, email, and phone are required.')
   }
 
-  const mailResult = await sendVolunteerNotification({
-    to: env.volunteerToEmail,
-    name,
-    email,
-    phone,
-  })
+  runDeferred(
+    async () => {
+      try {
+        await sendVolunteerNotification({
+          to: env.volunteerToEmail,
+          name,
+          email,
+          phone,
+        })
+      } catch (error) {
+        console.error('[volunteer-form] Failed to deliver notification email:', error)
+      }
+    },
+    'volunteer-form-email',
+  )
 
-  response.status(201).json({
+  response.status(202).json({
     success: true,
     message: 'Volunteer form submitted successfully.',
-    delivery: mailResult.mode,
+    delivery: 'queued',
   })
 }
 

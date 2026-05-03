@@ -3,7 +3,6 @@ const { env } = require('../../config/env')
 const { Admin } = require('../../models/Admin')
 const { sendAdminInviteEmail } = require('../../services/adminInviteMailer')
 const { httpError } = require('../../utils/httpError')
-const { runDeferred } = require('../../utils/runDeferred')
 
 function normalizeEmail(value = '') {
   return value.trim().toLowerCase()
@@ -39,29 +38,33 @@ function toAdminListItem(admin) {
 async function sendInviteWithFallback({ admin, inviter }) {
   const inviteUrl = buildInviteUrl(admin.inviteToken)
 
-  runDeferred(
-    async () => {
-      try {
-        await sendAdminInviteEmail({
-          inviteeEmail: admin.email,
-          invitedByName: inviter.name || inviter.email,
-          inviteUrl,
-          expiresAt: admin.inviteTokenExpiresAt,
-        })
-      } catch (error) {
-        console.error('[admin-invite] Failed to send invite email:', error)
-      }
-    },
-    'admin-invite-email',
-  )
+  try {
+    const result = await sendAdminInviteEmail({
+      inviteeEmail: admin.email,
+      invitedByName: inviter.name || inviter.email,
+      inviteUrl,
+      expiresAt: admin.inviteTokenExpiresAt,
+    })
 
-  return {
-    emailDelivery: {
-      delivered: false,
-      pending: true,
-      error: '',
-    },
-    inviteUrl,
+    return {
+      emailDelivery: {
+        delivered: Boolean(result?.delivered),
+        pending: false,
+        error: '',
+      },
+      inviteUrl,
+    }
+  } catch (error) {
+    console.error('[admin-invite] Failed to send invite email:', error)
+
+    return {
+      emailDelivery: {
+        delivered: false,
+        pending: false,
+        error: error.message || 'Unable to send invite email automatically.',
+      },
+      inviteUrl,
+    }
   }
 }
 
@@ -124,7 +127,9 @@ async function inviteAdmin(request, response) {
       expiresAt: admin.inviteTokenExpiresAt,
       emailDelivery: inviteResult.emailDelivery,
     },
-    message: 'Admin invitation created. The invite email is being sent in the background.',
+    message: inviteResult.emailDelivery.delivered
+      ? `Invitation email sent to ${admin.email}.`
+      : `Admin invitation created for ${admin.email}. Automatic delivery failed, so share the secure invite link below.`,
   })
 }
 
@@ -162,7 +167,9 @@ async function resendInvite(request, response) {
       expiresAt: admin.inviteTokenExpiresAt,
       emailDelivery: inviteResult.emailDelivery,
     },
-    message: 'Admin invitation refreshed. The invite email is being sent in the background.',
+    message: inviteResult.emailDelivery.delivered
+      ? `Invitation email resent to ${admin.email}.`
+      : `A fresh invite link is ready for ${admin.email}. Automatic delivery failed, so share the secure link below.`,
   })
 }
 
