@@ -41,12 +41,13 @@ function GalleryEditorPage({ mode }) {
   const [mediaItems, setMediaItems] = useState([])
   const [coverMediaId, setCoverMediaId] = useState('')
   const [selectedFiles, setSelectedFiles] = useState([])
-  const [publishNewMedia, setPublishNewMedia] = useState(false)
   const [isUploadingMedia, setIsUploadingMedia] = useState(false)
   const [isDeletingMediaId, setIsDeletingMediaId] = useState('')
   const [isSavingMediaId, setIsSavingMediaId] = useState('')
   const [isReorderingMediaId, setIsReorderingMediaId] = useState('')
   const [isUpdatingCover, setIsUpdatingCover] = useState(false)
+  const [selectedMediaIds, setSelectedMediaIds] = useState([])
+  const [activeMediaId, setActiveMediaId] = useState('')
 
   const [galleryUsage, setGalleryUsage] = useState(null)
   const [isLoadingGalleryUsage, setIsLoadingGalleryUsage] = useState(true)
@@ -128,10 +129,7 @@ function GalleryEditorPage({ mode }) {
   )
 
   const filesNeedingCompression = useMemo(
-    () =>
-      selectedFiles.filter(
-        (item) => item.inspection.exceedsLimit || item.state === 'error',
-      ),
+    () => selectedFiles.filter((item) => item.inspection.exceedsLimit || item.state === 'error'),
     [selectedFiles],
   )
 
@@ -143,8 +141,14 @@ function GalleryEditorPage({ mode }) {
     [selectedFiles],
   )
 
+  const activeMedia = useMemo(
+    () => mediaItems.find((item) => item.id === activeMediaId) ?? null,
+    [activeMediaId, mediaItems],
+  )
+
   const galleryQuotaBlocked = Boolean(galleryUsage?.uploadBlocked)
   const hasPendingCompression = selectedFiles.some((item) => item.state === 'compressing')
+  const allSelectedInLibrary = mediaItems.length > 0 && selectedMediaIds.length === mediaItems.length
 
   function updateField(field, value) {
     setForm((current) => ({ ...current, [field]: value }))
@@ -154,6 +158,17 @@ function GalleryEditorPage({ mode }) {
     setMediaItems((current) =>
       current.map((item) => (item.id === mediaId ? { ...item, [field]: value } : item)),
     )
+  }
+
+  function syncCollectionState(item) {
+    setForm({
+      title: item.title ?? '',
+      eyebrow: item.eyebrow ?? '',
+      summary: item.summary ?? '',
+      isPublished: Boolean(item.isPublished),
+    })
+    setMediaItems(item.media ?? [])
+    setCoverMediaId(item.coverMediaId ?? '')
   }
 
   async function handleMediaFileChange(event) {
@@ -168,7 +183,7 @@ function GalleryEditorPage({ mode }) {
     setStatusMessage('')
 
     const builtFiles = await Promise.all(
-      nextFiles.map((file) => buildSelectedFile(file, { isPublished: publishNewMedia, fallbackTitle: form.title })),
+      nextFiles.map((file) => buildSelectedFile(file, { fallbackTitle: form.title })),
     )
 
     setSelectedFiles((current) => [...current, ...builtFiles])
@@ -204,12 +219,7 @@ function GalleryEditorPage({ mode }) {
         return
       }
 
-      setForm({
-        title: item.title ?? '',
-        eyebrow: item.eyebrow ?? '',
-        summary: item.summary ?? '',
-        isPublished: Boolean(item.isPublished),
-      })
+      syncCollectionState(item)
     } catch (error) {
       setErrorMessage(error.message)
     } finally {
@@ -235,7 +245,6 @@ function GalleryEditorPage({ mode }) {
       const replacement = await buildSelectedFile(compressedFile, {
         alt: fileEntry.alt,
         caption: fileEntry.caption,
-        isPublished: fileEntry.isPublished,
         fallbackTitle: form.title,
       })
 
@@ -314,7 +323,6 @@ function GalleryEditorPage({ mode }) {
           bytes: item.bytes,
           alt: item.alt,
           caption: item.caption,
-          isPublished: item.isPublished,
         })),
       )
 
@@ -322,7 +330,9 @@ function GalleryEditorPage({ mode }) {
       const existingIds = new Set(uploadReadyFiles.map((item) => item.id))
 
       setMediaItems((current) =>
-        [...current, ...uploadedItems].sort((left, right) => Number(left.sortOrder || 0) - Number(right.sortOrder || 0)),
+        [...current, ...uploadedItems].sort(
+          (left, right) => Number(left.sortOrder || 0) - Number(right.sortOrder || 0),
+        ),
       )
       setSelectedFiles((current) => {
         current.forEach((item) => {
@@ -358,9 +368,14 @@ function GalleryEditorPage({ mode }) {
     try {
       await deleteAdminGalleryMedia(collectionId, mediaId)
       setMediaItems((current) => current.filter((item) => item.id !== mediaId))
+      setSelectedMediaIds((current) => current.filter((id) => id !== mediaId))
 
       if (coverMediaId === mediaId) {
         setCoverMediaId('')
+      }
+
+      if (activeMediaId === mediaId) {
+        setActiveMediaId('')
       }
 
       setStatusMessage('Media file removed successfully.')
@@ -372,6 +387,40 @@ function GalleryEditorPage({ mode }) {
       setErrorMessage(error.message)
     } finally {
       setIsDeletingMediaId('')
+    }
+  }
+
+  async function handleDeleteSelectedMedia() {
+    if (!selectedMediaIds.length) {
+      return
+    }
+
+    setErrorMessage('')
+    setStatusMessage('')
+
+    try {
+      for (const mediaId of selectedMediaIds) {
+        // eslint-disable-next-line no-await-in-loop
+        await deleteAdminGalleryMedia(collectionId, mediaId)
+      }
+
+      setMediaItems((current) => current.filter((item) => !selectedMediaIds.includes(item.id)))
+      setSelectedMediaIds([])
+      setStatusMessage('Selected media files removed successfully.')
+
+      if (selectedMediaIds.includes(activeMediaId)) {
+        setActiveMediaId('')
+      }
+
+      if (selectedMediaIds.includes(coverMediaId)) {
+        setCoverMediaId('')
+      }
+
+      const usage = await loadGalleryUsage()
+      setGalleryUsage(usage)
+      setGalleryUsageError('')
+    } catch (error) {
+      setErrorMessage(error.message)
     }
   }
 
@@ -392,7 +441,6 @@ function GalleryEditorPage({ mode }) {
       const updatedItem = await updateAdminGalleryMedia(collectionId, mediaId, {
         alt: mediaItem.alt,
         caption: mediaItem.caption,
-        isPublished: mediaItem.isPublished,
       })
 
       setMediaItems((current) => current.map((item) => (item.id === mediaId ? updatedItem : item)))
@@ -449,7 +497,7 @@ function GalleryEditorPage({ mode }) {
         coverMediaId === mediaId ? '' : mediaId,
       )
 
-      setCoverMediaId(updatedCollection.coverMediaId ?? '')
+      syncCollectionState(updatedCollection)
       setStatusMessage(
         updatedCollection.coverMediaId
           ? 'Collection cover updated successfully.'
@@ -460,6 +508,18 @@ function GalleryEditorPage({ mode }) {
     } finally {
       setIsUpdatingCover(false)
     }
+  }
+
+  function handleToggleSelectMedia(mediaId) {
+    setSelectedMediaIds((current) =>
+      current.includes(mediaId)
+        ? current.filter((id) => id !== mediaId)
+        : [...current, mediaId],
+    )
+  }
+
+  function handleToggleSelectAllMedia() {
+    setSelectedMediaIds(allSelectedInLibrary ? [] : mediaItems.map((item) => item.id))
   }
 
   if (status === 'loading') {
@@ -554,9 +614,9 @@ function GalleryEditorPage({ mode }) {
                 className="mt-1 h-4 w-4 rounded border-white/20 bg-transparent text-[#f8d35c] focus:ring-[#f8d35c]"
               />
               <span className="space-y-1">
-                <span className="block text-sm font-medium text-white">Published</span>
+                <span className="block text-sm font-medium text-white">Publish entire collection</span>
                 <span className="block text-sm text-[#91a39a]">
-                  Published collections can be surfaced to the website once public gallery integration reads them.
+                  This single switch controls whether the whole collection and all uploaded media are available on the website.
                 </span>
               </span>
             </label>
@@ -597,35 +657,17 @@ function GalleryEditorPage({ mode }) {
         }
       >
         <div className="space-y-5">
-          <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-            <label className="block space-y-2">
-              <span className="text-sm text-[#d5dfda]">Select media files</span>
-              <input
-                type="file"
-                multiple
-                accept="image/jpeg,image/jpg,image/png,image/webp,video/mp4,video/quicktime"
-                onChange={handleMediaFileChange}
-                disabled={!isEdit}
-                className="block w-full rounded-2xl border border-dashed border-white/15 bg-white/5 px-4 py-4 text-sm text-[#b7c6bf] file:mr-4 file:rounded-xl file:border-0 file:bg-[#f8d35c] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[#1b1b12] disabled:cursor-not-allowed disabled:opacity-60"
-              />
-            </label>
-
-            <label className="flex items-center gap-3 rounded-[20px] border border-white/10 bg-white/5 px-4 py-4">
-              <input
-                type="checkbox"
-                checked={publishNewMedia}
-                onChange={(event) => {
-                  const nextValue = event.target.checked
-                  setPublishNewMedia(nextValue)
-                  setSelectedFiles((current) =>
-                    current.map((item) => ({ ...item, isPublished: nextValue })),
-                  )
-                }}
-                className="h-4 w-4 rounded border-white/20 bg-transparent text-[#f8d35c] focus:ring-[#f8d35c]"
-              />
-              <span className="text-sm text-[#d5dfda]">Publish new uploads by default</span>
-            </label>
-          </div>
+          <label className="block space-y-2">
+            <span className="text-sm text-[#d5dfda]">Select media files</span>
+            <input
+              type="file"
+              multiple
+              accept="image/jpeg,image/jpg,image/png,image/webp,video/mp4,video/quicktime"
+              onChange={handleMediaFileChange}
+              disabled={!isEdit}
+              className="block w-full rounded-2xl border border-dashed border-white/15 bg-white/5 px-4 py-4 text-sm text-[#b7c6bf] file:mr-4 file:rounded-xl file:border-0 file:bg-[#f8d35c] file:px-4 file:py-2 file:text-sm file:font-medium file:text-[#1b1b12] disabled:cursor-not-allowed disabled:opacity-60"
+            />
+          </label>
 
           <div className="flex flex-wrap gap-3">
             <button
@@ -639,7 +681,13 @@ function GalleryEditorPage({ mode }) {
             <button
               type="button"
               onClick={handleUploadMedia}
-              disabled={!isEdit || !uploadReadyFiles.length || filesNeedingCompression.length > 0 || hasPendingCompression || isUploadingMedia}
+              disabled={
+                !isEdit ||
+                !uploadReadyFiles.length ||
+                filesNeedingCompression.length > 0 ||
+                hasPendingCompression ||
+                isUploadingMedia
+              }
               className="inline-flex rounded-2xl bg-[#f8d35c] px-5 py-3 text-sm font-medium text-[#1b1b12] transition hover:bg-[#ffbf2f] disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isUploadingMedia ? 'Uploading media...' : 'Upload ready files'}
@@ -647,28 +695,72 @@ function GalleryEditorPage({ mode }) {
           </div>
 
           {selectedFiles.length ? (
-            <div className="grid gap-4 xl:grid-cols-2">
-              {selectedFiles.map((item) => (
-                <SelectedFileCard
-                  key={item.id}
-                  file={item}
-                  onChange={(field, value) =>
-                    setSelectedFiles((current) =>
-                      current.map((entry) => (entry.id === item.id ? { ...entry, [field]: value } : entry)),
-                    )
-                  }
-                  onCompress={() => handleCompressFile(item.id)}
-                  onRemove={() =>
-                    setSelectedFiles((current) => {
-                      const nextItems = current.filter((entry) => entry.id !== item.id)
-                      if (item.previewUrl) {
-                        URL.revokeObjectURL(item.previewUrl)
-                      }
-                      return nextItems
-                    })
-                  }
-                />
-              ))}
+            <div className="overflow-hidden rounded-[24px] border border-white/10 bg-white/5">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-white/10 text-left text-sm">
+                  <thead className="bg-white/5 text-[#91a39a]">
+                    <tr>
+                      <th className="px-4 py-3 font-medium">File</th>
+                      <th className="px-4 py-3 font-medium">Type</th>
+                      <th className="px-4 py-3 font-medium">Size</th>
+                      <th className="px-4 py-3 font-medium">Status</th>
+                      <th className="px-4 py-3 font-medium text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/10">
+                    {selectedFiles.map((item) => (
+                      <tr key={item.id} className="align-top text-[#d5dfda]">
+                        <td className="px-4 py-3">
+                          <div className="space-y-1">
+                            <p className="font-medium text-white">{item.name}</p>
+                            <p className="text-xs text-[#91a39a]">{item.mimeType || 'Unknown type'}</p>
+                            <p className="text-xs text-[#91a39a]">{item.alt}</p>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 uppercase text-[#f8d35c]">{item.kind || 'file'}</td>
+                        <td className="px-4 py-3">{formatBytes(item.bytes)}</td>
+                        <td className="px-4 py-3">
+                          <div className="space-y-1">
+                            <p>{item.inspection.exceedsLimit ? 'Needs compression' : 'Ready'}</p>
+                            {item.errorMessage || item.inspection.message ? (
+                              <p className="text-xs text-[#ffd5ca]">
+                                {item.errorMessage || item.inspection.message}
+                              </p>
+                            ) : null}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleCompressFile(item.id)}
+                              disabled={!item.inspection.canCompress || item.state === 'compressing'}
+                              className="rounded-xl border border-[#f8d35c]/30 bg-[#201c10] px-3 py-2 text-xs font-medium text-[#f8d35c] disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              {item.state === 'compressing' ? 'Compressing...' : 'Compress'}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setSelectedFiles((current) => {
+                                  const nextItems = current.filter((entry) => entry.id !== item.id)
+                                  if (item.previewUrl) {
+                                    URL.revokeObjectURL(item.previewUrl)
+                                  }
+                                  return nextItems
+                                })
+                              }
+                              className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-white"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           ) : (
             <div className="rounded-[24px] border border-dashed border-white/10 bg-white/5 px-5 py-8 text-sm text-[#91a39a]">
@@ -681,153 +773,160 @@ function GalleryEditorPage({ mode }) {
       <SectionCard
         eyebrow="Media library"
         title="Collection media"
-        description="Set the collection cover, fine-tune captions and alt text, and keep the media order ready for public presentation."
+        description="Review your full media list, open any item for detailed editing, and manage cover selection from a single library table."
       >
         {mediaItems.length ? (
-          <div className="grid gap-5 xl:grid-cols-2">
-            {mediaItems.map((item, index) => {
-              const isCover = coverMediaId === item.id
-              const busy = isDeletingMediaId === item.id || isSavingMediaId === item.id || isReorderingMediaId === item.id
-
-              return (
-                <article
-                  key={item.id}
-                  className="overflow-hidden rounded-[26px] border border-white/10 bg-white/5"
+          <div className="space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-[20px] border border-white/10 bg-white/5 px-4 py-4">
+              <div className="text-sm text-[#d5dfda]">
+                {selectedMediaIds.length ? `${selectedMediaIds.length} selected` : 'Select one or more media files to manage them together.'}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    selectedMediaIds.length === 1 ? handleSetCover(selectedMediaIds[0]) : null
+                  }
+                  disabled={selectedMediaIds.length !== 1 || isUpdatingCover}
+                  className="rounded-xl border border-[#f8d35c]/30 bg-[#201c10] px-3 py-2 text-xs font-medium text-[#f8d35c] disabled:cursor-not-allowed disabled:opacity-50"
                 >
-                  <div className="relative aspect-[4/3] bg-[#0f1513]">
-                    {item.type === 'image' ? (
-                      <img
-                        src={item.secureUrl || item.url}
-                        alt={item.alt || form.title}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <video
-                        src={item.secureUrl || item.url}
-                        className="h-full w-full object-cover"
-                        muted
-                        playsInline
-                        preload="metadata"
-                      />
-                    )}
+                  {isUpdatingCover ? 'Updating cover...' : 'Set selected as cover'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDeleteSelectedMedia}
+                  disabled={!selectedMediaIds.length}
+                  className="rounded-xl border border-[#ffb4a2]/30 bg-[#3a1814] px-3 py-2 text-xs font-medium text-[#ffd5ca] disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Delete selected
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedMediaIds([])}
+                  disabled={!selectedMediaIds.length}
+                  className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  Clear selection
+                </button>
+              </div>
+            </div>
 
-                    <div className="absolute left-4 top-4 flex flex-wrap gap-2">
-                      <span className="rounded-full border border-white/15 bg-[#07100d]/80 px-3 py-1 text-xs uppercase tracking-[0.18em] text-[#f8d35c]">
-                        {item.type}
-                      </span>
-                      <span className="rounded-full border border-white/15 bg-[#07100d]/80 px-3 py-1 text-xs uppercase tracking-[0.18em] text-white">
-                        {item.isPublished ? 'Published' : 'Draft'}
-                      </span>
-                      {isCover ? (
-                        <span className="rounded-full border border-[#f8d35c]/40 bg-[#3d3314]/80 px-3 py-1 text-xs uppercase tracking-[0.18em] text-[#f8d35c]">
-                          Cover
-                        </span>
-                      ) : null}
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 p-5">
-                    <div className="grid gap-3 md:grid-cols-2">
-                      <label className="block space-y-2">
-                        <span className="text-sm text-[#d5dfda]">Alt text</span>
-                        <input
-                          value={item.alt || ''}
-                          onChange={(event) => updateMediaField(item.id, 'alt', event.target.value)}
-                          className={inputClassName}
-                          placeholder="Describe this media"
-                        />
-                      </label>
-
-                      <label className="flex items-start gap-3 rounded-[18px] border border-white/10 bg-[#0f1513] px-4 py-4">
+            <div className="overflow-hidden rounded-[24px] border border-white/10 bg-white/5">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-white/10 text-left text-sm">
+                  <thead className="bg-white/5 text-[#91a39a]">
+                    <tr>
+                      <th className="px-4 py-3">
                         <input
                           type="checkbox"
-                          checked={Boolean(item.isPublished)}
-                          onChange={(event) => updateMediaField(item.id, 'isPublished', event.target.checked)}
-                          className="mt-1 h-4 w-4 rounded border-white/20 bg-transparent text-[#f8d35c] focus:ring-[#f8d35c]"
+                          checked={allSelectedInLibrary}
+                          onChange={handleToggleSelectAllMedia}
+                          className="h-4 w-4 rounded border-white/20 bg-transparent text-[#f8d35c] focus:ring-[#f8d35c]"
                         />
-                        <span className="space-y-1">
-                          <span className="block text-sm font-medium text-white">Published</span>
-                          <span className="block text-sm text-[#91a39a]">
-                            Toggle whether this media item is ready for the website.
-                          </span>
-                        </span>
-                      </label>
-                    </div>
+                      </th>
+                      <th className="px-4 py-3 font-medium">Preview</th>
+                      <th className="px-4 py-3 font-medium">File</th>
+                      <th className="px-4 py-3 font-medium">Type</th>
+                      <th className="px-4 py-3 font-medium">Size</th>
+                      <th className="px-4 py-3 font-medium">Updated</th>
+                      <th className="px-4 py-3 font-medium text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/10">
+                    {mediaItems.map((item, index) => {
+                      const isCover = coverMediaId === item.id
+                      const busy =
+                        isDeletingMediaId === item.id ||
+                        isSavingMediaId === item.id ||
+                        isReorderingMediaId === item.id
 
-                    <label className="block space-y-2">
-                      <span className="text-sm text-[#d5dfda]">Caption</span>
-                      <textarea
-                        value={item.caption || ''}
-                        onChange={(event) => updateMediaField(item.id, 'caption', event.target.value)}
-                        className={textareaClassName}
-                        rows={4}
-                        placeholder="Optional caption for this gallery item"
-                      />
-                    </label>
-
-                    <div className="grid gap-3 sm:grid-cols-3">
-                      <StatPill label="Size" value={formatBytes(item.bytes)} />
-                      <StatPill label="Format" value={item.format || 'Unknown'} />
-                      <StatPill
-                        label="Updated"
-                        value={item.updatedAt ? formatDateTime(item.updatedAt) : 'Just now'}
-                      />
-                    </div>
-
-                    <div className="flex flex-wrap gap-3">
-                      <button
-                        type="button"
-                        onClick={() => handleSetCover(item.id)}
-                        disabled={isUpdatingCover || busy}
-                        className="inline-flex rounded-2xl border border-[#f8d35c]/30 bg-[#201c10] px-4 py-3 text-sm font-medium text-[#f8d35c] transition hover:bg-[#2d2616] disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        {isUpdatingCover && isCover
-                          ? 'Updating cover...'
-                          : isCover
-                            ? 'Clear cover'
-                            : 'Set as cover'}
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleMoveMedia(item.id, 'up')}
-                        disabled={index === 0 || busy}
-                        className="inline-flex rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        Move up
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleMoveMedia(item.id, 'down')}
-                        disabled={index === mediaItems.length - 1 || busy}
-                        className="inline-flex rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        Move down
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleSaveMedia(item.id)}
-                        disabled={busy}
-                        className="inline-flex rounded-2xl bg-[#f8d35c] px-4 py-3 text-sm font-medium text-[#1b1b12] transition hover:bg-[#ffbf2f] disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {isSavingMediaId === item.id ? 'Saving...' : 'Save changes'}
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteMedia(item.id)}
-                        disabled={busy}
-                        className="inline-flex rounded-2xl border border-[#ffb4a2]/30 bg-[#3a1814] px-4 py-3 text-sm font-medium text-[#ffd5ca] transition hover:bg-[#4c1f1b] disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        {isDeletingMediaId === item.id ? 'Removing...' : 'Delete'}
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              )
-            })}
+                      return (
+                        <tr key={item.id} className="align-middle text-[#d5dfda]">
+                          <td className="px-4 py-3">
+                            <input
+                              type="checkbox"
+                              checked={selectedMediaIds.includes(item.id)}
+                              onChange={() => handleToggleSelectMedia(item.id)}
+                              className="h-4 w-4 rounded border-white/20 bg-transparent text-[#f8d35c] focus:ring-[#f8d35c]"
+                            />
+                          </td>
+                          <td className="px-4 py-3">
+                            <button
+                              type="button"
+                              onClick={() => setActiveMediaId(item.id)}
+                              className="block h-16 w-24 overflow-hidden rounded-xl border border-white/10 bg-[#0f1513] transition hover:border-[#f8d35c]/30"
+                            >
+                              {item.type === 'image' ? (
+                                <img
+                                  src={item.secureUrl || item.url}
+                                  alt={item.alt || form.title}
+                                  className="h-full w-full object-cover"
+                                />
+                              ) : (
+                                <video
+                                  src={item.secureUrl || item.url}
+                                  className="h-full w-full object-cover"
+                                  muted
+                                  playsInline
+                                  preload="metadata"
+                                />
+                              )}
+                            </button>
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="space-y-1">
+                              <p className="font-medium text-white">{item.alt || 'Untitled media'}</p>
+                              <div className="flex flex-wrap gap-2">
+                                {isCover ? (
+                                  <span className="rounded-full border border-[#f8d35c]/30 bg-[#3d3314]/50 px-2 py-1 text-[11px] uppercase tracking-[0.18em] text-[#f8d35c]">
+                                    Cover
+                                  </span>
+                                ) : null}
+                                <span className="rounded-full border border-white/10 bg-[#0f1513] px-2 py-1 text-[11px] uppercase tracking-[0.18em] text-white">
+                                  {form.isPublished ? 'Published' : 'Draft'}
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 uppercase text-[#f8d35c]">{item.type}</td>
+                          <td className="px-4 py-3">{formatBytes(item.bytes)}</td>
+                          <td className="px-4 py-3 text-[#91a39a]">
+                            {item.updatedAt ? formatDateTime(item.updatedAt) : 'Just now'}
+                          </td>
+                          <td className="px-4 py-3">
+                            <div className="flex justify-end gap-2">
+                              <button
+                                type="button"
+                                onClick={() => handleMoveMedia(item.id, 'up')}
+                                disabled={index === 0 || busy}
+                                className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+                              >
+                                Up
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleMoveMedia(item.id, 'down')}
+                                disabled={index === mediaItems.length - 1 || busy}
+                                className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+                              >
+                                Down
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setActiveMediaId(item.id)}
+                                className="rounded-xl border border-[#f8d35c]/30 bg-[#201c10] px-3 py-2 text-xs font-medium text-[#f8d35c]"
+                              >
+                                Manage
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         ) : (
           <div className="rounded-[24px] border border-dashed border-white/10 bg-white/5 px-5 py-8 text-sm text-[#91a39a]">
@@ -835,6 +934,37 @@ function GalleryEditorPage({ mode }) {
           </div>
         )}
       </SectionCard>
+
+      {activeMedia ? (
+        <MediaManagerModal
+          media={activeMedia}
+          collectionTitle={form.title}
+          isPublished={form.isPublished}
+          isCover={coverMediaId === activeMedia.id}
+          busy={
+            isDeletingMediaId === activeMedia.id ||
+            isSavingMediaId === activeMedia.id ||
+            isReorderingMediaId === activeMedia.id ||
+            isUpdatingCover
+          }
+          onClose={() => setActiveMediaId('')}
+          onChange={(field, value) => updateMediaField(activeMedia.id, field, value)}
+          onSave={() => handleSaveMedia(activeMedia.id)}
+          onDelete={() => handleDeleteMedia(activeMedia.id)}
+          onSetCover={() => handleSetCover(activeMedia.id)}
+          onMoveUp={() => handleMoveMedia(activeMedia.id, 'up')}
+          onMoveDown={() => handleMoveMedia(activeMedia.id, 'down')}
+          saveLabel={isSavingMediaId === activeMedia.id ? 'Saving...' : 'Save changes'}
+          deleteLabel={isDeletingMediaId === activeMedia.id ? 'Removing...' : 'Delete media'}
+          coverLabel={
+            isUpdatingCover
+              ? 'Updating cover...'
+              : coverMediaId === activeMedia.id
+                ? 'Clear cover'
+                : 'Set as cover'
+          }
+        />
+      ) : null}
     </div>
   )
 }
@@ -913,104 +1043,158 @@ function GalleryUsageNotice({ usage, isLoading, errorMessage, selectedBytes }) {
   )
 }
 
-function SelectedFileCard({ file, onChange, onCompress, onRemove }) {
+function MediaManagerModal({
+  media,
+  collectionTitle,
+  isPublished,
+  isCover,
+  busy,
+  onClose,
+  onChange,
+  onSave,
+  onDelete,
+  onSetCover,
+  onMoveUp,
+  onMoveDown,
+  saveLabel,
+  deleteLabel,
+  coverLabel,
+}) {
   return (
-    <article className="overflow-hidden rounded-[24px] border border-white/10 bg-white/5">
-      <div className="aspect-[4/3] bg-[#0f1513]">
-        {file.kind === 'image' && file.previewUrl ? (
-          <img src={file.previewUrl} alt={file.alt || file.name} className="h-full w-full object-cover" />
-        ) : file.kind === 'video' && file.previewUrl ? (
-          <video src={file.previewUrl} className="h-full w-full object-cover" muted playsInline preload="metadata" />
-        ) : (
-          <div className="flex h-full items-center justify-center text-sm text-[#91a39a]">Preview unavailable</div>
-        )}
-      </div>
-
-      <div className="space-y-4 p-5">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full border border-white/10 bg-[#0f1513] px-3 py-1 text-xs uppercase tracking-[0.18em] text-[#f8d35c]">
-            {file.kind || 'file'}
-          </span>
-          <span className="rounded-full border border-white/10 bg-[#0f1513] px-3 py-1 text-xs uppercase tracking-[0.18em] text-white">
-            {formatBytes(file.bytes)}
-          </span>
-          {file.inspection.exceedsLimit ? (
-            <span className="rounded-full border border-[#ffb4a2]/30 bg-[#3a1814] px-3 py-1 text-xs uppercase tracking-[0.18em] text-[#ffd5ca]">
-              Exceeds limit
-            </span>
-          ) : null}
-        </div>
-
-        <div>
-          <p className="text-sm font-medium text-white">{file.name}</p>
-          <p className="mt-1 text-sm text-[#91a39a]">{file.mimeType || 'Unknown type'}</p>
-        </div>
-
-        <label className="block space-y-2">
-          <span className="text-sm text-[#d5dfda]">Alt text</span>
-          <input
-            value={file.alt}
-            onChange={(event) => onChange('alt', event.target.value)}
-            className={inputClassName}
-            placeholder="Describe this media"
-          />
-        </label>
-
-        <label className="block space-y-2">
-          <span className="text-sm text-[#d5dfda]">Caption</span>
-          <textarea
-            value={file.caption}
-            onChange={(event) => onChange('caption', event.target.value)}
-            className={textareaClassName}
-            rows={3}
-            placeholder="Optional caption"
-          />
-        </label>
-
-        <label className="flex items-start gap-3 rounded-[18px] border border-white/10 bg-[#0f1513] px-4 py-4">
-          <input
-            type="checkbox"
-            checked={file.isPublished}
-            onChange={(event) => onChange('isPublished', event.target.checked)}
-            className="mt-1 h-4 w-4 rounded border-white/20 bg-transparent text-[#f8d35c] focus:ring-[#f8d35c]"
-          />
-          <span className="space-y-1">
-            <span className="block text-sm font-medium text-white">Publish on upload</span>
-            <span className="block text-sm text-[#91a39a]">
-              Decide whether this media item should be ready for the website immediately after upload.
-            </span>
-          </span>
-        </label>
-
-        {file.errorMessage || file.inspection.message ? (
-          <div className="rounded-[18px] border border-[#ffb4a2]/20 bg-[#5a2318]/20 px-4 py-3 text-sm text-[#ffd5ca]">
-            {file.errorMessage || file.inspection.message}
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-[#030605]/75 px-4 py-8 backdrop-blur-md">
+      <div className="max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-[28px] border border-white/10 bg-[#08100d] shadow-[0_30px_90px_rgba(0,0,0,0.45)]">
+        <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
+          <div>
+            <p className="text-xs uppercase tracking-[0.24em] text-[#f8d35c]">Media manager</p>
+            <h3 className="mt-2 text-2xl font-semibold text-white">{media.alt || collectionTitle || 'Gallery media'}</h3>
           </div>
-        ) : null}
-
-        <div className="flex flex-wrap gap-3">
           <button
             type="button"
-            onClick={onCompress}
-            disabled={!file.inspection.canCompress || file.state === 'compressing'}
-            className="inline-flex rounded-2xl border border-[#f8d35c]/30 bg-[#201c10] px-4 py-3 text-sm font-medium text-[#f8d35c] transition hover:bg-[#2d2616] disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={onClose}
+            className="rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition hover:bg-white/10"
           >
-            {file.state === 'compressing' ? 'Compressing...' : 'Compress file'}
-          </button>
-          <button
-            type="button"
-            onClick={onRemove}
-            className="inline-flex rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10"
-          >
-            Remove
+            Close
           </button>
         </div>
+
+        <div className="grid max-h-[calc(90vh-94px)] gap-0 overflow-y-auto xl:grid-cols-[minmax(0,1.2fr)_minmax(360px,0.8fr)]">
+          <div className="bg-[#0d1512] p-6">
+            <div className="overflow-hidden rounded-[24px] border border-white/10 bg-[#050908]">
+              {media.type === 'image' ? (
+                <img
+                  src={media.secureUrl || media.url}
+                  alt={media.alt || collectionTitle}
+                  className="h-full max-h-[65vh] w-full object-contain"
+                />
+              ) : (
+                <video
+                  src={media.secureUrl || media.url}
+                  controls
+                  className="h-full max-h-[65vh] w-full object-contain"
+                  preload="metadata"
+                />
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-5 p-6">
+            <div className="flex flex-wrap gap-2">
+              <span className="rounded-full border border-white/10 bg-[#0f1513] px-3 py-1 text-xs uppercase tracking-[0.18em] text-[#f8d35c]">
+                {media.type}
+              </span>
+              <span className="rounded-full border border-white/10 bg-[#0f1513] px-3 py-1 text-xs uppercase tracking-[0.18em] text-white">
+                {isPublished ? 'Published collection' : 'Draft collection'}
+              </span>
+              {isCover ? (
+                <span className="rounded-full border border-[#f8d35c]/30 bg-[#3d3314]/50 px-3 py-1 text-xs uppercase tracking-[0.18em] text-[#f8d35c]">
+                  Current cover
+                </span>
+              ) : null}
+            </div>
+
+            <label className="block space-y-2">
+              <span className="text-sm text-[#d5dfda]">Alt text</span>
+              <input
+                value={media.alt || ''}
+                onChange={(event) => onChange('alt', event.target.value)}
+                className={inputClassName}
+                placeholder="Describe this media"
+              />
+            </label>
+
+            <label className="block space-y-2">
+              <span className="text-sm text-[#d5dfda]">Caption</span>
+              <textarea
+                value={media.caption || ''}
+                onChange={(event) => onChange('caption', event.target.value)}
+                className={textareaClassName}
+                rows={5}
+                placeholder="Optional caption for this gallery item"
+              />
+            </label>
+
+            <div className="grid gap-3 sm:grid-cols-3">
+              <StatPill label="Size" value={formatBytes(media.bytes)} />
+              <StatPill label="Format" value={media.format || 'Unknown'} />
+              <StatPill
+                label="Updated"
+                value={media.updatedAt ? formatDateTime(media.updatedAt) : 'Just now'}
+              />
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={onSetCover}
+                disabled={busy}
+                className="inline-flex rounded-2xl border border-[#f8d35c]/30 bg-[#201c10] px-4 py-3 text-sm font-medium text-[#f8d35c] transition hover:bg-[#2d2616] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {coverLabel}
+              </button>
+              <button
+                type="button"
+                onClick={onMoveUp}
+                disabled={busy}
+                className="inline-flex rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Move up
+              </button>
+              <button
+                type="button"
+                onClick={onMoveDown}
+                disabled={busy}
+                className="inline-flex rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Move down
+              </button>
+            </div>
+
+            <div className="flex flex-wrap gap-3 pt-2">
+              <button
+                type="button"
+                onClick={onSave}
+                disabled={busy}
+                className="inline-flex rounded-2xl bg-[#f8d35c] px-5 py-3 text-sm font-medium text-[#1b1b12] transition hover:bg-[#ffbf2f] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {saveLabel}
+              </button>
+              <button
+                type="button"
+                onClick={onDelete}
+                disabled={busy}
+                className="inline-flex rounded-2xl border border-[#ffb4a2]/30 bg-[#3a1814] px-4 py-3 text-sm font-medium text-[#ffd5ca] transition hover:bg-[#4c1f1b] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {deleteLabel}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-    </article>
+    </div>
   )
 }
 
-async function buildSelectedFile(file, { alt = '', caption = '', isPublished = false, fallbackTitle = '' } = {}) {
+async function buildSelectedFile(file, { alt = '', caption = '', fallbackTitle = '' } = {}) {
   const inspection = inspectGalleryFile(file)
   const previewUrl = URL.createObjectURL(file)
 
@@ -1023,7 +1207,6 @@ async function buildSelectedFile(file, { alt = '', caption = '', isPublished = f
     bytes: file.size,
     alt: alt || deriveAltFromFileName(file.name, fallbackTitle),
     caption,
-    isPublished,
     previewUrl,
     inspection,
     state: inspection.exceedsLimit ? 'error' : 'ready',

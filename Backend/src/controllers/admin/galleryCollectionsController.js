@@ -173,6 +173,15 @@ async function updateAdminGalleryCollection(request, response) {
 
   Object.assign(item, payload)
   await item.save()
+  await GalleryMedia.updateMany(
+    { collectionId: item._id },
+    {
+      $set: {
+        isPublished: item.isPublished,
+        updatedByEmail: request.admin.email,
+      },
+    },
+  )
 
   const mediaCount = await countMediaForCollection(item._id)
 
@@ -356,7 +365,7 @@ async function createAdminGalleryMedia(request, response) {
         alt: file.alt || deriveAltFromFileName(file.fileName, collection.title),
         caption: file.caption,
         sortOrder: baseSortOrder + index,
-        isPublished: file.isPublished,
+        isPublished: collection.isPublished,
         createdByEmail: request.admin.email,
         updatedByEmail: request.admin.email,
       })
@@ -397,7 +406,7 @@ async function createAdminGalleryMedia(request, response) {
     details: {
       Collection: collection.title,
       Files: String(createdMediaDocs.length),
-      Published: createdMediaDocs.every((item) => item.isPublished) ? 'Yes' : 'Mixed',
+      Published: collection.isPublished ? 'Yes' : 'No',
       'Total bytes': formatBytes(createdMediaDocs.reduce((total, item) => total + Number(item.bytes || 0), 0)),
     },
   })
@@ -488,7 +497,6 @@ async function updateAdminGalleryMedia(request, response) {
 
   mediaItem.alt = String(request.body?.alt || '').trim()
   mediaItem.caption = String(request.body?.caption || '').trim()
-  mediaItem.isPublished = Boolean(request.body?.isPublished)
   mediaItem.updatedByEmail = request.admin.email
   await mediaItem.save()
 
@@ -503,7 +511,6 @@ async function updateAdminGalleryMedia(request, response) {
       collectionId: collection._id.toString(),
       publicId: mediaItem.publicId,
       type: mediaItem.type,
-      isPublished: mediaItem.isPublished,
     },
   })
 
