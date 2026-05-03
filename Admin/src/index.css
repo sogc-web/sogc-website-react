@@ -92,6 +92,67 @@ select option {
   height: 72px;
 }
 
+.admin-toggle {
+  position: relative;
+  width: 58px;
+  height: 32px;
+  flex: 0 0 auto;
+}
+
+.admin-toggle__input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+.admin-toggle__track {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+  transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.admin-toggle__thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fff7d8 0%, #f3d370 100%);
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.22),
+    inset 0 1px 1px rgba(255, 255, 255, 0.55);
+  transition: transform 180ms ease, background 180ms ease;
+}
+
+.admin-toggle__input:checked + .admin-toggle__track {
+  background: rgba(248, 211, 92, 0.24);
+  border-color: rgba(248, 211, 92, 0.5);
+  box-shadow:
+    inset 0 0 0 1px rgba(248, 211, 92, 0.08),
+    0 0 0 4px rgba(248, 211, 92, 0.06);
+}
+
+.admin-toggle__input:checked + .admin-toggle__track .admin-toggle__thumb {
+  transform: translateX(26px);
+  background: linear-gradient(180deg, #fff6cf 0%, #f8d35c 100%);
+}
+
+.admin-toggle__input:focus-visible + .admin-toggle__track {
+  outline: 2px solid rgba(248, 211, 92, 0.7);
+  outline-offset: 2px;
+}
+
+.admin-toggle__input:disabled + .admin-toggle__track {
+  opacity: 0.55;
+}
+
 @keyframes admin-loader-rotate {
   100% {
     transform: rotate(360deg);

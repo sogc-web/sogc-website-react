@@ -492,12 +492,17 @@ function EventEditorPage({ mode }) {
                 <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Publish controls</p>
                 <div className="mt-5 space-y-4">
                   <label className="flex items-start gap-3 rounded-[24px] border border-white/10 bg-[#0f1513] p-4">
-                    <input
-                      type="checkbox"
-                      checked={form.isPublished}
-                      onChange={(event) => updateField('isPublished', event.target.checked)}
-                      className="mt-1 h-4 w-4 accent-[#f8d35c]"
-                    />
+                    <span className="admin-toggle mt-0.5">
+                      <input
+                        type="checkbox"
+                        checked={form.isPublished}
+                        onChange={(event) => updateField('isPublished', event.target.checked)}
+                        className="admin-toggle__input"
+                      />
+                      <span className="admin-toggle__track">
+                        <span className="admin-toggle__thumb" />
+                      </span>
+                    </span>
                     <span>
                       <span className="block text-sm font-medium text-white">Published</span>
                       <span className="mt-1 block text-sm text-[#9db0a7]">

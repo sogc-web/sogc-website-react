@@ -607,12 +607,17 @@ function GalleryEditorPage({ mode }) {
             </label>
 
             <label className="flex items-start gap-3 rounded-[20px] border border-white/10 bg-white/5 px-4 py-4">
-              <input
-                type="checkbox"
-                checked={form.isPublished}
-                onChange={(event) => updateField('isPublished', event.target.checked)}
-                className="mt-1 h-4 w-4 rounded border-white/20 bg-transparent text-[#f8d35c] focus:ring-[#f8d35c]"
-              />
+              <span className="admin-toggle mt-0.5">
+                <input
+                  type="checkbox"
+                  checked={form.isPublished}
+                  onChange={(event) => updateField('isPublished', event.target.checked)}
+                  className="admin-toggle__input"
+                />
+                <span className="admin-toggle__track">
+                  <span className="admin-toggle__thumb" />
+                </span>
+              </span>
               <span className="space-y-1">
                 <span className="block text-sm font-medium text-white">Publish entire collection</span>
                 <span className="block text-sm text-[#91a39a]">
@@ -777,39 +782,29 @@ function GalleryEditorPage({ mode }) {
       >
         {mediaItems.length ? (
           <div className="space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-[20px] border border-white/10 bg-white/5 px-4 py-4">
-              <div className="text-sm text-[#d5dfda]">
-                {selectedMediaIds.length ? `${selectedMediaIds.length} selected` : 'Select one or more media files to manage them together.'}
+            {selectedMediaIds.length ? (
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-[20px] border border-white/10 bg-white/5 px-4 py-4">
+                <div className="text-sm text-[#d5dfda]">{selectedMediaIds.length} selected</div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={handleDeleteSelectedMedia}
+                    disabled={!selectedMediaIds.length}
+                    className="rounded-xl border border-[#ffb4a2]/30 bg-[#3a1814] px-3 py-2 text-xs font-medium text-[#ffd5ca] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Delete selected
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedMediaIds([])}
+                    disabled={!selectedMediaIds.length}
+                    className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Clear selection
+                  </button>
+                </div>
               </div>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() =>
-                    selectedMediaIds.length === 1 ? handleSetCover(selectedMediaIds[0]) : null
-                  }
-                  disabled={selectedMediaIds.length !== 1 || isUpdatingCover}
-                  className="rounded-xl border border-[#f8d35c]/30 bg-[#201c10] px-3 py-2 text-xs font-medium text-[#f8d35c] disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {isUpdatingCover ? 'Updating cover...' : 'Set selected as cover'}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleDeleteSelectedMedia}
-                  disabled={!selectedMediaIds.length}
-                  className="rounded-xl border border-[#ffb4a2]/30 bg-[#3a1814] px-3 py-2 text-xs font-medium text-[#ffd5ca] disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Delete selected
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedMediaIds([])}
-                  disabled={!selectedMediaIds.length}
-                  className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  Clear selection
-                </button>
-              </div>
-            </div>
+            ) : null}
 
             <div className="overflow-hidden rounded-[24px] border border-white/10 bg-white/5">
               <div className="overflow-x-auto">
@@ -1061,8 +1056,14 @@ function MediaManagerModal({
   coverLabel,
 }) {
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-[#030605]/75 px-4 py-8 backdrop-blur-md">
-      <div className="max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-[28px] border border-white/10 bg-[#08100d] shadow-[0_30px_90px_rgba(0,0,0,0.45)]">
+    <div
+      className="fixed inset-0 z-40 flex items-center justify-center bg-[#030605]/75 px-4 py-8 backdrop-blur-md"
+      onClick={onClose}
+    >
+      <div
+        className="max-h-[90vh] w-full max-w-5xl overflow-hidden rounded-[28px] border border-white/10 bg-[#08100d] shadow-[0_30px_90px_rgba(0,0,0,0.45)]"
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
           <div>
             <p className="text-xs uppercase tracking-[0.24em] text-[#f8d35c]">Media manager</p>

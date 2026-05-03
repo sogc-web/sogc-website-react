@@ -366,12 +366,17 @@ function PopupPage({ mode }) {
                   <p className="text-xs uppercase tracking-[0.3em] text-[#f8d35c]">Popup behavior</p>
                   <div className="mt-5 space-y-4">
                     <label className="flex items-start gap-3 rounded-[24px] border border-white/10 bg-[#0f1513] p-4">
-                      <input
-                        type="checkbox"
-                        checked={form.isActive}
-                        onChange={(event) => updateField('isActive', event.target.checked)}
-                        className="mt-1 h-4 w-4 accent-[#f8d35c]"
-                      />
+                      <span className="admin-toggle mt-0.5">
+                        <input
+                          type="checkbox"
+                          checked={form.isActive}
+                          onChange={(event) => updateField('isActive', event.target.checked)}
+                          className="admin-toggle__input"
+                        />
+                        <span className="admin-toggle__track">
+                          <span className="admin-toggle__thumb" />
+                        </span>
+                      </span>
                       <span>
                         <span className="block text-sm font-medium text-white">Show this popup on website</span>
                         <span className="mt-1 block text-sm text-[#9db0a7]">
@@ -381,12 +386,17 @@ function PopupPage({ mode }) {
                     </label>
 
                     <label className="flex items-start gap-3 rounded-[24px] border border-white/10 bg-[#0f1513] p-4">
-                      <input
-                        type="checkbox"
-                        checked={form.openOnManualTrigger}
-                        onChange={(event) => updateField('openOnManualTrigger', event.target.checked)}
-                        className="mt-1 h-4 w-4 accent-[#f8d35c]"
-                      />
+                      <span className="admin-toggle mt-0.5">
+                        <input
+                          type="checkbox"
+                          checked={form.openOnManualTrigger}
+                          onChange={(event) => updateField('openOnManualTrigger', event.target.checked)}
+                          className="admin-toggle__input"
+                        />
+                        <span className="admin-toggle__track">
+                          <span className="admin-toggle__thumb" />
+                        </span>
+                      </span>
                       <span>
                         <span className="block text-sm font-medium text-white">Allow popup to open from site actions</span>
                         <span className="mt-1 block text-sm text-[#9db0a7]">
@@ -396,12 +406,17 @@ function PopupPage({ mode }) {
                     </label>
 
                     <label className="flex items-start gap-3 rounded-[24px] border border-white/10 bg-[#0f1513] p-4">
-                      <input
-                        type="checkbox"
-                        checked={form.openOnScroll}
-                        onChange={(event) => updateField('openOnScroll', event.target.checked)}
-                        className="mt-1 h-4 w-4 accent-[#f8d35c]"
-                      />
+                      <span className="admin-toggle mt-0.5">
+                        <input
+                          type="checkbox"
+                          checked={form.openOnScroll}
+                          onChange={(event) => updateField('openOnScroll', event.target.checked)}
+                          className="admin-toggle__input"
+                        />
+                        <span className="admin-toggle__track">
+                          <span className="admin-toggle__thumb" />
+                        </span>
+                      </span>
                       <span>
                         <span className="block text-sm font-medium text-white">Open after scroll</span>
                         <span className="mt-1 block text-sm text-[#9db0a7]">
