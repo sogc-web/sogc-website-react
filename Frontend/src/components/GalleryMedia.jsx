@@ -9,7 +9,7 @@ import 'yet-another-react-lightbox/styles.css'
 import 'yet-another-react-lightbox/plugins/captions.css'
 import 'yet-another-react-lightbox/plugins/thumbnails.css'
 import SectionHeader from './SectionHeader'
-import { fetchAdminGalleryCollections, mergeGalleryCollections } from './publicGaleery'
+import { fetchAdminGalleryCollections, mergeGalleryCollections } from '../lib/publicGallery'
 import './GalleryMedia.css'
 
 const AUTO_PLAY_DELAY = 3600

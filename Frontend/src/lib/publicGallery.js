@@ -1,4 +1,4 @@
-import { PUBLIC_API_BASE_URL } from '../lib/env'
+import { PUBLIC_API_BASE_URL } from './env'
 
 function getFileNameFromUrl(url = '') {
   const normalized = String(url || '').split('?')[0]
