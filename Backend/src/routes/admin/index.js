@@ -17,6 +17,19 @@ const {
   updateAdminEvent,
 } = require('../../controllers/admin/eventsController')
 const {
+  createAdminGalleryCollection,
+  createAdminGalleryMedia,
+  deleteAdminGalleryCollection,
+  deleteAdminGalleryMedia,
+  getAdminGalleryCollection,
+  getAdminGalleryUsage,
+  listAdminGalleryCollections,
+  reorderAdminGalleryMedia,
+  updateAdminGalleryCover,
+  updateAdminGalleryCollection,
+  updateAdminGalleryMedia,
+} = require('../../controllers/admin/galleryCollectionsController')
+const {
   activateAdminPopup,
   createAdminPopup,
   deleteAdminPopup,
@@ -54,6 +67,17 @@ router.get('/events/:id', requireAdminAuth, asyncHandler(getAdminEvent))
 router.post('/events', requireAdminAuth, requireAdminCsrf, asyncHandler(createAdminEvent))
 router.put('/events/:id', requireAdminAuth, requireAdminCsrf, asyncHandler(updateAdminEvent))
 router.delete('/events/:id', requireAdminAuth, requireAdminCsrf, asyncHandler(deleteAdminEvent))
+router.get('/gallery', requireAdminAuth, asyncHandler(listAdminGalleryCollections))
+router.get('/gallery/usage', requireAdminAuth, asyncHandler(getAdminGalleryUsage))
+router.get('/gallery/:id', requireAdminAuth, asyncHandler(getAdminGalleryCollection))
+router.post('/gallery', requireAdminAuth, requireAdminCsrf, asyncHandler(createAdminGalleryCollection))
+router.put('/gallery/:id', requireAdminAuth, requireAdminCsrf, asyncHandler(updateAdminGalleryCollection))
+router.put('/gallery/:id/cover', requireAdminAuth, requireAdminCsrf, asyncHandler(updateAdminGalleryCover))
+router.delete('/gallery/:id', requireAdminAuth, requireAdminCsrf, asyncHandler(deleteAdminGalleryCollection))
+router.post('/gallery/:id/media', requireAdminAuth, requireAdminCsrf, asyncHandler(createAdminGalleryMedia))
+router.put('/gallery/:id/media/reorder', requireAdminAuth, requireAdminCsrf, asyncHandler(reorderAdminGalleryMedia))
+router.put('/gallery/:id/media/:mediaId', requireAdminAuth, requireAdminCsrf, asyncHandler(updateAdminGalleryMedia))
+router.delete('/gallery/:id/media/:mediaId', requireAdminAuth, requireAdminCsrf, asyncHandler(deleteAdminGalleryMedia))
 router.get('/popups', requireAdminAuth, asyncHandler(listAdminPopups))
 router.get('/popups/:id', requireAdminAuth, asyncHandler(getAdminPopup))
 router.post('/popups', requireAdminAuth, requireAdminCsrf, asyncHandler(createAdminPopup))

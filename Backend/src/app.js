@@ -8,6 +8,7 @@ const formRoutes = require('./routes/forms')
 const adminRoutes = require('./routes/admin')
 const authRoutes = require('./routes/authRoutes')
 const publicEventRoutes = require('./routes/public/eventsRoutes')
+const publicGalleryRoutes = require('./routes/public/galleryRoutes')
 const publicPopupRoutes = require('./routes/public/popupRoutes')
 
 const app = express()
@@ -20,8 +21,8 @@ app.use(
     credentials: true,
   }),
 )
-app.use(express.json({ limit: '2mb' }))
-app.use(express.urlencoded({ extended: true }))
+app.use(express.json({ limit: '160mb' }))
+app.use(express.urlencoded({ extended: true, limit: '160mb' }))
 app.use(hydrateAdminSession)
 
 app.get('/', (_request, response) => {
@@ -33,6 +34,7 @@ app.get('/', (_request, response) => {
 
 app.use('/api/health', healthRoutes)
 app.use('/api/events', publicEventRoutes)
+app.use('/api/gallery', publicGalleryRoutes)
 app.use('/api/popup', publicPopupRoutes)
 app.use('/api/forms', formRoutes)
 app.use('/auth', authRoutes)
