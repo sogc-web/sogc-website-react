@@ -9,6 +9,7 @@ import 'yet-another-react-lightbox/styles.css'
 import 'yet-another-react-lightbox/plugins/captions.css'
 import 'yet-another-react-lightbox/plugins/thumbnails.css'
 import SectionHeader from './SectionHeader'
+import { fetchAdminGalleryCollections, mergeGalleryCollections } from './publicGaleery'
 import './GalleryMedia.css'
 
 const AUTO_PLAY_DELAY = 3600
@@ -208,6 +209,7 @@ function getCardMotion(offset, cardWidth, isMobile) {
 }
 
 function GalleryMedia({ t }) {
+  const [adminCollections, setAdminCollections] = useState([])
   const [selectedCollection, setSelectedCollection] = useState(null)
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [position, setPosition] = useState(0)
@@ -218,12 +220,17 @@ function GalleryMedia({ t }) {
   const wheelTimeoutRef = useRef(null)
   const positionRef = useRef(0)
 
-  const mediaCollections = useMemo(
+  const staticCollections = useMemo(
     () =>
       (t.gallery.collections ?? [])
         .map((collection) => buildCollection(collection))
         .filter((collection) => collection.media.length > 0 && collection.cover),
     [t],
+  )
+
+  const mediaCollections = useMemo(
+    () => mergeGalleryCollections(staticCollections, adminCollections),
+    [adminCollections, staticCollections],
   )
 
   const total = mediaCollections.length
@@ -237,6 +244,20 @@ function GalleryMedia({ t }) {
 
     return buildSlides(selectedCollection)
   }, [selectedCollection])
+
+  useEffect(() => {
+    const controller = new AbortController()
+
+    fetchAdminGalleryCollections(controller.signal)
+      .then((items) => {
+        setAdminCollections(items)
+      })
+      .catch(() => {
+        setAdminCollections([])
+      })
+
+    return () => controller.abort()
+  }, [])
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(max-width: 768px)')
