@@ -11,7 +11,11 @@ export async function inviteAdmin(input) {
     body: JSON.stringify(input),
   })
 
-  return payload.item
+  return {
+    item: payload.item,
+    invite: payload.invite ?? null,
+    message: payload.message || '',
+  }
 }
 
 export async function resendAdminInvite(id) {
@@ -19,7 +23,11 @@ export async function resendAdminInvite(id) {
     method: 'POST',
   })
 
-  return payload.item
+  return {
+    item: payload.item,
+    invite: payload.invite ?? null,
+    message: payload.message || '',
+  }
 }
 
 export async function disableAdmin(id) {

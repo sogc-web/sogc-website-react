@@ -7,6 +7,7 @@ function AdminsPage() {
   const [status, setStatus] = useState({ loading: true, error: '', notice: '' })
   const [form, setForm] = useState({ name: '', email: '' })
   const [submitting, setSubmitting] = useState(false)
+  const [inviteFallback, setInviteFallback] = useState(null)
 
   async function loadAdmins() {
     setStatus((current) => ({ ...current, loading: true, error: '' }))
@@ -27,12 +28,17 @@ function AdminsPage() {
   async function handleInviteSubmit(event) {
     event.preventDefault()
     setSubmitting(true)
+    setInviteFallback(null)
     setStatus((current) => ({ ...current, error: '', notice: '' }))
 
     try {
-      await inviteAdmin(form)
+      const result = await inviteAdmin(form)
       setForm({ name: '', email: '' })
-      setStatus((current) => ({ ...current, notice: 'Invite email sent successfully.' }))
+      setStatus((current) => ({
+        ...current,
+        notice: result.message || 'Invite email sent successfully.',
+      }))
+      setInviteFallback(buildInviteFallback(result))
       await loadAdmins()
     } catch (error) {
       setStatus((current) => ({ ...current, error: error.message }))
@@ -42,10 +48,15 @@ function AdminsPage() {
   }
 
   async function handleRowAction(action) {
+    setInviteFallback(null)
     setStatus((current) => ({ ...current, error: '', notice: '' }))
 
     try {
-      await action()
+      const result = await action()
+      if (result?.message) {
+        setStatus((current) => ({ ...current, notice: result.message }))
+      }
+      setInviteFallback(buildInviteFallback(result))
       await loadAdmins()
     } catch (error) {
       setStatus((current) => ({ ...current, error: error.message }))
@@ -64,6 +75,32 @@ function AdminsPage() {
         {status.notice ? (
           <div className="mb-4 rounded-2xl border border-[#f8d35c]/20 bg-[#f8d35c]/10 px-4 py-3 text-sm text-[#f8e7ae]">
             {status.notice}
+          </div>
+        ) : null}
+
+        {inviteFallback ? (
+          <div className="mb-4 space-y-3 rounded-2xl border border-[#f8d35c]/20 bg-[#f8d35c]/10 px-4 py-4 text-sm text-[#f8e7ae]">
+            <p>
+              The invite link is ready for manual sharing with{' '}
+              <span className="font-medium text-white">{inviteFallback.email}</span>.
+            </p>
+            <input
+              readOnly
+              value={inviteFallback.url}
+              className="w-full rounded-2xl border border-white/10 bg-[#0f1513] px-4 py-3 text-white outline-none"
+            />
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => navigator.clipboard.writeText(inviteFallback.url)}
+                className="rounded-2xl bg-[#f8d35c] px-4 py-2 text-sm font-medium text-[#1b1b12]"
+              >
+                Copy invite link
+              </button>
+              <div className="self-center text-xs text-[#d9c981]">
+                Expires: {new Date(inviteFallback.expiresAt).toLocaleString()}
+              </div>
+            </div>
           </div>
         ) : null}
 
@@ -191,6 +228,18 @@ function AdminsPage() {
       </SectionCard>
     </div>
   )
+}
+
+function buildInviteFallback(result) {
+  if (!result?.invite?.url || result?.invite?.emailDelivery?.delivered) {
+    return null
+  }
+
+  return {
+    email: result.item?.email || 'the invited admin',
+    url: result.invite.url,
+    expiresAt: result.invite.expiresAt,
+  }
 }
 
 export default AdminsPage
