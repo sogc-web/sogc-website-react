@@ -14,6 +14,7 @@ const env = {
   adminUrl: process.env.ADMIN_URL || 'http://localhost:5174',
   mongodbUri: process.env.MONGODB_URI || '',
   emailMode: process.env.EMAIL_MODE || 'console',
+  resendApiKey: process.env.RESEND_API_KEY || '',
   mailHost: process.env.MAIL_HOST || '',
   mailPort: Number(process.env.MAIL_PORT || 587),
   mailSecure: toBoolean(process.env.MAIL_SECURE, false),

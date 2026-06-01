@@ -1,40 +1,29 @@
-const nodemailer = require('nodemailer')
+const { Resend } = require('resend')
 const { env } = require('../config/env')
 
-function createTransporter() {
-  if (env.emailMode === 'console' || !env.mailHost) {
-    return null
-  }
-
-  return nodemailer.createTransport({
-    host: env.mailHost,
-    port: env.mailPort,
-    secure: env.mailSecure,
-    auth: env.mailUser && env.mailPass ? { user: env.mailUser, pass: env.mailPass } : undefined,
-    connectionTimeout: 10000,
-    greetingTimeout: 10000,
-    socketTimeout: 15000,
-  })
-}
+const resend = new Resend(env.resendApiKey)
 
 async function sendEmail({ to, subject, text, html, replyTo }) {
-  const transporter = createTransporter()
-
-  if (!transporter) {
+  if (env.emailMode === 'console' || !env.resendApiKey) {
     console.log('[EMAIL:console-mode]', { to, subject, text, html, replyTo })
     return { delivered: false, mode: 'console' }
   }
 
-  const result = await transporter.sendMail({
-    from: env.mailFrom,
-    to,
-    replyTo,
-    subject,
-    text,
-    html,
-  })
+  try {
+    const data = await resend.emails.send({
+      from: 'onboarding@resend.dev',
+      to,
+      reply_to: replyTo,
+      subject,
+      text,
+      html,
+    })
 
-  return { delivered: true, mode: 'smtp', result }
+    return { delivered: true, mode: 'resend', result: data }
+  } catch (error) {
+    console.error('[EMAIL:resend-error]', error)
+    throw error
+  }
 }
 
 module.exports = { sendEmail }
