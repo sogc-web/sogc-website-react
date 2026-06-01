@@ -63,19 +63,14 @@ async function sendContactNotification({ to, name, email, phone, role, message }
     replyTo: email,
     subject,
     text,
-    html: buildFormHtml({
-      eyebrow: 'SOGC Contact Form',
-      title: 'New contact enquiry',
-      intro: 'A visitor submitted the contact form on the public website.',
-      details: {
-        Name: name,
-        Email: email,
-        Phone: phone || '-',
-        Role: role || '-',
-      },
-      bodyLabel: 'Message',
-      bodyText: message,
-    }),
+    templateId: '259ee60d-c2de-4192-912a-0ddabb4cec35',
+    variables: {
+      name: name,
+      email: email,
+      phone: phone || '-',
+      role: role || '-',
+      message: message,
+    }
   })
 }
 
