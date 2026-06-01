@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import './PressMentions.css'
 import SectionHeader from './SectionHeader'
 import { mediaCoverageImages } from '../data/mediaCoverageImages'
@@ -27,9 +28,9 @@ function PressMentions({ t }) {
         ))}
       </div>
       <div className="press-more-row">
-        <a className="ghost-btn press-more-btn" href="#media-coverage">
+        <Link className="ghost-btn press-more-btn" to="/media-coverage">
           {buttonLabel}
-        </a>
+        </Link>
       </div>
     </section>
   )

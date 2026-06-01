@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
+import SEO from './SEO'
 import Lightbox from 'yet-another-react-lightbox'
 import Captions from 'yet-another-react-lightbox/plugins/captions'
 import Thumbnails from 'yet-another-react-lightbox/plugins/thumbnails'
@@ -119,12 +121,12 @@ function Campaigns({ t, campaigns }) {
                         ))}
                       </div>
 
-                      <a
-                        href={`#campaign/${campaign.slug}`}
+                      <Link
+                        to={`/campaigns/${campaign.slug}`}
                         className="mt-4 inline-flex items-center rounded-full border border-[#f8d35c]/28 bg-[#f8d35c]/16 px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.18em] text-[#fff7dd] transition hover:-translate-y-0.5 hover:bg-[#f8d35c]/22 md:mt-6"
                       >
                         {t.campaigns.cta}
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </div>
@@ -207,10 +209,17 @@ function CampaignDetailPage({ t, campaign }) {
   }, [campaign.slug])
 
   return (
-    <section className="campaign-detail-page">
+    <>
+      <SEO 
+        title={campaign.title}
+        description={campaign.summary}
+        url={`/campaigns/${campaign.slug}`}
+        image={media[0]?.src}
+      />
+      <section className="campaign-detail-page">
       <div className="campaign-detail-page__hero">
         <div ref={heroCopyRef} className="campaign-detail-page__hero-copy">
-          <a href="#campaigns" className="campaign-detail-page__back">Back to campaigns</a>
+          <Link to="/" className="campaign-detail-page__back">Back to campaigns</Link>
           <div className="campaign-detail-page__eyebrow-row">
             <span className="eyebrow">{campaign.kicker}</span>
             <span className="campaign-detail-page__spotlight">{campaign.stat}</span>
@@ -296,6 +305,7 @@ function CampaignDetailPage({ t, campaign }) {
         zoom={{ maxZoomPixelRatio: 2.5, scrollToZoom: true }}
       />
     </section>
+    </>
   )
 }
 

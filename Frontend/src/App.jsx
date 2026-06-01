@@ -1,4 +1,5 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import './App.css'
 import './components/HeroSection.css'
 import Loader from './components/Loader'
@@ -22,6 +23,7 @@ import VolunteerPopup from './components/VolunteerPopup'
 import AdminPopup from './components/AdminPopup'
 import FAQChatbot from './components/FAQChatbot'
 import ScrollReveal from './components/ScrollReveal'
+import SEO from './components/SEO'
 import { getContent } from './data/content'
 import { campaignContentEn } from './data/campaign_content.en'
 import { campaignContentHi } from './data/campaign_content.hi'
@@ -31,10 +33,10 @@ import { fetchActivePopup } from './lib/publicPopup'
 
 const LANGUAGE_STORAGE_KEY = 'sogc-language'
 const HERO_IMAGE_ROTATION_MS = 5000
-const MEDIA_COVERAGE_HASH = '#media-coverage'
-const CAMPAIGN_HASH_PREFIX = '#campaign/'
-const EVENT_HASH_PREFIX = '#event/'
-const ABOUT_HASH_PREFIX = '#about/'
+const MEDIA_COVERAGE_PATH = '/media-coverage'
+const CAMPAIGN_PATH_PREFIX = '/campaigns/'
+const EVENT_PATH_PREFIX = '/events/'
+const ABOUT_PATH_PREFIX = '/about/'
 const HEADER_LOGO_SRC = '/sogc-logo.png'
 const heroBackgroundImageModules = import.meta.glob(
   [
@@ -61,25 +63,23 @@ function shuffleItems(items) {
   return shuffledItems
 }
 
-function getCurrentRoute() {
-  if (typeof window === 'undefined') return { type: 'home' }
+function getCurrentRoute(pathname) {
+  if (!pathname || pathname === '/') return { type: 'home' }
 
-  const { hash } = window.location
-
-  if (hash === MEDIA_COVERAGE_HASH) {
+  if (pathname === MEDIA_COVERAGE_PATH) {
     return { type: 'media-coverage' }
   }
 
-  if (hash.startsWith(CAMPAIGN_HASH_PREFIX)) {
-    return { type: 'campaign', slug: hash.slice(CAMPAIGN_HASH_PREFIX.length) }
+  if (pathname.startsWith(CAMPAIGN_PATH_PREFIX)) {
+    return { type: 'campaign', slug: pathname.slice(CAMPAIGN_PATH_PREFIX.length) }
   }
 
-  if (hash.startsWith(EVENT_HASH_PREFIX)) {
-    return { type: 'event', slug: hash.slice(EVENT_HASH_PREFIX.length) }
+  if (pathname.startsWith(EVENT_PATH_PREFIX)) {
+    return { type: 'event', slug: pathname.slice(EVENT_PATH_PREFIX.length) }
   }
 
-  if (hash.startsWith(ABOUT_HASH_PREFIX)) {
-    return { type: 'about', slug: hash.slice(ABOUT_HASH_PREFIX.length) }
+  if (pathname.startsWith(ABOUT_PATH_PREFIX)) {
+    return { type: 'about', slug: pathname.slice(ABOUT_PATH_PREFIX.length) }
   }
 
   return { type: 'home' }
@@ -100,8 +100,9 @@ function preloadImage(src, fetchPriority = 'auto') {
 }
 
 function App() {
+  const location = useLocation()
+  const currentRoute = getCurrentRoute(location.pathname)
   const [loading, setLoading] = useState(true)
-  const [currentRoute, setCurrentRoute] = useState(getCurrentRoute)
   const [heroCarouselImages] = useState(() => shuffleItems(heroBackgroundImages))
   const [heroImageIndex, setHeroImageIndex] = useState(0)
   const [adminEvents, setAdminEvents] = useState([])
@@ -156,12 +157,7 @@ function App() {
     return () => controller.abort()
   }, [])
 
-  useEffect(() => {
-    const handleHashChange = () => setCurrentRoute(getCurrentRoute())
 
-    window.addEventListener('hashchange', handleHashChange)
-    return () => window.removeEventListener('hashchange', handleHashChange)
-  }, [])
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -231,6 +227,9 @@ function App() {
           </>
         ) : (
           <>
+            <SEO 
+              url="/" 
+            />
             <section className="hero-stage">
               {heroCarouselImages.length > 0 ? (
                 <div className="hero-stage-carousel" aria-hidden="true">

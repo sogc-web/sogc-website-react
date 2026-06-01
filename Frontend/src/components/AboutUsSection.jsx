@@ -1,9 +1,11 @@
-﻿import { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import SEO from './SEO'
 import SectionHeader from './SectionHeader'
 import './AboutUsSection.css'
 
-function getAboutDetailHash(tab) {
-  return `#about/${tab.slug ?? tab.id}`
+function getAboutDetailPath(tab) {
+  return `/about/${tab.slug ?? tab.id}`
 }
 
 function splitParagraphs(paragraphs = []) {
@@ -31,10 +33,10 @@ function AboutUsSection({ t }) {
 
   const progressPercent = tabs.length > 1 ? (activeIndex / (tabs.length - 1)) * 100 : 0
 
+  const navigate = useNavigate()
+
   const handleExplore = (tab) => {
-    if (typeof window !== 'undefined') {
-      window.location.hash = getAboutDetailHash(tab)
-    }
+    navigate(getAboutDetailPath(tab))
   }
 
   if (!activeTab) {
@@ -154,11 +156,17 @@ function AboutDetailPage({ t, tab }) {
   const [detailPartOne, detailPartTwo] = splitParagraphs(tab.paragraphs)
 
   return (
-    <section className="about-detail-page">
+    <>
+      <SEO 
+        title={tab.title}
+        description={tab.summary}
+        url={getAboutDetailPath(tab)}
+      />
+      <section className="about-detail-page">
       <div className="about-detail-page__layout">
         <div className="about-detail-page__column about-detail-page__column--left">
           <article className="about-detail-card about-detail-card--intro">
-            <a href="#about-us" className="about-detail-page__back">{t.aboutUs.backToAbout}</a>
+            <Link to="/" className="about-detail-page__back">{t.aboutUs.backToAbout}</Link>
             <div className="about-detail-page__eyebrow-row">
               <span className="eyebrow about-detail-page__kicker about-detail-page__kicker--white">
                 {tab.kicker}
@@ -256,10 +264,11 @@ function AboutDetailPage({ t, tab }) {
 
       {tab.footnote ? <p className="about-detail-page__footnote">{tab.footnote}</p> : null}
     </section>
+    </>
   )
 }
 
-export { AboutDetailPage, getAboutDetailHash }
+export { AboutDetailPage, getAboutDetailPath as getAboutDetailHash }
 export default AboutUsSection
 
 

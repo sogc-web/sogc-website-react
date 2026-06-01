@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import SEO from './SEO'
 import Lightbox from 'yet-another-react-lightbox'
 import Captions from 'yet-another-react-lightbox/plugins/captions'
 import Thumbnails from 'yet-another-react-lightbox/plugins/thumbnails'
@@ -29,7 +30,13 @@ function MediaCoveragePage({ t }) {
   )
 
   return (
-    <section className="media-coverage-page">
+    <>
+      <SEO 
+        title={title}
+        description={description}
+        url="/media-coverage"
+      />
+      <section className="media-coverage-page">
       <div className="section-header section-header--center media-coverage-page__header">
         <span className="eyebrow">{eyebrow}</span>
         <h2>{title}</h2>
@@ -76,6 +83,7 @@ function MediaCoveragePage({ t }) {
         zoom={{ maxZoomPixelRatio: 2.5, scrollToZoom: true }}
       />
     </section>
+    </>
   )
 }
 

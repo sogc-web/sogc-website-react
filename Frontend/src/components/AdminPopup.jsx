@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export default function AdminPopup({ popup }) {
     const [isOpen, setIsOpen] = useState(false)
     const [isRendered, setIsRendered] = useState(false)
+    const navigate = useNavigate()
 
     const modalRef = useRef(null)
     const closeTimeoutRef = useRef(null)
@@ -63,7 +65,7 @@ export default function AdminPopup({ popup }) {
 
     const handleOpenEvent = () => {
         if (popup?.linkedEventSlug) {
-            window.location.hash = `#event/${popup.linkedEventSlug}`
+            navigate(`/events/${popup.linkedEventSlug}`)
         }
         handleClose()
     }

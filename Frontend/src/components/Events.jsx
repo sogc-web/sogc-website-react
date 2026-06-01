@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
+import SEO from './SEO'
 import './Events.css'
 import SectionHeader from './SectionHeader'
 import { eventPageCopy } from '../data/eventDetails'
@@ -168,9 +170,9 @@ function Events({ t, events, lang }) {
                 <span>{event.location}</span>
               </div>
               <div className="event-listing__actions">
-                <a href={`#event/${event.slug}`} className="ghost-btn small">
+                <Link to={`/events/${event.slug}`} className="ghost-btn small">
                   {copy.viewDetailsCta}
-                </a>
+                </Link>
               </div>
             </div>
           </article>
@@ -227,10 +229,16 @@ function EventDetailPage({ event, lang }) {
 
   return (
     <>
+      <SEO 
+        title={event.title}
+        description={event.description}
+        url={`/events/${event.slug}`}
+        image={event.image ?? eventListingImages[event.slug]}
+      />
       <section className="event-detail-page">
         <div className="event-detail-page__hero">
           <div className="event-detail-page__copy">
-            <a href="#events" className="event-detail-page__back">{copy.backToEvents}</a>
+            <Link to="/" className="event-detail-page__back">{copy.backToEvents}</Link>
             <div className="event-detail-page__eyebrow-row">
               <span className="eyebrow" style={{ color: 'white' }}>{event.tag ?? event.date}</span>
               <span className="event-detail-page__date-pill">{event.scheduleLine}</span>
