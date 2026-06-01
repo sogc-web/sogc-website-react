@@ -15,9 +15,12 @@ const app = express()
 
 app.set('trust proxy', 1)
 
+const frontendUrls = env.frontendUrl ? env.frontendUrl.split(',').map(url => url.trim()) : []
+const adminUrls = env.adminUrl ? env.adminUrl.split(',').map(url => url.trim()) : []
+
 app.use(
   cors({
-    origin: [env.frontendUrl, env.adminUrl].filter(Boolean),
+    origin: [...frontendUrls, ...adminUrls].filter(Boolean),
     credentials: true,
   }),
 )
